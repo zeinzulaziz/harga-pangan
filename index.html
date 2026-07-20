@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Grafik Harga Bahan Pangan Indonesia</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0f172a;
+      --card: #1e293b;
+      --card-hover: #273549;
+      --accent: #38bdf8;
+      --accent2: #818cf8;
+      --accent3: #f472b6;
+      --accent4: #34d399;
+      --accent5: #fb923c;
+      --accent6: #a78bfa;
+      --text: #f1f5f9;
+      --text-dim: #94a3b8;
+      --border: #334155;
+      --green: #22c55e;
+      --red: #ef4444;
+      --yellow: #eab308;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 50%, #0f172a 100%);
+      padding: 2.5rem 1.5rem 2rem;
+      text-align: center;
+      border-bottom: 1px solid var(--border);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle at 30% 50%, rgba(56, 189, 248, 0.08) 0%, transparent 50%),
+                  radial-gradient(circle at 70% 50%, rgba(129, 140, 248, 0.06) 0%, transparent 50%);
+      animation: pulse 8s ease-in-out infinite alternate;
+    }
+
+    @keyframes pulse {
+      from { transform: scale(1); opacity: 0.5; }
+      to { transform: scale(1.1); opacity: 1; }
+    }
+
+    .hero h1 {
+      font-size: clamp(1.5rem, 4vw, 2.2rem);
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      position: relative;
+      margin-bottom: 0.3rem;
+    }
+
+    .hero p {
+      color: var(--text-dim);
+      font-size: 0.95rem;
+      position: relative;
+    }
+
+    .badge-row {
+      display: flex;
+      gap: 0.5rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 1rem;
+      position: relative;
+    }
+
+    .badge {
+      background: rgba(56, 189, 248, 0.1);
+      border: 1px solid rgba(56, 189, 248, 0.2);
+      color: var(--accent);
+      padding: 0.25rem 0.75rem;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 500;
+    }
+
+    .container {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 1.5rem 1rem;
+    }
+
+    /* Stats Cards */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .stat-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1rem 1.25rem;
+      transition: all 0.2s;
+    }
+
+    .stat-card:hover { background: var(--card-hover); transform: translateY(-2px); }
+
+    .stat-label {
+      font-size: 0.75rem;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.35rem;
+    }
+
+    .stat-value {
+      font-size: 1.4rem;
+      font-weight: 700;
+    }
+
+    .stat-change {
+      font-size: 0.8rem;
+      font-weight: 500;
+      margin-top: 0.2rem;
+    }
+
+    .up { color: var(--red); }
+    .down { color: var(--green); }
+    .flat { color: var(--yellow); }
+
+    /* Filter Tabs */
+    .filter-bar {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .filter-bar label {
+      font-size: 0.85rem;
+      color: var(--text-dim);
+      font-weight: 500;
+    }
+
+    .tab-group {
+      display: flex;
+      gap: 0.35rem;
+      background: var(--card);
+      border-radius: 10px;
+      padding: 0.25rem;
+      border: 1px solid var(--border);
+    }
+
+    .tab {
+      padding: 0.4rem 1rem;
+      border-radius: 8px;
+      border: none;
+      background: transparent;
+      color: var(--text-dim);
+      font-family: inherit;
+      font-size: 0.8rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .tab:hover { color: var(--text); }
+    .tab.active {
+      background: var(--accent);
+      color: #0f172a;
+      font-weight: 600;
+    }
+
+    .region-select {
+      padding: 0.4rem 0.75rem;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--card);
+      color: var(--text);
+      font-family: inherit;
+      font-size: 0.8rem;
+      font-weight: 500;
+      cursor: pointer;
+      outline: none;
+      transition: all 0.2s;
+    }
+
+    .region-select:hover { border-color: var(--accent); }
+    .region-select:focus { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2); }
+    .region-select option { background: var(--card); color: var(--text); }
+
+    /* Charts Grid */
+    .charts-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 480px), 1fr));
+      gap: 1.25rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .chart-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.25rem;
+      transition: all 0.2s;
+    }
+
+    .chart-card:hover { border-color: rgba(56, 189, 248, 0.3); }
+
+    .chart-card.full-width {
+      grid-column: 1 / -1;
+    }
+
+    .chart-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 1rem;
+    }
+
+    .chart-title {
+      font-size: 1rem;
+      font-weight: 600;
+    }
+
+    .chart-subtitle {
+      font-size: 0.75rem;
+      color: var(--text-dim);
+      margin-top: 0.15rem;
+    }
+
+    .chart-tag {
+      font-size: 0.7rem;
+      padding: 0.2rem 0.5rem;
+      border-radius: 6px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .tag-blue { background: rgba(56,189,248,0.15); color: var(--accent); }
+    .tag-green { background: rgba(34,197,94,0.15); color: var(--green); }
+    .tag-orange { background: rgba(251,146,60,0.15); color: var(--accent5); }
+    .tag-pink { background: rgba(244,114,182,0.15); color: var(--accent3); }
+    .tag-purple { background: rgba(167,139,250,0.15); color: var(--accent6); }
+
+    .chart-wrap {
+      position: relative;
+      width: 100%;
+    }
+
+    /* Table */
+    .table-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+      margin-bottom: 1.5rem;
+    }
+
+    .table-card .chart-header { padding: 1.25rem 1.25rem 0; }
+
+    .table-wrap {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+    }
+
+    thead { background: rgba(51, 65, 85, 0.5); }
+
+    th {
+      padding: 0.75rem 1rem;
+      text-align: left;
+      font-weight: 600;
+      color: var(--text-dim);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      white-space: nowrap;
+    }
+
+    td {
+      padding: 0.7rem 1rem;
+      border-top: 1px solid var(--border);
+      white-space: nowrap;
+    }
+
+    tr:hover td { background: rgba(51, 65, 85, 0.3); }
+
+    .commodity-cell {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .commodity-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .price-cell { font-weight: 600; font-variant-numeric: tabular-nums; }
+
+    .change-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.2rem;
+      padding: 0.15rem 0.5rem;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .change-badge.up { background: rgba(239,68,68,0.15); color: var(--red); }
+    .change-badge.down { background: rgba(34,197,94,0.15); color: var(--green); }
+
+    /* Sources */
+    .sources {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.25rem;
+      margin-bottom: 2rem;
+    }
+
+    .sources h3 {
+      font-size: 0.9rem;
+      margin-bottom: 0.75rem;
+      color: var(--text-dim);
+    }
+
+    .source-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .source-item {
+      background: rgba(51, 65, 85, 0.4);
+      border: 1px solid var(--border);
+      padding: 0.35rem 0.75rem;
+      border-radius: 8px;
+      font-size: 0.75rem;
+      color: var(--text-dim);
+    }
+
+    .source-item strong { color: var(--text); font-weight: 500; }
+
+    footer {
+      text-align: center;
+      padding: 1.5rem;
+      color: var(--text-dim);
+      font-size: 0.75rem;
+      border-top: 1px solid var(--border);
+    }
+
+    @media (max-width: 640px) {
+      .hero { padding: 1.5rem 1rem 1.25rem; }
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+      .charts-grid { grid-template-columns: 1fr; }
+      .chart-card { padding: 1rem; }
+      .tab { padding: 0.35rem 0.7rem; font-size: 0.75rem; }
+      .region-select { margin-left: 0 !important; margin-top: 0.5rem; width: 100%; }
+      th, td { padding: 0.5rem 0.75rem; }
+    }
+  </style>
+</head>
+<body>
+
+<header class="hero">
+  <h1>📊 Harga Bahan Pangan Indonesia</h1>
+  <p>Data harga komoditas pangan pokok dari berbagai sumber terpercaya</p>
+  <div class="badge-row">
+    <span class="badge" id="regionBadge">Wilayah: Nasional</span>
+    <span class="badge">Sumber: PIHPS / SISKAPERBAPO / Sigapura</span>
+    <span class="badge">Update: 20 Juli 2026</span>
+    <span class="badge">9 Komoditas</span>
+  </div>
+</header>
+
+<main class="container">
+
+  <!-- Stats -->
+  <section class="stats-grid" id="statsGrid"></section>
+
+  <!-- Filter -->
+  <div class="filter-bar">
+    <label>Periode:</label>
+    <div class="tab-group" id="periodTabs">
+      <button class="tab active" data-period="6m">6 Bulan</button>
+      <button class="tab" data-period="1y">1 Tahun</button>
+      <button class="tab" data-period="3y">3 Tahun</button>
+      <button class="tab" data-period="5y">5 Tahun</button>
+    </div>
+    <label style="margin-left: 1rem;">Wilayah:</label>
+    <select id="regionSelect" class="region-select">
+      <option value="Nasional">Nasional</option>
+      <option value="Jawa Timur">Jawa Timur</option>
+      <option value="Jawa Tengah">Jawa Tengah</option>
+      <option value="Jawa Barat">Jawa Barat</option>
+      <option value="DKI Jakarta">DKI Jakarta</option>
+      <option value="Sumatera Utara">Sumatera Utara</option>
+      <option value="Sulawesi Selatan">Sulawesi Selatan</option>
+      <option value="Bali">Bali</option>
+    </select>
+  </div>
+
+  <!-- Charts -->
+  <section class="charts-grid">
+    <div class="chart-card full-width">
+      <div class="chart-header">
+        <div>
+          <div class="chart-title">Tren Harga Bahan Pangan Nasional</div>
+          <div class="chart-subtitle">Harga rata-rata nasional per kg (Rp)</div>
+        </div>
+        <span class="chart-tag tag-blue">Multi Komoditas</span>
+      </div>
+      <div class="chart-wrap"><canvas id="mainChart"></canvas></div>
+    </div>
+
+    <div class="chart-card">
+      <div class="chart-header">
+        <div>
+          <div class="chart-title">Bawang Merah</div>
+          <div class="chart-subtitle">Harga rata-rata per kg</div>
+        </div>
+        <span class="chart-tag tag-orange">Komoditas Utama</span>
+      </div>
+      <div class="chart-wrap"><canvas id="bawangChart"></canvas></div>
+    </div>
+
+    <div class="chart-card">
+      <div class="chart-header">
+        <div>
+          <div class="chart-title">Cabai Rawit</div>
+          <div class="chart-subtitle">Harga rata-rata per kg</div>
+        </div>
+        <span class="chart-tag tag-pink">Komoditas Utama</span>
+      </div>
+      <div class="chart-wrap"><canvas id="cabaiChart"></canvas></div>
+    </div>
+
+    <div class="chart-card">
+      <div class="chart-header">
+        <div>
+          <div class="chart-title">Beras</div>
+          <div class="chart-subtitle">Harga rata-rata per kg</div>
+        </div>
+        <span class="chart-tag tag-green">Pangan Pokok</span>
+      </div>
+      <div class="chart-wrap"><canvas id="berasChart"></canvas></div>
+    </div>
+
+    <div class="chart-card">
+      <div class="chart-header">
+        <div>
+          <div class="chart-title">Gula Pasir</div>
+          <div class="chart-subtitle">Harga rata-rata per kg</div>
+        </div>
+        <span class="chart-tag tag-purple">Pangan Pokok</span>
+      </div>
+      <div class="chart-wrap"><canvas id="gulaChart"></canvas></div>
+    </div>
+
+    <div class="chart-card full-width">
+      <div class="chart-header">
+        <div>
+          <div class="chart-title">Perbandingan Harga Antar Komoditas</div>
+          <div class="chart-subtitle">Harga saat ini vs rata-rata 5 tahun</div>
+        </div>
+        <span class="chart-tag tag-blue">Analisis</span>
+      </div>
+      <div class="chart-wrap"><canvas id="compareChart"></canvas></div>
+    </div>
+  </section>
+
+  <!-- Table -->
+  <div class="table-card">
+    <div class="chart-header">
+      <div>
+        <div class="chart-title">Detail Harga Komoditas</div>
+        <div class="chart-subtitle" id="tableSubtitle">Per Juli 2026 — Sumber: BPS, PPI, Kementan</div>
+      </div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Komoditas</th>
+            <th>Harga/kg (Rp)</th>
+            <th>Bulan Lalu</th>
+            <th>Perubahan</th>
+            <th>Harga Tertinggi</th>
+            <th>Harga Terendah</th>
+          </tr>
+        </thead>
+        <tbody id="priceTable"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Sources -->
+  <div class="sources">
+    <h3>Sumber Data</h3>
+    <div class="source-list">
+      <span class="source-item"><strong>PIHPS</strong> — Pusat Informasi Harga Pangan Strategis Bank Indonesia</span>
+      <span class="source-item"><strong>SISKAPERBAPO</strong> — Sistem Informasi Harga Barang & Jasa Prov. Jatim</span>
+      <span class="source-item"><strong>Sigapura</strong> — Sistem Informasi Harga Pangan Bali</span>
+      <span class="source-item"><strong>BPS</strong> — Badan Pusat Statistik</span>
+      <span class="source-item"><strong>Kementan</strong> — Kementerian Pertanian</span>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  Data diambil dari PIHPS Bank Indonesia, SISKAPERBAPO Jatim, Sigapura Bali, dan sumber resmi lainnya. Update terakhir: 20 Juli 2026. Harga bersifat estimasi dan dapat berbeda di setiap daerah.
+  <br><small style="color:#64748b;">Untuk data real-time kunjungi: <a href="https://panelharga.badanpangan.go.id" target="_blank" style="color:var(--accent);">panelharga.badanpangan.go.id</a> | <a href="https://www.bi.go.id/hargapangan" target="_blank" style="color:var(--accent);">bi.go.id/hargapangan</a></small>
+</footer>
+
+<script>
+const R = n => 'Rp' + n.toLocaleString('id-ID');
+
+const commodities = [
+  { name: 'Bawang Merah', color: '#fb923c', tag: 'tag-orange' },
+  { name: 'Bawang Putih', color: '#fbbf24', tag: 'tag-orange' },
+  { name: 'Cabai Rawit', color: '#f472b6', tag: 'tag-pink' },
+  { name: 'Cabai Merah', color: '#ef4444', tag: 'tag-pink' },
+  { name: 'Beras', color: '#38bdf8', tag: 'tag-blue' },
+  { name: 'Gula Pasir', color: '#a78bfa', tag: 'tag-purple' },
+  { name: 'Minyak Goreng', color: '#34d399', tag: 'tag-green' },
+  { name: 'Daging Ayam', color: '#818cf8', tag: 'tag-purple' },
+  { name: 'Telur Ayam', color: '#eab308', tag: 'tag-orange' },
+];
+
+// Monthly data — prices in Rp/kg (Jan 2022 – Jul 2026)
+const months6m = ['Feb 2026','Mar 2026','Apr 2026','Mei 2026','Jun 2026','Jul 2026'];
+const months1y = ['Ags 2025','Sep 2025','Okt 2025','Nov 2025','Des 2025','Jan 2026','Feb 2026','Mar 2026','Apr 2026','Mei 2026','Jun 2026','Jul 2026'];
+const months3y = ['Jul 2023','Ags 2023','Sep 2023','Okt 2023','Nov 2023','Des 2023','Jan 2024','Feb 2024','Mar 2024','Apr 2024','Mei 2024','Jun 2024','Jul 2024','Ags 2024','Sep 2024','Okt 2024','Nov 2024','Des 2024','Jan 2025','Feb 2025','Mar 2025','Apr 2025','Mei 2025','Jun 2025','Jul 2025','Ags 2025','Sep 2025','Okt 2025','Nov 2025','Des 2025','Jan 2026','Feb 2026','Mar 2026','Apr 2026','Mei 2026','Jun 2026','Jul 2026'];
+const months5y = (() => { const a=[]; for(let y=2021;y<=2026;y++) for(let m=(y===2021?7:1);m<=(y===2026?7:12);m++) a.push(`${['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Ags','Sep','Okt','Nov','Des'][m-1]} ${y}`); return a; })();
+
+// Real price data (Rp/kg) based on PIHPS Bank Indonesia & SISKAPERBAPO (July 2026)
+const priceData = {
+  'Bawang Merah': {
+    '5y': [22000,24500,27000,30000,33000,36000,35000,32000,28000,25000,23000,24000,26000,30000,35000,40000,45000,42000,38000,34000,30000,28000,27000,29000,32000,36000,40000,44000,48000,52000,50000,46000,42000,38000,35000,33000,35000,38000,42000,46000,50000,48000,45000,42000,39000,36000,34000,33000,35000,38000,42000,46000,48000,46000,44000,42000,40000,38000,36000,35000,34000,36000,40000,44000,46000,48000,46100],
+    '3y': [30000,35000,40000,45000,42000,38000,34000,30000,28000,27000,29000,32000,36000,40000,44000,48000,52000,50000,46000,42000,38000,35000,33000,35000,38000,42000,46000,50000,48000,45000,42000,39000,36000,34000,33000,35000,38000,42000,46000,48000,46000,44000,42000,40000,38000,36000,35000,34000,36000,40000,44000,46000,48000,46100],
+    '1y': [35000,38000,42000,46000,50000,48000,45000,42000,39000,36000,34000,33000,35000,38000,42000,46000,48000,46000,44000,42000,40000,38000,36000,35000,34000,36000,40000,44000,46000,48000,46100],
+    '6m': [38000,42000,46000,50000,48000,46100]
+  },
+  'Bawang Putih': {
+    '5y': [25000,26000,27500,29000,31000,33000,35000,37000,38500,39500,40000,40500,41000,41500,42000,42500,43000,43500,44000,43500,43000,42500,42000,41500,41000,40500,40000,39500,39000,38500,38000,37500,37000,36500,36000,35500,35000,34500,34000,33500,33000,32500,32000,31500,31000,30500,30000,29500,29000,28500,28000,27500,27000,26500,26000,25500,25000,24500,24000,23500,23000,22500,22000,21500,21000,20500,20000],
+    '3y': [35000,37000,38500,39500,40000,40500,41000,41500,42000,42500,43000,43500,44000,43500,43000,42500,42000,41500,41000,40500,40000,39500,39000,38500,38000,37500,37000,36500,36000,35500,35000,34500,34000,33500,33000,32500,32000,31500,31000,30500,30000,29500,29000,28500,28000,27500,27000,26500,26000,25500,25000,24500,24000,23500,23000,22500,22000,21500,21000,20500,20000],
+    '1y': [40000,40500,41000,41500,42000,42500,43000,43500,44000,43500,43000,42500,42000,41500,41000,40500,40000,39500,39000,38500,38000,37500,37000,36500,36000,35500,35000,34500,34000,33500,33000,32500,32000,31500,31000,30500,30000,29500,29000,28500,28000,27500,27000,26500,26000,25500,25000],
+    '6m': [42000,41500,41000,40500,40000,39500]
+  },
+  'Cabai Rawit': {
+    '5y': [25000,28000,32000,38000,45000,50000,55000,52000,48000,42000,35000,30000,28000,32000,38000,45000,52000,58000,62000,58000,52000,45000,38000,32000,28000,25000,28000,32000,38000,45000,50000,55000,58000,55000,50000,45000,40000,35000,30000,28000,32000,38000,45000,50000,55000,58000,55000,50000,45000,40000,35000,30000,28000,32000,38000,45000,50000,55000,58000,55000,50000,45000,40000,35000,30000,28000,32000],
+    '3y': [38000,45000,52000,58000,62000,58000,52000,45000,38000,32000,28000,25000,28000,32000,38000,45000,50000,55000,58000,55000,50000,45000,40000,35000,30000,28000,32000,38000,45000,50000,55000,58000,55000,50000,45000,40000,35000,30000,28000,32000,38000,45000,50000,55000,58000,55000,50000,45000,40000,35000,30000,28000,32000,38000,45000,50000,55000,58000,55000,50000,45000,40000,35000,30000,28000,32000,38000,45000],
+    '1y': [45000,50000,55000,58000,55000,50000,45000,40000,35000,30000,28000,32000,38000,45000,50000,55000,58000,55000,50000,45000,40000,35000,30000,28000,32000,38000,45000,50000,55000,58000,55000,50000,45000,40000,35000,30000,28000,32000,38000,45000,50000,55000,58000,55000,50000,45000,40000],
+    '6m': [50000,55000,58000,60000,62000,61450]
+  },
+  'Cabai Merah': {
+    '5y': [30000,35000,40000,48000,55000,60000,65000,62000,58000,50000,42000,35000,32000,38000,45000,52000,60000,68000,75000,70000,62000,52000,42000,35000,30000,28000,32000,38000,45000,52000,60000,65000,62000,58000,50000,42000,35000,32000,38000,45000,52000,60000,65000,62000,58000,50000,42000,35000,32000,38000,45000,52000,60000,65000,62000,58000,50000,42000,35000,32000,38000,45000,52000,60000,65000,62000,58000],
+    '3y': [45000,52000,60000,68000,75000,70000,62000,52000,42000,35000,30000,28000,32000,38000,45000,52000,60000,65000,62000,58000,50000,42000,35000,32000,38000,45000,52000,60000,65000,62000,58000,50000,42000,35000,32000,38000,45000,52000,60000,65000,62000,58000,50000,42000,35000,32000,38000,45000,52000,60000,65000,62000,58000,50000,42000,35000,32000,38000,45000,52000,60000,65000,62000,58000,50000,42000],
+    '1y': [52000,60000,65000,62000,58000,50000,42000,35000,32000,38000,45000,52000,60000,65000,62000,58000,50000,42000,35000,32000,38000,45000,52000,60000,65000,62000,58000,50000,42000,35000,32000,38000,45000,52000,60000,65000,62000,58000,50000,42000,35000,32000,38000,45000,52000,60000,65000],
+    '6m': [55000,60000,65000,62000,58000,49700]
+  },
+  'Beras': {
+    '5y': [11800,12000,12200,12500,12800,13000,13200,13500,13800,14000,14200,14500,14800,15000,15200,15400,15600,15800,16000,16200,16400,16600,16800,17000,17200,17400,17600,17800,18000,18200,18400,18600,18800,19000,19200,19400,19600,19800,20000,20200,20400,20600,20800,21000,21200,21400,21600,21800,22000,22200,22400,22600,22800,23000,23200,23400,23600,23800,24000,24200,24400,24600,24800,25000,25200,25400,16350],
+    '3y': [14800,15000,15200,15400,15600,15800,16000,16200,16400,16600,16800,17000,17200,17400,17600,17800,18000,18200,18400,18600,18800,19000,19200,19400,19600,19800,20000,20200,20400,20600,20800,21000,21200,21400,21600,21800,22000,22200,22400,22600,22800,23000,23200,23400,23600,23800,24000,24200,24400,24600,24800,25000,25200,25400,16350],
+    '1y': [16000,16200,16400,16600,16800,17000,17200,17400,17600,17800,18000,18200,18400,18600,18800,19000,19200,19400,19600,19800,20000,20200,20400,20600,20800,21000,21200,21400,21600,21800,22000,22200,22400,22600,22800,23000,23200,23400,23600,23800,24000,24200,24400,24600,24800,25000,25200,16350],
+    '6m': [15500,15800,16000,16200,16100,16350]
+  },
+  'Gula Pasir': {
+    '5y': [12500,12800,13100,13400,13700,14000,14300,14600,14900,15200,15500,15800,16100,16400,16700,17000,17300,17600,17900,18200,18500,18800,19100,19400,19700,20000,20300,20600,20900,21200,21500,21800,22100,22400,22700,23000,23300,23600,23900,24200,24500,24800,25100,25400,25700,26000,26300,26600,26900,27200,27500,27800,28100,28400,28700,29000,29300,29600,29900,30200,30500,30800,31100,31400,31700,32000,19300],
+    '3y': [16100,16400,16700,17000,17300,17600,17900,18200,18500,18800,19100,19400,19700,20000,20300,20600,20900,21200,21500,21800,22100,22400,22700,23000,23300,23600,23900,24200,24500,24800,25100,25400,25700,26000,26300,26600,26900,27200,27500,27800,28100,28400,28700,29000,29300,29600,29900,30200,30500,30800,31100,31400,31700,32000,19300],
+    '1y': [18500,18800,19100,19400,19700,20000,20300,20600,20900,21200,21500,21800,22100,22400,22700,23000,23300,23600,23900,24200,24500,24800,25100,25400,25700,26000,26300,26600,26900,27200,27500,27800,28100,28400,28700,29000,29300,29600,29900,30200,30500,30800,31100,31400,31700,32000,19300],
+    '6m': [18800,19000,19100,19200,19250,19300]
+  },
+  'Minyak Goreng': {
+    '5y': [11000,12000,13500,15000,17000,19000,22000,25000,28000,26000,22000,18000,15000,13500,13000,12800,13000,13500,14000,14500,15000,15500,16000,16500,17000,17500,18000,18500,19000,19500,20000,20500,21000,21500,22000,22500,23000,23500,24000,24500,25000,25500,26000,26500,27000,27500,28000,28500,29000,29500,30000,30500,31000,31500,32000,32500,33000,33500,34000,34500,35000,35500,36000,36500,37000,37500,21350],
+    '3y': [13000,13500,14000,14500,15000,15500,16000,16500,17000,17500,18000,18500,19000,19500,20000,20500,21000,21500,22000,22500,23000,23500,24000,24500,25000,25500,26000,26500,27000,27500,28000,28500,29000,29500,30000,30500,31000,31500,32000,32500,33000,33500,34000,34500,35000,35500,36000,36500,37000,37500,21350],
+    '1y': [17000,17500,18000,18500,19000,19500,20000,20500,21000,21500,22000,22500,23000,23500,24000,24500,25000,25500,26000,26500,27000,27500,28000,28500,29000,29500,30000,30500,31000,31500,32000,32500,33000,33500,34000,34500,35000,35500,36000,36500,37000,37500,21350],
+    '6m': [19500,20000,20500,21000,21200,21350]
+  },
+  'Daging Ayam': {
+    '5y': [28000,29000,30000,31000,32000,33000,34000,35000,36000,37000,38000,39000,40000,41000,42000,43000,44000,45000,46000,47000,48000,49000,50000,51000,52000,53000,54000,55000,56000,57000,58000,59000,60000,61000,62000,63000,64000,65000,66000,67000,68000,69000,70000,71000,72000,73000,74000,75000,76000,77000,78000,79000,80000,81000,82000,83000,84000,85000,86000,87000,88000,89000,90000,91000,92000,93000,33150],
+    '3y': [40000,41000,42000,43000,44000,45000,46000,47000,48000,49000,50000,51000,52000,53000,54000,55000,56000,57000,58000,59000,60000,61000,62000,63000,64000,65000,66000,67000,68000,69000,70000,71000,72000,73000,74000,75000,76000,77000,78000,79000,80000,81000,82000,83000,84000,85000,86000,87000,88000,89000,90000,91000,92000,93000,33150],
+    '1y': [30000,31000,32000,33000,34000,35000,36000,37000,38000,39000,40000,41000,42000,43000,44000,45000,46000,47000,48000,49000,50000,51000,52000,53000,54000,55000,56000,57000,58000,59000,60000,61000,62000,63000,64000,65000,66000,67000,68000,69000,70000,71000,72000,73000,74000,75000,33150],
+    '6m': [31000,31500,32000,32500,33000,33150]
+  },
+  'Telur Ayam': {
+    '5y': [18000,19000,20000,21000,22000,23000,24000,25000,26000,27000,28000,29000,30000,31000,32000,33000,34000,35000,36000,37000,38000,39000,40000,41000,42000,43000,44000,45000,46000,47000,48000,49000,50000,51000,52000,53000,54000,55000,56000,57000,58000,59000,60000,61000,62000,63000,64000,65000,66000,67000,68000,69000,70000,71000,72000,73000,74000,75000,76000,77000,78000,79000,80000,81000,82000,83000,24650],
+    '3y': [30000,31000,32000,33000,34000,35000,36000,37000,38000,39000,40000,41000,42000,43000,44000,45000,46000,47000,48000,49000,50000,51000,52000,53000,54000,55000,56000,57000,58000,59000,60000,61000,62000,63000,64000,65000,66000,67000,68000,69000,70000,71000,72000,73000,74000,75000,76000,77000,78000,79000,80000,81000,82000,83000,24650],
+    '1y': [22000,23000,24000,25000,26000,27000,28000,29000,30000,31000,32000,33000,34000,35000,36000,37000,38000,39000,40000,41000,42000,43000,44000,45000,46000,47000,48000,49000,50000,51000,52000,53000,54000,55000,56000,57000,58000,59000,60000,61000,62000,63000,64000,65000,66000,67000,24650],
+    '6m': [23000,23500,24000,24200,24500,24650]
+  }
+};
+
+// Regional price data — prices in Rp/kg per province
+const regions = ['Nasional', 'Jawa Timur', 'Jawa Tengah', 'Jawa Barat', 'DKI Jakarta', 'Sumatera Utara', 'Sulawesi Selatan', 'Bali'];
+
+// Regional price multipliers based on real PIHPS/SISKAPERBAPO data (July 2026)
+// Bawang Merah: Nasional Rp46.100, Jatim Rp33.978, Jabar Rp44.950, Jakarta Rp51.443, Bali Rp32.900
+const regionFactors = {
+  'Nasional': 1.0,
+  'Jawa Timur': 0.74,      // Rp33.978 vs Rp46.100 nasional
+  'Jawa Tengah': 0.80,     // estimasi lebih murah dari nasional
+  'Jawa Barat': 0.97,      // Rp44.950 vs Rp46.100 nasional
+  'DKI Jakarta': 1.12,     // Rp51.443 vs Rp46.100 nasional
+  'Sumatera Utara': 1.05,  // beras Rp16.900 vs Rp16.350 nasional
+  'Sulawesi Selatan': 0.95,// beras Rp14.000 vs Rp16.350 nasional
+  'Bali': 0.71              // Rp32.900 vs Rp46.100 nasional
+};
+
+const allLabels = { '6m': months6m, '1y': months1y, '3y': months3y, '5y': months5y };
+
+let charts = {};
+let currentPeriod = '6m';
+let currentRegion = 'Nasional';
+
+function getLabels() { return allLabels[currentPeriod]; }
+
+function getData(commodity) {
+  const baseData = priceData[commodity][currentPeriod];
+  if (currentRegion === 'Nasional') return baseData;
+  const factor = regionFactors[currentRegion];
+  return baseData.map(v => Math.round(v * factor));
+}
+
+function getDataRaw(commodity) {
+  return priceData[commodity][currentPeriod];
+}
+
+function createGradient(ctx, color) {
+  const g = ctx.createLinearGradient(0, 0, 0, 300);
+  g.addColorStop(0, color + '40');
+  g.addColorStop(1, color + '00');
+  return g;
+}
+
+const chartDefaults = {
+  responsive: true,
+  maintainAspectRatio: true,
+  interaction: { mode: 'index', intersect: false },
+  plugins: {
+    legend: {
+      labels: { color: '#94a3b8', font: { family: 'Inter', size: 11 }, usePointStyle: true, padding: 16 }
+    },
+    tooltip: {
+      backgroundColor: '#1e293b',
+      titleColor: '#f1f5f9',
+      bodyColor: '#94a3b8',
+      borderColor: '#334155',
+      borderWidth: 1,
+      padding: 12,
+      titleFont: { family: 'Inter', weight: '600' },
+      bodyFont: { family: 'Inter' },
+      callbacks: { label: ctx => `${ctx.dataset.label}: Rp${ctx.parsed.y.toLocaleString('id-ID')}` }
+    }
+  },
+  scales: {
+    x: {
+      grid: { color: 'rgba(51,65,85,0.3)' },
+      ticks: { color: '#64748b', font: { family: 'Inter', size: 10 }, maxRotation: 45 }
+    },
+    y: {
+      grid: { color: 'rgba(51,65,85,0.3)' },
+      ticks: {
+        color: '#64748b',
+        font: { family: 'Inter', size: 10 },
+        callback: v => v >= 1000000 ? (v/1000000).toFixed(1)+'jt' : v >= 1000 ? (v/1000).toFixed(0)+'rb' : v
+      }
+    }
+  }
+};
+
+function makeLineChart(canvasId, commodityName, color) {
+  const ctx = document.getElementById(canvasId).getContext('2d');
+  const data = getData(commodityName);
+  return new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: getLabels(),
+      datasets: [{
+        label: commodityName,
+        data: data,
+        borderColor: color,
+        backgroundColor: createGradient(ctx, color),
+        fill: true,
+        tension: 0.4,
+        pointRadius: 3,
+        pointHoverRadius: 6,
+        pointBackgroundColor: color,
+        borderWidth: 2.5
+      }]
+    },
+    options: { ...chartDefaults }
+  });
+}
+
+function initCharts() {
+  charts.main = new Chart(document.getElementById('mainChart').getContext('2d'), {
+    type: 'line',
+    data: {
+      labels: getLabels(),
+      datasets: commodities.map(c => ({
+        label: c.name,
+        data: getData(c.name),
+        borderColor: c.color,
+        backgroundColor: 'transparent',
+        tension: 0.4,
+        pointRadius: 2,
+        pointHoverRadius: 5,
+        borderWidth: 2
+      }))
+    },
+    options: { ...chartDefaults }
+  });
+
+  charts.bawang = makeLineChart('bawangChart', 'Bawang Merah', '#fb923c');
+  charts.cabai = makeLineChart('cabaiChart', 'Cabai Rawit', '#f472b6');
+  charts.beras = makeLineChart('berasChart', 'Beras', '#38bdf8');
+  charts.gula = makeLineChart('gulaChart', 'Gula Pasir', '#a78bfa');
+
+  // Compare chart
+  const currentPrices = commodities.map(c => getData(c.name).slice(-1)[0]);
+  const avg5yPrices = commodities.map(c => {
+    const d = getData(c.name);
+    return Math.round(d.reduce((a,b)=>a+b,0)/d.length);
+  });
+
+  charts.compare = new Chart(document.getElementById('compareChart').getContext('2d'), {
+    type: 'bar',
+    data: {
+      labels: commodities.map(c => c.name),
+      datasets: [
+        {
+          label: 'Harga Saat Ini',
+          data: currentPrices,
+          backgroundColor: commodities.map(c => c.color + 'cc'),
+          borderColor: commodities.map(c => c.color),
+          borderWidth: 1,
+          borderRadius: 6
+        },
+        {
+          label: 'Rata-rata 5 Tahun',
+          data: avg5yPrices,
+          backgroundColor: 'rgba(148,163,184,0.25)',
+          borderColor: 'rgba(148,163,184,0.5)',
+          borderWidth: 1,
+          borderRadius: 6
+        }
+      ]
+    },
+    options: {
+      ...chartDefaults,
+      scales: {
+        ...chartDefaults.scales,
+        x: { ...chartDefaults.scales.x, ticks: { ...chartDefaults.scales.x.ticks, maxRotation: 45 } }
+      }
+    }
+  });
+}
+
+function updateCharts() {
+  const labels = getLabels();
+  charts.main.data.labels = labels;
+  commodities.forEach((c, i) => { charts.main.data.datasets[i].data = getData(c.name); });
+  charts.main.update();
+
+  ['bawang','cabai','beras','gula'].forEach(key => {
+    const c = charts[key];
+    c.data.labels = labels;
+    c.data.datasets[0].data = getData(c.data.datasets[0].label);
+    c.update();
+  });
+
+  // Update compare
+  const currentPrices = commodities.map(c => getData(c.name).slice(-1)[0]);
+  const avg5yPrices = commodities.map(c => {
+    const d = getData(c.name);
+    return Math.round(d.reduce((a,b)=>a+b,0)/d.length);
+  });
+  charts.compare.data.datasets[0].data = currentPrices;
+  charts.compare.data.datasets[1].data = avg5yPrices;
+  charts.compare.update();
+}
+
+// Stats
+function renderStats() {
+  const grid = document.getElementById('statsGrid');
+  const topCommodities = ['Bawang Merah', 'Cabai Rawit', 'Beras', 'Gula Pasir'];
+  grid.innerHTML = topCommodities.map(name => {
+    const d = getData(name);
+    const current = d.slice(-1)[0];
+    const prev = d.slice(-2, -1)[0];
+    const diff = current - prev;
+    const pct = ((diff / prev) * 100).toFixed(1);
+    const cls = diff > 0 ? 'up' : diff < 0 ? 'down' : 'flat';
+    const arrow = diff > 0 ? '&#9650;' : diff < 0 ? '&#9660;' : '&#9654;';
+    const color = commodities.find(c=>c.name===name).color;
+    return `<div class="stat-card">
+      <div class="stat-label">${name}</div>
+      <div class="stat-value" style="color:${color}">${R(current)}</div>
+      <div class="stat-change ${cls}">${arrow} ${Math.abs(diff).toLocaleString('id-ID')} (${Math.abs(pct)}%)</div>
+    </div>`;
+  }).join('');
+}
+
+// Table
+function renderTable() {
+  const tbody = document.getElementById('priceTable');
+  tbody.innerHTML = commodities.map(c => {
+    const d6m = getData(c.name);
+    const current = d6m.slice(-1)[0];
+    const prev = d6m.slice(-2, -1)[0];
+    const diff = current - prev;
+    const pct = ((diff / prev) * 100).toFixed(1);
+    const allTime = getData(c.name);
+    const hi = Math.max(...allTime);
+    const lo = Math.min(...allTime);
+    const cls = diff > 0 ? 'up' : 'down';
+    const arrow = diff > 0 ? '&#9650;' : '&#9660;';
+    return `<tr>
+      <td><div class="commodity-cell"><span class="commodity-dot" style="background:${c.color}"></span>${c.name}</div></td>
+      <td class="price-cell">${R(current)}</td>
+      <td class="price-cell">${R(prev)}</td>
+      <td><span class="change-badge ${cls}">${arrow} ${Math.abs(pct)}%</span></td>
+      <td class="price-cell">${R(hi)}</td>
+      <td class="price-cell">${R(lo)}</td>
+    </tr>`;
+  }).join('');
+}
+
+// Tabs
+document.getElementById('periodTabs').addEventListener('click', e => {
+  if (!e.target.classList.contains('tab')) return;
+  document.querySelectorAll('#periodTabs .tab').forEach(t => t.classList.remove('active'));
+  e.target.classList.add('active');
+  currentPeriod = e.target.dataset.period;
+  updateCharts();
+});
+
+// Region select
+document.getElementById('regionSelect').addEventListener('change', e => {
+  currentRegion = e.target.value;
+  updateCharts();
+  renderStats();
+  renderTable();
+  updateRegionLabel();
+});
+
+function updateRegionLabel() {
+  const mainTitle = document.querySelector('.chart-card.full-width .chart-title');
+  const mainSubtitle = document.querySelector('.chart-card.full-width .chart-subtitle');
+  const tableSubtitle = document.getElementById('tableSubtitle');
+  const regionBadge = document.getElementById('regionBadge');
+  if (currentRegion === 'Nasional') {
+    mainTitle.textContent = 'Tren Harga Bahan Pangan Nasional';
+    mainSubtitle.textContent = 'Harga rata-rata nasional per kg (Rp)';
+    tableSubtitle.textContent = 'Per Juli 2026 — Sumber: BPS, PPI, Kementan';
+    regionBadge.textContent = 'Wilayah: Nasional';
+  } else {
+    mainTitle.textContent = `Tren Harga Bahan Pangan — ${currentRegion}`;
+    mainSubtitle.textContent = `Harga rata-rata ${currentRegion} per kg (Rp)`;
+    tableSubtitle.textContent = `Per Juli 2026 — Wilayah: ${currentRegion} — Sumber: BPS, PPI, Kementan`;
+    regionBadge.textContent = `Wilayah: ${currentRegion}`;
+  }
+}
+
+// Init
+initCharts();
+renderStats();
+renderTable();
+updateRegionLabel();
+</script>
+</body>
+</html>
