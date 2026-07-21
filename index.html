@@ -767,12 +767,16 @@ function renderCommodityChips() {
   const container = document.getElementById('commodityChips');
   container.innerHTML = commodities.map(c => {
     const active = selectedCommodities.includes(c.name) ? 'active' : '';
-    return `<button class="chip ${active}" data-name="${c.name}" style="--chip-color:${c.color}">
+    return `<button class="chip ${active}" data-name="${c.name}" style="--chip-color:${c.color}" title="Klik: toggle | Double-click: solo">
       <span class="chip-dot" style="background:${c.color}"></span>${c.name}
     </button>`;
   }).join('');
   container.querySelectorAll('.chip').forEach(btn => {
     btn.addEventListener('click', () => toggleCommodity(btn.dataset.name));
+    btn.addEventListener('dblclick', (e) => {
+      e.preventDefault();
+      soloCommodity(btn.dataset.name);
+    });
   });
 }
 
@@ -784,6 +788,13 @@ function toggleCommodity(name) {
   } else {
     selectedCommodities.push(name);
   }
+  renderCommodityChips();
+  updateCharts();
+  renderTable();
+}
+
+function soloCommodity(name) {
+  selectedCommodities = [name];
   renderCommodityChips();
   updateCharts();
   renderTable();
