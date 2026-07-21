@@ -1119,17 +1119,90 @@ function updateRegionLabel() {
 }
 
 async function loadExternalData() {
-  try {
-    const resp = await fetch('data/prices.json');
-    if (!resp.ok) return;
-    const external = await resp.json();
-    if (external.lastUpdate) {
-      const d = new Date(external.lastUpdate);
-      const months = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
-      document.getElementById('regionBadge').textContent += ` | Data: ${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
+  // Coba fetch data live dari berbagai sumber
+  const sources = [
+    // Sumber 1: Data dari PIHPS via CORS proxy
+    {
+      name: 'PIHPS Bank Indonesia',
+      url: 'https://api.allorigins.win/raw?url=' + encodeURIComponent('https://www.bi.go.id/hargapangan/api/TablePriceData/GetTablePriceData?komoditas=Bawang+Merah&jenis=Pasar+Tradisional&bulan=' + new Date().getMonth() + '&tahun=' + new Date().getFullYear()),
+      parse: (data) => {
+        try {
+          const json = typeof data === 'string' ? JSON.parse(data) : data;
+          if (json && json.data && json.data.length > 0) {
+            return { prices: json.data[0], date: json.tanggal || new Date().toISOString() };
+          }
+        } catch(e) {}
+        return null;
+      }
+    },
+    // Sumber 2: Fallback dari file local
+    {
+      name: 'Local cache',
+      url: 'data/prices.json',
+      parse: (data) => data
     }
-  } catch (e) {
-    // External data not available, use hardcoded
+  ];
+
+  for (const source of sources) {
+    try {
+      const resp = await fetch(source.url, { 
+        signal: AbortSignal.timeout(5000) 
+      });
+      if (!resp.ok) continue;
+      
+      const raw = await resp.text();
+      const result = source.parse(raw);
+      
+      if (result && result.prices) {
+        console.log(`✓ Data loaded from: ${source.name}`);
+        
+        // Update tanggal di UI
+        if (result.date) {
+          const d = new Date(result.date);
+          const months = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+          const dateStr = `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
+          document.getElementById('regionBadge').textContent = `Data Live: ${dateStr} | Sumber: ${source.name}`;
+        }
+        
+        // Update data harga jika tersedia
+        if (result.prices) {
+          updateLivePrices(result.prices);
+        }
+        
+        return; // Berhasil, hentikan pencarian
+      }
+    } catch (e) {
+      console.log(`✗ ${source.name} gagal:`, e.message);
+      continue;
+    }
+  }
+  
+  // Semua sumber gagal, gunakan data hardcode (default)
+  console.log('ℹ Menggunakan data hardcode');
+}
+
+function updateLivePrices(prices) {
+  // Map nama dari API ke nama komoditas kita
+  const priceMap = {};
+  
+  if (typeof prices === 'object') {
+    for (const [key, value] of Object.entries(prices)) {
+      const numVal = parseInt(String(value).replace(/[^0-9]/g, ''));
+      if (numVal > 0) {
+        priceMap[key] = numVal;
+      }
+    }
+  }
+  
+  // Update data di priceData jika ada
+  for (const commodity of commodities) {
+    if (priceMap[commodity.name] || priceMap[commodity.name.toLowerCase()]) {
+      const newPrice = priceMap[commodity.name] || priceMap[commodity.name.toLowerCase()];
+      if (priceData[commodity.name] && priceData[commodity.name]['6m']) {
+        const arr = priceData[commodity.name]['6m'];
+        arr[arr.length - 1] = newPrice;
+      }
+    }
   }
 }
 
