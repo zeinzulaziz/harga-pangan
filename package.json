@@ -5,7 +5,8 @@
   "scripts": {
     "update": "node scripts/update.js",
     "fetch": "node scripts/fetch-prices.js",
-    "scrape": "node scripts/scrape-pihps.js"
+    "scrape": "node scripts/scrape-pihps.js",
+    "scrape-jatim": "node scripts/scrape-siskaperbapo.js"
   },
   "dependencies": {
     "puppeteer": "^22.0.0"

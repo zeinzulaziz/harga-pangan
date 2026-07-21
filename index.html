@@ -1094,6 +1094,7 @@ document.getElementById('periodTabs').addEventListener('click', e => {
 // Region select
 document.getElementById('regionSelect').addEventListener('change', e => {
   currentRegion = e.target.value;
+  loadExternalData();
   updateCharts();
   renderStats();
   renderTable();
@@ -1119,10 +1120,54 @@ function updateRegionLabel() {
 }
 
 async function loadExternalData() {
-  // Coba fetch data live dari berbagai sumber
-  const sources = [
-    // Sumber 1: Data dari PIHPS via CORS proxy
-    {
+  const region = document.getElementById('regionSelect').value;
+  
+  const sources = [];
+  
+  // Sumber 1: SISKAPERBAPO untuk Jawa Timur
+  if (region === 'Jawa Timur') {
+    sources.push({
+      name: 'SISKAPERBAPO Jatim',
+      url: 'https://corsproxy.io/?' + encodeURIComponent('https://siskaperbapo.jatimprov.go.id/'),
+      parse: (html) => {
+        try {
+          const priceMap = {
+            'Bawang Merah': 'Bawang Merah / kg',
+            'Bawang Putih': 'Bawang Putih / kg',
+            'Cabai Rawit': 'Cabe Rawit Merah / kg',
+            'Cabai Merah': 'Cabe Merah Besar / kg',
+            'Beras': 'Beras Medium / kg',
+            'Gula Pasir': 'Gula Kristal Putih / kg',
+            'Minyak Goreng': 'Minyak Goreng Curah / kg',
+            'Daging Ayam': 'Daging Ayam Ras / kg',
+            'Telur Ayam': 'Telur Ayam Ras / kg'
+          };
+          
+          const prices = {};
+          for (const [ourName, siteName] of Object.entries(priceMap)) {
+            const escaped = siteName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            const regex = new RegExp(escaped + '</td>[\\s\\S]*?<td[^>]*>([\\d.,]+)\\s*<span', 'i');
+            const match = html.match(regex);
+            if (match) {
+              const price = parseInt(match[1].replace(/\./g, ''));
+              if (price > 1000 && price < 500000) {
+                prices[ourName] = price;
+              }
+            }
+          }
+          
+          if (Object.keys(prices).length >= 5) {
+            return { prices, date: new Date().toISOString() };
+          }
+        } catch(e) {}
+        return null;
+      }
+    });
+  }
+  
+  // Sumber 2: PIHPS Bank Indonesia (Nasional)
+  if (region === 'nasional') {
+    sources.push({
       name: 'PIHPS Bank Indonesia',
       url: 'https://api.allorigins.win/raw?url=' + encodeURIComponent('https://www.bi.go.id/hargapangan/api/TablePriceData/GetTablePriceData?komoditas=Bawang+Merah&jenis=Pasar+Tradisional&bulan=' + new Date().getMonth() + '&tahun=' + new Date().getFullYear()),
       parse: (data) => {
@@ -1134,29 +1179,38 @@ async function loadExternalData() {
         } catch(e) {}
         return null;
       }
-    },
-    // Sumber 2: Fallback dari file local
-    {
-      name: 'Local cache',
-      url: 'data/prices.json',
-      parse: (data) => data
-    }
-  ];
+    });
+  }
+  
+  // Sumber 3: Local cache
+  sources.push({
+    name: 'Local cache',
+    url: 'data/prices.json',
+    parse: (data) => data
+  });
 
   for (const source of sources) {
     try {
+      console.log(`⏳ Fetching from: ${source.name}...`);
       const resp = await fetch(source.url, { 
-        signal: AbortSignal.timeout(5000) 
+        signal: AbortSignal.timeout(15000) 
       });
-      if (!resp.ok) continue;
+      if (!resp.ok) {
+        console.log(`✗ ${source.name} HTTP ${resp.status}`);
+        continue;
+      }
       
       const raw = await resp.text();
+      console.log(`  Data diterima (${(raw.length/1024).toFixed(1)} KB)`);
       const result = source.parse(raw);
       
       if (result && result.prices) {
         console.log(`✓ Data loaded from: ${source.name}`);
+        console.log('  Harga yang berhasil di-scrape:');
+        for (const [name, price] of Object.entries(result.prices)) {
+          console.log(`  - ${name}: Rp${price.toLocaleString('id-ID')}/kg`);
+        }
         
-        // Update tanggal di UI
         if (result.date) {
           const d = new Date(result.date);
           const months = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
@@ -1164,12 +1218,13 @@ async function loadExternalData() {
           document.getElementById('regionBadge').textContent = `Data Live: ${dateStr} | Sumber: ${source.name}`;
         }
         
-        // Update data harga jika tersedia
         if (result.prices) {
           updateLivePrices(result.prices);
         }
         
-        return; // Berhasil, hentikan pencarian
+        return;
+      } else {
+        console.log(`✗ ${source.name} parse gagal - tidak ada data`);
       }
     } catch (e) {
       console.log(`✗ ${source.name} gagal:`, e.message);
@@ -1177,31 +1232,21 @@ async function loadExternalData() {
     }
   }
   
-  // Semua sumber gagal, gunakan data hardcode (default)
   console.log('ℹ Menggunakan data hardcode');
 }
 
 function updateLivePrices(prices) {
-  // Map nama dari API ke nama komoditas kita
-  const priceMap = {};
+  // Live data dari SISKAPERBAPO sudah harga aktual region tersebut
+  // Jadi kita bagi dengan factor agar saat getData() mengalikan, hasilnya benar
+  const factor = regionFactors[currentRegion] || 1.0;
   
-  if (typeof prices === 'object') {
-    for (const [key, value] of Object.entries(prices)) {
-      const numVal = parseInt(String(value).replace(/[^0-9]/g, ''));
-      if (numVal > 0) {
-        priceMap[key] = numVal;
-      }
-    }
-  }
-  
-  // Update data di priceData jika ada
   for (const commodity of commodities) {
-    if (priceMap[commodity.name] || priceMap[commodity.name.toLowerCase()]) {
-      const newPrice = priceMap[commodity.name] || priceMap[commodity.name.toLowerCase()];
-      if (priceData[commodity.name] && priceData[commodity.name]['6m']) {
-        const arr = priceData[commodity.name]['6m'];
-        arr[arr.length - 1] = newPrice;
-      }
+    const newPrice = prices[commodity.name];
+    if (newPrice && priceData[commodity.name] && priceData[commodity.name]['6m']) {
+      // Simpan harga dasar (bagi factor) agar saat dikalikan region = harga aktual
+      const basePrice = factor !== 1.0 ? Math.round(newPrice / factor) : newPrice;
+      const arr = priceData[commodity.name]['6m'];
+      arr[arr.length - 1] = basePrice;
     }
   }
 }
