@@ -263,6 +263,25 @@
       background: var(--chip-color, var(--accent));
     }
 
+    .clear-filter-btn {
+      padding: 0.3rem 0.6rem;
+      border-radius: 999px;
+      border: 1px solid rgba(239,68,68,0.3);
+      background: rgba(239,68,68,0.1);
+      color: #ef4444;
+      font-family: inherit;
+      font-size: 0.7rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+
+    .clear-filter-btn:hover {
+      background: rgba(239,68,68,0.2);
+      border-color: rgba(239,68,68,0.5);
+    }
+
     /* Charts Grid */
     .charts-grid {
       display: grid;
@@ -526,6 +545,7 @@
   <div class="commodity-filter" id="commodityFilter">
     <label>Komoditas:</label>
     <div class="commodity-chips" id="commodityChips"></div>
+    <button class="clear-filter-btn" id="clearFilterBtn" onclick="clearAllFilters()">Reset Filter</button>
   </div>
 
   <!-- Charts -->
@@ -767,6 +787,22 @@ function toggleCommodity(name) {
   renderCommodityChips();
   updateCharts();
   renderTable();
+}
+
+function clearAllFilters() {
+  currentPeriod = '6m';
+  currentRegion = 'Nasional';
+  selectedCommodities = commodities.map(c => c.name);
+
+  document.querySelectorAll('#periodTabs .tab').forEach(t => t.classList.remove('active'));
+  document.querySelector('#periodTabs .tab[data-period="6m"]').classList.add('active');
+  document.getElementById('regionSelect').value = 'Nasional';
+
+  renderCommodityChips();
+  updateCharts();
+  renderStats();
+  renderTable();
+  updateRegionLabel();
 }
 
 function getLabels() { return allLabels[currentPeriod]; }
