@@ -140,8 +140,8 @@
       margin-top: 0.2rem;
     }
 
-    .up { color: var(--red); }
-    .down { color: var(--green); }
+    .up { color: var(--green); }
+    .down { color: var(--red); }
     .flat { color: var(--yellow); }
 
     /* Filter Tabs */
@@ -441,8 +441,8 @@
       font-weight: 600;
     }
 
-    .change-badge.up { background: rgba(239,68,68,0.15); color: var(--red); }
-    .change-badge.down { background: rgba(34,197,94,0.15); color: var(--green); }
+    .change-badge.up { background: rgba(34,197,94,0.15); color: var(--green); }
+    .change-badge.down { background: rgba(239,68,68,0.15); color: var(--red); }
 
     /* Sources */
     .sources {
@@ -1046,12 +1046,12 @@ function renderStats() {
     const diff = current - prev;
     const pct = ((diff / prev) * 100).toFixed(1);
     const cls = diff > 0 ? 'up' : diff < 0 ? 'down' : 'flat';
-    const arrow = diff > 0 ? '&#9650;' : diff < 0 ? '&#9660;' : '&#9654;';
+    const sign = diff > 0 ? '+' : diff < 0 ? '-' : '';
     const color = commodities.find(c=>c.name===name).color;
     return `<div class="stat-card">
       <div class="stat-label">${name}</div>
       <div class="stat-value" style="color:${color}">${R(current)}</div>
-      <div class="stat-change ${cls}">${arrow} ${Math.abs(diff).toLocaleString('id-ID')} (${Math.abs(pct)}%)</div>
+      <div class="stat-change ${cls}">${sign}${Math.abs(diff).toLocaleString('id-ID')} (${Math.abs(pct)}%)</div>
     </div>`;
   }).join('');
 }
@@ -1070,12 +1070,12 @@ function renderTable() {
     const hi = Math.max(...allTime);
     const lo = Math.min(...allTime);
     const cls = diff > 0 ? 'up' : 'down';
-    const arrow = diff > 0 ? '&#9650;' : '&#9660;';
+    const sign = diff > 0 ? '+' : '-';
     return `<tr>
       <td><div class="commodity-cell"><span class="commodity-dot" style="background:${c.color}"></span>${c.name}</div></td>
       <td class="price-cell">${R(current)}</td>
       <td class="price-cell">${R(prev)}</td>
-      <td><span class="change-badge ${cls}">${arrow} ${Math.abs(pct)}%</span></td>
+      <td><span class="change-badge ${cls}">${sign}${Math.abs(pct)}%</span></td>
       <td class="price-cell">${R(hi)}</td>
       <td class="price-cell">${R(lo)}</td>
     </tr>`;
