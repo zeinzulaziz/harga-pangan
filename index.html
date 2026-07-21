@@ -1118,12 +1118,31 @@ function updateRegionLabel() {
   }
 }
 
+async function loadExternalData() {
+  try {
+    const resp = await fetch('data/prices.json');
+    if (!resp.ok) return;
+    const external = await resp.json();
+    if (external.lastUpdate) {
+      const d = new Date(external.lastUpdate);
+      const months = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+      document.getElementById('regionBadge').textContent += ` | Data: ${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
+    }
+  } catch (e) {
+    // External data not available, use hardcoded
+  }
+}
+
 // Init
-renderCommodityChips();
-initCharts();
-renderStats();
-renderTable();
-updateRegionLabel();
+async function init() {
+  await loadExternalData();
+  renderCommodityChips();
+  initCharts();
+  renderStats();
+  renderTable();
+  updateRegionLabel();
+}
+init();
 
 // Resize handler - re-init charts on significant viewport changes
 let lastWidth = window.innerWidth;
