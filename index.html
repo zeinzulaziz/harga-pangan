@@ -509,7 +509,7 @@
   <div class="badge-row">
     <span class="badge" id="regionBadge">Wilayah: Nasional</span>
     <span class="badge">Sumber: PIHPS / SISKAPERBAPO / Sigapura</span>
-    <span class="badge">Update: 20 Juli 2026</span>
+    <span class="badge">Update: 21 Juli 2026</span>
     <span class="badge">9 Komoditas</span>
   </div>
 </header>
@@ -622,7 +622,7 @@
     <div class="chart-header">
       <div>
         <div class="chart-title">Detail Harga Komoditas</div>
-        <div class="chart-subtitle" id="tableSubtitle">Per Juli 2026 — Sumber: BPS, PPI, Kementan</div>
+        <div class="chart-subtitle" id="tableSubtitle">Per 21 Juli 2026 — Sumber: BPS, PPI, Kementan</div>
       </div>
     </div>
     <div class="table-wrap">
@@ -1108,12 +1108,12 @@ function updateRegionLabel() {
   if (currentRegion === 'Nasional') {
     mainTitle.textContent = 'Tren Harga Bahan Pangan Nasional';
     mainSubtitle.textContent = 'Harga rata-rata nasional per kg (Rp)';
-    tableSubtitle.textContent = 'Per Juli 2026 — Sumber: BPS, PPI, Kementan';
+    tableSubtitle.textContent = 'Per 21 Juli 2026 — Sumber: BPS, PPI, Kementan';
     regionBadge.textContent = 'Wilayah: Nasional';
   } else {
     mainTitle.textContent = `Tren Harga Bahan Pangan — ${currentRegion}`;
     mainSubtitle.textContent = `Harga rata-rata ${currentRegion} per kg (Rp)`;
-    tableSubtitle.textContent = `Per Juli 2026 — Wilayah: ${currentRegion} — Sumber: BPS, PPI, Kementan`;
+    tableSubtitle.textContent = `Per 21 Juli 2026 — Wilayah: ${currentRegion} — Sumber: BPS, PPI, Kementan`;
     regionBadge.textContent = `Wilayah: ${currentRegion}`;
   }
 }
