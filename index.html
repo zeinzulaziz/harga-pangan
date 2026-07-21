@@ -209,17 +209,29 @@
     /* Charts Grid */
     .charts-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(min(100%, 480px), 1fr));
-      gap: 1.25rem;
+      grid-template-columns: 1fr;
+      gap: 1rem;
       margin-bottom: 1.5rem;
+    }
+
+    @media (min-width: 640px) {
+      .charts-grid {
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 480px), 1fr));
+        gap: 1.25rem;
+      }
     }
 
     .chart-card {
       background: var(--card);
       border: 1px solid var(--border);
       border-radius: 14px;
-      padding: 1.25rem;
+      padding: 1rem;
       transition: all 0.2s;
+      overflow: hidden;
+    }
+
+    @media (min-width: 640px) {
+      .chart-card { padding: 1.25rem; }
     }
 
     .chart-card:hover { border-color: rgba(56, 189, 248, 0.3); }
@@ -232,23 +244,37 @@
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
-      margin-bottom: 1rem;
+      margin-bottom: 0.75rem;
+      gap: 0.5rem;
+    }
+
+    @media (min-width: 640px) {
+      .chart-header { margin-bottom: 1rem; }
     }
 
     .chart-title {
-      font-size: 1rem;
+      font-size: 0.85rem;
       font-weight: 600;
+      line-height: 1.3;
+    }
+
+    @media (min-width: 640px) {
+      .chart-title { font-size: 1rem; }
     }
 
     .chart-subtitle {
-      font-size: 0.75rem;
+      font-size: 0.7rem;
       color: var(--text-dim);
       margin-top: 0.15rem;
     }
 
+    @media (min-width: 640px) {
+      .chart-subtitle { font-size: 0.75rem; }
+    }
+
     .chart-tag {
-      font-size: 0.7rem;
-      padding: 0.2rem 0.5rem;
+      font-size: 0.6rem;
+      padding: 0.15rem 0.4rem;
       border-radius: 6px;
       font-weight: 600;
       white-space: nowrap;
@@ -263,6 +289,12 @@
     .chart-wrap {
       position: relative;
       width: 100%;
+      overflow: hidden;
+    }
+
+    .chart-wrap canvas {
+      max-width: 100%;
+      touch-action: pan-y;
     }
 
     /* Table */
@@ -380,10 +412,16 @@
       .hero { padding: 1.5rem 1rem 1.25rem; }
       .stats-grid { grid-template-columns: repeat(2, 1fr); }
       .charts-grid { grid-template-columns: 1fr; }
-      .chart-card { padding: 1rem; }
+      .chart-card { padding: 0.75rem; }
+      .chart-header { flex-direction: column; gap: 0.3rem; }
+      .chart-tag { align-self: flex-start; }
       .tab { padding: 0.35rem 0.7rem; font-size: 0.75rem; }
       .region-select { margin-left: 0 !important; margin-top: 0.5rem; width: 100%; }
       th, td { padding: 0.5rem 0.75rem; }
+      th { font-size: 0.65rem; }
+      td { font-size: 0.75rem; }
+      footer { padding: 1rem; font-size: 0.7rem; }
+      footer small { font-size: 0.6rem; }
     }
   </style>
 </head>
@@ -667,7 +705,16 @@ const chartDefaults = {
   interaction: { mode: 'index', intersect: false },
   plugins: {
     legend: {
-      labels: { color: '#94a3b8', font: { family: 'Inter', size: 11 }, usePointStyle: true, padding: 16 }
+      display: true,
+      position: 'bottom',
+      labels: {
+        color: '#94a3b8',
+        font: { family: 'Inter', size: window.innerWidth < 640 ? 9 : 11 },
+        usePointStyle: true,
+        padding: window.innerWidth < 640 ? 8 : 16,
+        boxWidth: window.innerWidth < 640 ? 8 : 12,
+        boxHeight: window.innerWidth < 640 ? 8 : 12
+      }
     },
     tooltip: {
       backgroundColor: '#1e293b',
@@ -675,22 +722,31 @@ const chartDefaults = {
       bodyColor: '#94a3b8',
       borderColor: '#334155',
       borderWidth: 1,
-      padding: 12,
-      titleFont: { family: 'Inter', weight: '600' },
-      bodyFont: { family: 'Inter' },
-      callbacks: { label: ctx => `${ctx.dataset.label}: Rp${ctx.parsed.y.toLocaleString('id-ID')}` }
+      padding: window.innerWidth < 640 ? 8 : 12,
+      titleFont: { family: 'Inter', weight: '600', size: window.innerWidth < 640 ? 11 : 13 },
+      bodyFont: { family: 'Inter', size: window.innerWidth < 640 ? 10 : 12 },
+      callbacks: { label: ctx => `${ctx.dataset.label}: Rp${ctx.parsed.y.toLocaleString('id-ID')}` },
+      displayColors: window.innerWidth >= 640,
+      boxPadding: 4
     }
   },
   scales: {
     x: {
       grid: { color: 'rgba(51,65,85,0.3)' },
-      ticks: { color: '#64748b', font: { family: 'Inter', size: 10 }, maxRotation: 45 }
+      ticks: {
+        color: '#64748b',
+        font: { family: 'Inter', size: window.innerWidth < 640 ? 8 : 10 },
+        maxRotation: window.innerWidth < 640 ? 60 : 45,
+        autoSkip: true,
+        maxTicksLimit: window.innerWidth < 640 ? 4 : 8
+      }
     },
     y: {
       grid: { color: 'rgba(51,65,85,0.3)' },
       ticks: {
         color: '#64748b',
-        font: { family: 'Inter', size: 10 },
+        font: { family: 'Inter', size: window.innerWidth < 640 ? 8 : 10 },
+        maxTicksLimit: window.innerWidth < 640 ? 5 : 7,
         callback: v => v >= 1000000 ? (v/1000000).toFixed(1)+'jt' : v >= 1000 ? (v/1000).toFixed(0)+'rb' : v
       }
     }
@@ -700,6 +756,7 @@ const chartDefaults = {
 function makeLineChart(canvasId, commodityName, color) {
   const ctx = document.getElementById(canvasId).getContext('2d');
   const data = getData(commodityName);
+  const isMobile = window.innerWidth < 640;
   return new Chart(ctx, {
     type: 'line',
     data: {
@@ -711,17 +768,18 @@ function makeLineChart(canvasId, commodityName, color) {
         backgroundColor: createGradient(ctx, color),
         fill: true,
         tension: 0.4,
-        pointRadius: 3,
-        pointHoverRadius: 6,
+        pointRadius: isMobile ? 1.5 : 3,
+        pointHoverRadius: isMobile ? 4 : 6,
         pointBackgroundColor: color,
-        borderWidth: 2.5
+        borderWidth: isMobile ? 1.5 : 2.5
       }]
     },
-    options: { ...chartDefaults }
+    options: { ...chartDefaults, aspectRatio: isMobile ? 1.2 : 1.6 }
   });
 }
 
 function initCharts() {
+  const isMobile = window.innerWidth < 640;
   charts.main = new Chart(document.getElementById('mainChart').getContext('2d'), {
     type: 'line',
     data: {
@@ -732,12 +790,12 @@ function initCharts() {
         borderColor: c.color,
         backgroundColor: 'transparent',
         tension: 0.4,
-        pointRadius: 2,
-        pointHoverRadius: 5,
-        borderWidth: 2
+        pointRadius: isMobile ? 0 : 2,
+        pointHoverRadius: isMobile ? 3 : 5,
+        borderWidth: isMobile ? 1.2 : 2
       }))
     },
-    options: { ...chartDefaults }
+    options: { ...chartDefaults, aspectRatio: isMobile ? 1 : 2 }
   });
 
   charts.bawang = makeLineChart('bawangChart', 'Bawang Merah', '#fb923c');
@@ -763,23 +821,38 @@ function initCharts() {
           backgroundColor: commodities.map(c => c.color + 'cc'),
           borderColor: commodities.map(c => c.color),
           borderWidth: 1,
-          borderRadius: 6
+          borderRadius: isMobile ? 3 : 6
         },
         {
-          label: 'Rata-rata 5 Tahun',
+          label: 'Rata-rata Periode',
           data: avg5yPrices,
           backgroundColor: 'rgba(148,163,184,0.25)',
           borderColor: 'rgba(148,163,184,0.5)',
           borderWidth: 1,
-          borderRadius: 6
+          borderRadius: isMobile ? 3 : 6
         }
       ]
     },
     options: {
       ...chartDefaults,
+      aspectRatio: isMobile ? 0.9 : 2,
       scales: {
         ...chartDefaults.scales,
-        x: { ...chartDefaults.scales.x, ticks: { ...chartDefaults.scales.x.ticks, maxRotation: 45 } }
+        x: {
+          ...chartDefaults.scales.x,
+          ticks: {
+            ...chartDefaults.scales.x.ticks,
+            maxRotation: isMobile ? 70 : 45,
+            font: { family: 'Inter', size: isMobile ? 7 : 10 }
+          }
+        },
+        y: {
+          ...chartDefaults.scales.y,
+          ticks: {
+            ...chartDefaults.scales.y.ticks,
+            font: { family: 'Inter', size: isMobile ? 7 : 10 }
+          }
+        }
       }
     }
   });
@@ -896,6 +969,22 @@ initCharts();
 renderStats();
 renderTable();
 updateRegionLabel();
+
+// Resize handler - re-init charts on significant viewport changes
+let lastWidth = window.innerWidth;
+let resizeTimeout;
+window.addEventListener('resize', () => {
+  clearTimeout(resizeTimeout);
+  resizeTimeout = setTimeout(() => {
+    const newWidth = window.innerWidth;
+    const crossedBreakpoint = (lastWidth < 640 && newWidth >= 640) || (lastWidth >= 640 && newWidth < 640);
+    if (crossedBreakpoint) {
+      Object.values(charts).forEach(c => c.destroy());
+      initCharts();
+    }
+    lastWidth = newWidth;
+  }, 250);
+});
 </script>
 </body>
 </html>
