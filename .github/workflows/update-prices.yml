@@ -21,10 +21,20 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Fetch price data
+      - name: Install Puppeteer
+        run: npm install puppeteer
+
+      - name: Fetch price data (API or Scrape)
         env:
           NFA_API_KEY: ${{ secrets.NFA_API_KEY }}
-        run: node scripts/fetch-prices.js
+        run: |
+          if [ -n "$NFA_API_KEY" ]; then
+            echo "API key found, using NFA API..."
+            node scripts/fetch-prices.js
+          else
+            echo "No API key, using scrape fallback..."
+            node scripts/scrape-pihps.js
+          fi
 
       - name: Update timestamp in index.html
         run: |
