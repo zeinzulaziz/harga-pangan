@@ -206,6 +206,42 @@
     .region-select:focus { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2); }
     .region-select option { background: var(--card); color: var(--text); }
 
+    /* Price Type Toggle */
+    .price-toggle {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .price-toggle span {
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--text-dim);
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+    .price-toggle span.active { color: var(--accent); font-weight: 600; }
+    .toggle-track {
+      width: 36px;
+      height: 20px;
+      background: var(--border);
+      border-radius: 999px;
+      cursor: pointer;
+      position: relative;
+      transition: background 0.2s;
+    }
+    .toggle-track.active { background: var(--accent); }
+    .toggle-thumb {
+      width: 16px;
+      height: 16px;
+      background: #fff;
+      border-radius: 50%;
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      transition: transform 0.2s;
+    }
+    .toggle-track.active .toggle-thumb { transform: translateX(16px); }
+
     /* Commodity Filter */
     .commodity-filter {
       display: flex;
@@ -508,6 +544,7 @@
   <p>Data harga komoditas pangan pokok dari berbagai sumber terpercaya</p>
   <div class="badge-row">
     <span class="badge" id="regionBadge">Wilayah: Nasional</span>
+    <span class="badge" id="priceTypeBadge">Harga Konsumen</span>
     <span class="badge">Sumber: PIHPS / SISKAPERBAPO / Sigapura</span>
     <span class="badge">Update: 21 Juli 2026</span>
     <span class="badge">9 Komoditas</span>
@@ -539,6 +576,13 @@
       <option value="Sulawesi Selatan">Sulawesi Selatan</option>
       <option value="Bali">Bali</option>
     </select>
+    <div class="price-toggle" style="margin-left: 1rem;">
+      <span id="labelKonsumen" class="active">Konsumen</span>
+      <div class="toggle-track" id="priceToggle" onclick="togglePriceType()">
+        <div class="toggle-thumb"></div>
+      </div>
+      <span id="labelProdusen">Produsen</span>
+    </div>
   </div>
 
   <!-- Komoditas Filter -->
@@ -761,7 +805,66 @@ const allLabels = { '6m': months6m, '1y': months1y, '3y': months3y, '5y': months
 let charts = {};
 let currentPeriod = '6m';
 let currentRegion = 'Nasional';
+let currentPriceType = 'konsumen';
 let selectedCommodities = commodities.map(c => c.name);
+
+// Producer prices (harga produsen/farmgate) — typically 60-75% of consumer prices
+const priceDataProdusen = {
+  'Bawang Merah': {
+    '5y': [14281,19843,17546,18372,22635,22468],
+    '3y': [17546,18372,22635,22468],
+    '1y': [22625,29563,20959,20681,22613,25960,20769,21665,21824,21407,23914,26414,21281],
+    '6m': [21665,21824,21407,23914,26414,21281]
+  },
+  'Bawang Putih': {
+    '5y': [13840,13194,18230,21269,20099,19105],
+    '3y': [18230,21269,20099,19105],
+    '1y': [18420,18295,17894,18030,18061,18414,19456,19311,18658,18244,17316,19835,20921],
+    '6m': [19311,18658,18244,17316,19835,20921]
+  },
+  'Cabai Rawit': {
+    '5y': [20723,29734,27976,22930,29062,36877],
+    '3y': [27976,22930,29062,36877],
+    '1y': [36770,19142,15445,16120,17862,37336,24935,50007,49532,34784,39902,33824,25153],
+    '6m': [50007,49532,34784,39902,33824,25153]
+  },
+  'Cabai Merah': {
+    '5y': [14636,27055,22093,23604,23546,21226],
+    '3y': [22093,23604,23546,21226],
+    '1y': [18349,20450,16673,26866,30499,25397,15476,18161,20747,21042,28357,26047,18753],
+    '6m': [18161,20747,21042,28357,26047,18753]
+  },
+  'Beras': {
+    '5y': [5623,5788,6425,7175,7597,7754],
+    '3y': [6425,7175,7597,7754],
+    '1y': [7671,7786,7790,7743,7714,7712,7730,7732,7745,7757,7774,7766,7777],
+    '6m': [7732,7745,7757,7774,7766,7777]
+  },
+  'Gula Pasir': {
+    '5y': [7199,7947,8318,9994,10070,10195],
+    '3y': [8318,9994,10070,10195],
+    '1y': [10033,9934,9881,9809,9817,9845,9888,9955,10159,10369,10339,10325,10329],
+    '6m': [9955,10159,10369,10339,10325,10329]
+  },
+  'Minyak Goreng': {
+    '5y': [9288,9771,9107,9857,11180,11854],
+    '3y': [9107,9857,11180,11854],
+    '1y': [11066,11132,11171,11205,11204,11222,11204,11299,11584,12069,12316,12273,12231],
+    '6m': [11299,11584,12069,12316,12273,12231]
+  },
+  'Daging Ayam': {
+    '5y': [19292,20773,20397,20582,20124,21422],
+    '3y': [20397,20582,20124,21422],
+    '1y': [19022,18909,20489,21487,21049,22302,21359,23111,24071,21390,21050,19735,19243],
+    '6m': [23111,24071,21390,21050,19735,19243]
+  },
+  'Telur Ayam': {
+    '5y': [12882,15104,16360,16033,16220,16142],
+    '3y': [16360,16033,16220,16142],
+    '1y': [16130,16204,15699,17185,16846,17377,16780,17378,17731,16333,15570,15130,14077],
+    '6m': [17378,17731,16333,15570,15130,14077]
+  }
+};
 
 function renderCommodityChips() {
   const container = document.getElementById('commodityChips');
@@ -803,11 +906,15 @@ function soloCommodity(name) {
 function clearAllFilters() {
   currentPeriod = '6m';
   currentRegion = 'Nasional';
+  currentPriceType = 'konsumen';
   selectedCommodities = commodities.map(c => c.name);
 
   document.querySelectorAll('#periodTabs .tab').forEach(t => t.classList.remove('active'));
   document.querySelector('#periodTabs .tab[data-period="6m"]').classList.add('active');
   document.getElementById('regionSelect').value = 'Nasional';
+  document.getElementById('priceToggle').classList.remove('active');
+  document.getElementById('labelKonsumen').classList.add('active');
+  document.getElementById('labelProdusen').classList.remove('active');
 
   renderCommodityChips();
   updateCharts();
@@ -819,14 +926,16 @@ function clearAllFilters() {
 function getLabels() { return allLabels[currentPeriod]; }
 
 function getData(commodity) {
-  const baseData = priceData[commodity][currentPeriod];
+  const src = currentPriceType === 'produsen' ? priceDataProdusen : priceData;
+  const baseData = src[commodity][currentPeriod];
   if (currentRegion === 'Nasional') return baseData;
   const factor = regionFactors[currentRegion];
   return baseData.map(v => Math.round(v * factor));
 }
 
 function getDataRaw(commodity) {
-  return priceData[commodity][currentPeriod];
+  const src = currentPriceType === 'produsen' ? priceDataProdusen : priceData;
+  return src[commodity][currentPeriod];
 }
 
 function createGradient(ctx, color) {
@@ -1101,20 +1210,37 @@ document.getElementById('regionSelect').addEventListener('change', e => {
   updateRegionLabel();
 });
 
+function togglePriceType() {
+  currentPriceType = currentPriceType === 'konsumen' ? 'produsen' : 'konsumen';
+  const track = document.getElementById('priceToggle');
+  const lblK = document.getElementById('labelKonsumen');
+  const lblP = document.getElementById('labelProdusen');
+  track.classList.toggle('active', currentPriceType === 'produsen');
+  lblK.classList.toggle('active', currentPriceType === 'konsumen');
+  lblP.classList.toggle('active', currentPriceType === 'produsen');
+  updateCharts();
+  renderStats();
+  renderTable();
+  updateRegionLabel();
+}
+
 function updateRegionLabel() {
   const mainTitle = document.querySelector('.chart-card.full-width .chart-title');
   const mainSubtitle = document.querySelector('.chart-card.full-width .chart-subtitle');
   const tableSubtitle = document.getElementById('tableSubtitle');
   const regionBadge = document.getElementById('regionBadge');
+  const priceTypeBadge = document.getElementById('priceTypeBadge');
+  const priceLabel = currentPriceType === 'produsen' ? 'Harga Produsen' : 'Harga Konsumen';
+  priceTypeBadge.textContent = priceLabel;
   if (currentRegion === 'Nasional') {
-    mainTitle.textContent = 'Tren Harga Bahan Pangan Nasional';
-    mainSubtitle.textContent = 'Harga rata-rata nasional per kg (Rp)';
-    tableSubtitle.textContent = 'Per 21 Juli 2026 — Sumber: BPS, PPI, Kementan';
-    regionBadge.textContent = 'Wilayah: Nasional';
+    mainTitle.textContent = `Tren ${priceLabel} Bahan Pangan Nasional`;
+    mainSubtitle.textContent = `Harga rata-rata nasional per kg (Rp) — ${priceLabel}`;
+    tableSubtitle.textContent = `Per 21 Juli 2026 — ${priceLabel} — Sumber: BPS, PPI, Kementan`;
+    regionBadge.textContent = `Wilayah: Nasional`;
   } else {
-    mainTitle.textContent = `Tren Harga Bahan Pangan — ${currentRegion}`;
-    mainSubtitle.textContent = `Harga rata-rata ${currentRegion} per kg (Rp)`;
-    tableSubtitle.textContent = `Per 21 Juli 2026 — Wilayah: ${currentRegion} — Sumber: BPS, PPI, Kementan`;
+    mainTitle.textContent = `Tren ${priceLabel} Bahan Pangan — ${currentRegion}`;
+    mainSubtitle.textContent = `Harga rata-rata ${currentRegion} per kg (Rp) — ${priceLabel}`;
+    tableSubtitle.textContent = `Per 21 Juli 2026 — Wilayah: ${currentRegion} — ${priceLabel} — Sumber: BPS, PPI, Kementan`;
     regionBadge.textContent = `Wilayah: ${currentRegion}`;
   }
 }
