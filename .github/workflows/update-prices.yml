@@ -21,26 +21,14 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Install Puppeteer
-        run: npm install puppeteer
-
-      - name: Fetch price data (API or Scrape)
-        env:
-          NFA_API_KEY: ${{ secrets.NFA_API_KEY }}
-        run: |
-          if [ -n "$NFA_API_KEY" ]; then
-            echo "API key found, using NFA API..."
-            node scripts/fetch-prices.js
-          else
-            echo "No API key, using scrape fallback..."
-            node scripts/scrape-pihps.js
-          fi
+      - name: Scrape SISKAPERBAPO Jatim
+        run: node scripts/scrape-siskaperbapo.js
 
       - name: Update timestamp in index.html
         run: |
           TODAY=$(TZ=Asia/Jakarta date '+%d %B %Y')
           sed -i "s/Update: [0-9]* [A-Za-z]* [0-9]*/Update: $TODAY/g" index.html
-          sed -i "s/Per [A-Za-z]* 20[0-9]* —/Per $TODAY —/g" index.html
+          sed -i "s/Per [0-9]* [A-Za-z]* [0-9]* —/Per $TODAY —/g" index.html
 
       - name: Commit and push changes
         run: |

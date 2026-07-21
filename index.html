@@ -242,6 +242,95 @@
     }
     .toggle-track.active .toggle-thumb { transform: translateX(16px); }
 
+    /* Loading Bar */
+    .loading-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      z-index: 9999;
+      overflow: hidden;
+      display: none;
+    }
+    .loading-bar.active { display: block; }
+    .loading-bar::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -40%;
+      width: 40%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+      animation: loadingSlide 1s ease-in-out infinite;
+    }
+    @keyframes loadingSlide {
+      0% { left: -40%; }
+      100% { left: 100%; }
+    }
+
+    /* Toast */
+    .toast-container {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .toast {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.75rem 1rem;
+      font-size: 0.8rem;
+      color: var(--text);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      animation: toastIn 0.3s ease;
+      max-width: 320px;
+    }
+    .toast.success { border-left: 3px solid var(--green); }
+    .toast.error { border-left: 3px solid var(--red); }
+    .toast.info { border-left: 3px solid var(--accent); }
+    .toast.hide { animation: toastOut 0.3s ease forwards; }
+    @keyframes toastIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes toastOut { from { opacity: 1; transform: translateY(0); } to { opacity: 0; transform: translateY(10px); } }
+
+    /* Produsen Disclaimer */
+    .produsen-disclaimer {
+      background: rgba(251, 146, 60, 0.1);
+      border: 1px solid rgba(251, 146, 60, 0.3);
+      border-radius: 10px;
+      padding: 0.6rem 1rem;
+      margin-bottom: 1rem;
+      font-size: 0.8rem;
+      color: #fb923c;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    /* Download Button */
+    .download-btn {
+      background: var(--card);
+      border: 1px solid var(--border);
+      color: var(--text-dim);
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.8rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+    .download-btn:hover { background: var(--accent); color: #0f172a; border-color: var(--accent); }
+
     /* Commodity Filter */
     .commodity-filter {
       display: flex;
@@ -529,18 +618,24 @@
       .chart-tag { align-self: flex-start; }
       .tab { padding: 0.35rem 0.7rem; font-size: 0.75rem; }
       .region-select { margin-left: 0 !important; margin-top: 0.5rem; width: 100%; }
+      .price-toggle { margin-left: 0 !important; margin-top: 0.5rem; }
       th, td { padding: 0.5rem 0.75rem; }
       th { font-size: 0.65rem; }
       td { font-size: 0.75rem; }
       footer { padding: 1rem; font-size: 0.7rem; }
       footer small { font-size: 0.6rem; }
+      .toast-container { bottom: 1rem; right: 1rem; left: 1rem; }
+      .toast { max-width: 100%; }
     }
   </style>
 </head>
 <body>
 
+<div class="loading-bar" id="loadingBar"></div>
+<div class="toast-container" id="toastContainer"></div>
+
 <header class="hero">
-  <h1>📊 Harga Bahan Pangan Indonesia</h1>
+  <h1>Harga Bahan Pangan Indonesia</h1>
   <p>Data harga komoditas pangan pokok dari berbagai sumber terpercaya</p>
   <div class="badge-row">
     <span class="badge" id="regionBadge">Wilayah: Nasional</span>
@@ -592,6 +687,11 @@
     <button class="clear-filter-btn" id="clearFilterBtn" onclick="clearAllFilters()">Reset Filter</button>
   </div>
 
+  <!-- Disclaimer Produsen -->
+  <div class="produsen-disclaimer" id="produsenDisclaimer" style="display:none;">
+    <span>⚠️</span> Harga produsen adalah estimasi berdasarkan margin rata-rata produsen–konsumen. Bukan data aktual.
+  </div>
+
   <!-- Charts -->
   <section class="charts-grid">
     <div class="chart-card full-width">
@@ -600,7 +700,10 @@
           <div class="chart-title">Tren Harga Bahan Pangan Nasional</div>
           <div class="chart-subtitle">Harga rata-rata nasional per kg (Rp)</div>
         </div>
-        <span class="chart-tag tag-blue">Multi Komoditas</span>
+        <div style="display:flex;gap:0.5rem;align-items:center;">
+          <span class="chart-tag tag-blue">Multi Komoditas</span>
+          <button class="download-btn" id="downloadMainChart" title="Download chart sebagai PNG">⬇</button>
+        </div>
       </div>
       <div class="chart-wrap"><canvas id="mainChart"></canvas></div>
     </div>
@@ -701,8 +804,25 @@
 </main>
 
 <footer>
-  Data diambil dari PIHPS Bank Indonesia, SISKAPERBAPO Jatim, Sigapura Bali, dan sumber resmi lainnya. Update terakhir: 20 Juli 2026. Harga bersifat estimasi dan dapat berbeda di setiap daerah.
-  <br><small style="color:#64748b;">Untuk data real-time kunjungi: <a href="https://panelharga.badanpangan.go.id" target="_blank" style="color:var(--accent);">panelharga.badanpangan.go.id</a> | <a href="https://www.bi.go.id/hargapangan" target="_blank" style="color:var(--accent);">bi.go.id/hargapangan</a></small>
+  <div style="max-width:700px;margin:0 auto;">
+    <p style="margin-bottom:0.5rem;"><strong>Sumber Data</strong></p>
+    <p style="margin-bottom:0.75rem;">
+      Harga konsumen: PIHPS Bank Indonesia, SISKAPERBAPO Jatim, Sigapura Bali.
+      Harga produsen: estimasi berdasarkan margin rata-rata produsen–konsumen.
+    </p>
+    <p style="margin-bottom:0.75rem;">
+      Data live di-scrape dari
+      <a href="https://siskaperbapo.jatimprov.go.id" target="_blank" style="color:var(--accent);">SISKAPERBAPO Jatim</a>
+      setiap hari. Harga regional menggunakan multiplier terhadap harga nasional.
+    </p>
+    <p style="margin-bottom:0.75rem;">
+      <strong>Disclaimer:</strong> Harga yang ditampilkan bersifat estimasi dan dapat berbeda di setiap daerah.
+      Untuk data resmi kunjungi
+      <a href="https://panelharga.badanpangan.go.id" target="_blank" style="color:var(--accent);">panelharga.badanpangan.go.id</a> atau
+      <a href="https://www.bi.go.id/hargapangan" target="_blank" style="color:var(--accent);">bi.go.id/hargapangan</a>.
+    </p>
+    <small style="color:#64748b;">Dibuat oleh <a href="https://github.com/zeinzulaziz/harga-pangan" target="_blank" style="color:var(--accent);">zeinzulaziz</a> | Data diperbarui secara otomatis setiap hari</small>
+  </div>
 </footer>
 
 <script>
@@ -915,8 +1035,10 @@ function clearAllFilters() {
   document.getElementById('priceToggle').classList.remove('active');
   document.getElementById('labelKonsumen').classList.add('active');
   document.getElementById('labelProdusen').classList.remove('active');
+  document.getElementById('produsenDisclaimer').style.display = 'none';
 
   renderCommodityChips();
+  updateChartSubtitles();
   updateCharts();
   renderStats();
   renderTable();
@@ -1201,9 +1323,11 @@ document.getElementById('periodTabs').addEventListener('click', e => {
 });
 
 // Region select
-document.getElementById('regionSelect').addEventListener('change', e => {
+document.getElementById('regionSelect').addEventListener('change', async (e) => {
   currentRegion = e.target.value;
-  loadExternalData();
+  document.getElementById('loadingBar').classList.add('active');
+  await loadExternalData();
+  document.getElementById('loadingBar').classList.remove('active');
   updateCharts();
   renderStats();
   renderTable();
@@ -1215,13 +1339,25 @@ function togglePriceType() {
   const track = document.getElementById('priceToggle');
   const lblK = document.getElementById('labelKonsumen');
   const lblP = document.getElementById('labelProdusen');
+  const disc = document.getElementById('produsenDisclaimer');
   track.classList.toggle('active', currentPriceType === 'produsen');
   lblK.classList.toggle('active', currentPriceType === 'konsumen');
   lblP.classList.toggle('active', currentPriceType === 'produsen');
+  disc.style.display = currentPriceType === 'produsen' ? 'flex' : 'none';
+  updateChartSubtitles();
   updateCharts();
   renderStats();
   renderTable();
   updateRegionLabel();
+}
+
+function updateChartSubtitles() {
+  const priceLabel = currentPriceType === 'produsen' ? 'Produsen' : 'Konsumen';
+  document.querySelectorAll('.chart-card .chart-subtitle').forEach(el => {
+    if (el.textContent.includes('per kg')) {
+      el.textContent = `Harga ${priceLabel} per kg`;
+    }
+  });
 }
 
 function updateRegionLabel() {
@@ -1308,11 +1444,13 @@ async function loadExternalData() {
     });
   }
   
-  // Sumber 3: Local cache
+  // Sumber 3: Local cache (output dari scrape-siskaperbapo.js)
   sources.push({
-    name: 'Local cache',
-    url: 'data/prices.json',
-    parse: (data) => data
+    name: 'Local cache (SISKAPERBAPO)',
+    url: 'data/siskaperbapo.json',
+    parse: (data) => {
+      try { return JSON.parse(data); } catch { return null; }
+    }
   });
 
   for (const source of sources) {
@@ -1337,6 +1475,9 @@ async function loadExternalData() {
           console.log(`  - ${name}: Rp${price.toLocaleString('id-ID')}/kg`);
         }
         
+        const count = Object.keys(result.prices).length;
+        showToast(`${count} komoditas dimuat dari ${source.name}`, 'success');
+        
         if (result.date) {
           const d = new Date(result.date);
           const months = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
@@ -1359,6 +1500,7 @@ async function loadExternalData() {
   }
   
   console.log('ℹ Menggunakan data hardcode');
+  showToast('Menggunakan data hardcode', 'info');
 }
 
 function updateLivePrices(prices) {
@@ -1378,8 +1520,23 @@ function updateLivePrices(prices) {
 }
 
 // Init
+function showToast(msg, type = 'info', duration = 4000) {
+  const container = document.getElementById('toastContainer');
+  const icons = { success: '✓', error: '✗', info: 'ℹ' };
+  const toast = document.createElement('div');
+  toast.className = `toast ${type}`;
+  toast.innerHTML = `<span>${icons[type] || ''}</span> ${msg}`;
+  container.appendChild(toast);
+  setTimeout(() => {
+    toast.classList.add('hide');
+    setTimeout(() => toast.remove(), 300);
+  }, duration);
+}
+
 async function init() {
+  document.getElementById('loadingBar').classList.add('active');
   await loadExternalData();
+  document.getElementById('loadingBar').classList.remove('active');
   renderCommodityChips();
   initCharts();
   renderStats();
@@ -1387,6 +1544,15 @@ async function init() {
   updateRegionLabel();
 }
 init();
+
+document.getElementById('downloadMainChart').addEventListener('click', () => {
+  const canvas = document.getElementById('mainChart');
+  const link = document.createElement('a');
+  link.download = `harga-pangan-${currentRegion.toLowerCase().replace(/\s/g,'-')}-${currentPriceType}-${currentPeriod}.png`;
+  link.href = canvas.toDataURL('image/png', 1.0);
+  link.click();
+  showToast('Chart berhasil diunduh', 'success');
+});
 
 // Resize handler - re-init charts on significant viewport changes
 let lastWidth = window.innerWidth;
