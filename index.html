@@ -689,7 +689,7 @@
 
   <!-- Disclaimer Produsen -->
   <div class="produsen-disclaimer" id="produsenDisclaimer" style="display:none;">
-    <span>⚠️</span> Harga produsen adalah estimasi berdasarkan margin rata-rata produsen–konsumen. Bukan data aktual.
+    <span>ℹ️</span> Harga produsen diambil dari SISKAPERBAPO Jatim. Data tidak tersedia untuk semua komoditas.
   </div>
 
   <!-- Charts -->
@@ -808,7 +808,7 @@
     <p style="margin-bottom:0.5rem;"><strong>Sumber Data</strong></p>
     <p style="margin-bottom:0.75rem;">
       Harga konsumen: PIHPS Bank Indonesia, SISKAPERBAPO Jatim, Sigapura Bali.
-      Harga produsen: estimasi berdasarkan margin rata-rata produsen–konsumen.
+      Harga produsen: SISKAPERBAPO Jatim (tersedia untuk beberapa komoditas).
     </p>
     <p style="margin-bottom:0.75rem;">
       Data live di-scrape dari
@@ -1486,7 +1486,7 @@ async function loadExternalData() {
         }
         
         if (result.prices) {
-          updateLivePrices(result.prices);
+          updateLivePrices(result.prices, result.producerPrices);
         }
         
         return;
@@ -1503,7 +1503,7 @@ async function loadExternalData() {
   showToast('Menggunakan data hardcode', 'info');
 }
 
-function updateLivePrices(prices) {
+function updateLivePrices(prices, producerPrices) {
   // Live data dari SISKAPERBAPO sudah harga aktual region tersebut
   // Jadi kita bagi dengan factor agar saat getData() mengalikan, hasilnya benar
   const factor = regionFactors[currentRegion] || 1.0;
@@ -1515,6 +1515,14 @@ function updateLivePrices(prices) {
       const basePrice = factor !== 1.0 ? Math.round(newPrice / factor) : newPrice;
       const arr = priceData[commodity.name]['6m'];
       arr[arr.length - 1] = basePrice;
+    }
+    
+    // Update producer prices jika ada
+    if (producerPrices && producerPrices[commodity.name] && priceDataProdusen[commodity.name] && priceDataProdusen[commodity.name]['6m']) {
+      const prodPrice = producerPrices[commodity.name];
+      const baseProdPrice = factor !== 1.0 ? Math.round(prodPrice / factor) : prodPrice;
+      const arr = priceDataProdusen[commodity.name]['6m'];
+      arr[arr.length - 1] = baseProdPrice;
     }
   }
 }

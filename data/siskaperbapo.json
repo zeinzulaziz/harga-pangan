@@ -1,7 +1,7 @@
 {
   "source": "SISKAPERBAPO Jatim",
   "region": "Jawa Timur",
-  "date": "2026-07-21T11:41:16.015Z",
+  "date": "2026-07-21T13:38:04.871Z",
   "prices": {
     "Bawang Merah": 32893,
     "Bawang Putih": 32951,
@@ -12,5 +12,8 @@
     "Minyak Goreng": 20321,
     "Daging Ayam": 33701,
     "Telur Ayam": 24980
+  },
+  "producerPrices": {
+    "Bawang Merah": 20500
   }
 }
