@@ -206,6 +206,63 @@
     .region-select:focus { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2); }
     .region-select option { background: var(--card); color: var(--text); }
 
+    /* Commodity Filter */
+    .commodity-filter {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1.25rem;
+      flex-wrap: wrap;
+    }
+
+    .commodity-filter > label {
+      font-size: 0.8rem;
+      color: var(--text-dim);
+      font-weight: 500;
+      white-space: nowrap;
+    }
+
+    .commodity-chips {
+      display: flex;
+      gap: 0.4rem;
+      flex-wrap: wrap;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.3rem 0.6rem;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: var(--card);
+      color: var(--text-dim);
+      font-size: 0.7rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      user-select: none;
+    }
+
+    .chip:hover { border-color: var(--accent); color: var(--text); }
+
+    .chip.active {
+      border-color: var(--chip-color, var(--accent));
+      background: color-mix(in srgb, var(--chip-color, var(--accent)) 15%, transparent);
+      color: var(--chip-color, var(--accent));
+    }
+
+    .chip-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--chip-color, var(--text-dim));
+    }
+
+    .chip.active .chip-dot {
+      background: var(--chip-color, var(--accent));
+    }
+
     /* Charts Grid */
     .charts-grid {
       display: grid;
@@ -465,6 +522,12 @@
     </select>
   </div>
 
+  <!-- Komoditas Filter -->
+  <div class="commodity-filter" id="commodityFilter">
+    <label>Komoditas:</label>
+    <div class="commodity-chips" id="commodityChips"></div>
+  </div>
+
   <!-- Charts -->
   <section class="charts-grid">
     <div class="chart-card full-width">
@@ -678,6 +741,33 @@ const allLabels = { '6m': months6m, '1y': months1y, '3y': months3y, '5y': months
 let charts = {};
 let currentPeriod = '6m';
 let currentRegion = 'Nasional';
+let selectedCommodities = commodities.map(c => c.name);
+
+function renderCommodityChips() {
+  const container = document.getElementById('commodityChips');
+  container.innerHTML = commodities.map(c => {
+    const active = selectedCommodities.includes(c.name) ? 'active' : '';
+    return `<button class="chip ${active}" data-name="${c.name}" style="--chip-color:${c.color}">
+      <span class="chip-dot" style="background:${c.color}"></span>${c.name}
+    </button>`;
+  }).join('');
+  container.querySelectorAll('.chip').forEach(btn => {
+    btn.addEventListener('click', () => toggleCommodity(btn.dataset.name));
+  });
+}
+
+function toggleCommodity(name) {
+  const idx = selectedCommodities.indexOf(name);
+  if (idx > -1) {
+    if (selectedCommodities.length === 1) return;
+    selectedCommodities.splice(idx, 1);
+  } else {
+    selectedCommodities.push(name);
+  }
+  renderCommodityChips();
+  updateCharts();
+  renderTable();
+}
 
 function getLabels() { return allLabels[currentPeriod]; }
 
@@ -780,11 +870,13 @@ function makeLineChart(canvasId, commodityName, color) {
 
 function initCharts() {
   const isMobile = window.innerWidth < 640;
+  const filtered = commodities.filter(c => selectedCommodities.includes(c.name));
+
   charts.main = new Chart(document.getElementById('mainChart').getContext('2d'), {
     type: 'line',
     data: {
       labels: getLabels(),
-      datasets: commodities.map(c => ({
+      datasets: filtered.map(c => ({
         label: c.name,
         data: getData(c.name),
         borderColor: c.color,
@@ -804,8 +896,8 @@ function initCharts() {
   charts.gula = makeLineChart('gulaChart', 'Gula Pasir', '#a78bfa');
 
   // Compare chart
-  const currentPrices = commodities.map(c => getData(c.name).slice(-1)[0]);
-  const avg5yPrices = commodities.map(c => {
+  const currentPrices = filtered.map(c => getData(c.name).slice(-1)[0]);
+  const avg5yPrices = filtered.map(c => {
     const d = getData(c.name);
     return Math.round(d.reduce((a,b)=>a+b,0)/d.length);
   });
@@ -860,8 +952,19 @@ function initCharts() {
 
 function updateCharts() {
   const labels = getLabels();
+  const filtered = commodities.filter(c => selectedCommodities.includes(c.name));
+
   charts.main.data.labels = labels;
-  commodities.forEach((c, i) => { charts.main.data.datasets[i].data = getData(c.name); });
+  charts.main.data.datasets = filtered.map(c => ({
+    label: c.name,
+    data: getData(c.name),
+    borderColor: c.color,
+    backgroundColor: 'transparent',
+    tension: 0.4,
+    pointRadius: window.innerWidth < 640 ? 0 : 2,
+    pointHoverRadius: window.innerWidth < 640 ? 3 : 5,
+    borderWidth: window.innerWidth < 640 ? 1.2 : 2
+  }));
   charts.main.update();
 
   ['bawang','cabai','beras','gula'].forEach(key => {
@@ -872,12 +975,15 @@ function updateCharts() {
   });
 
   // Update compare
-  const currentPrices = commodities.map(c => getData(c.name).slice(-1)[0]);
-  const avg5yPrices = commodities.map(c => {
+  const currentPrices = filtered.map(c => getData(c.name).slice(-1)[0]);
+  const avg5yPrices = filtered.map(c => {
     const d = getData(c.name);
     return Math.round(d.reduce((a,b)=>a+b,0)/d.length);
   });
+  charts.compare.data.labels = filtered.map(c => c.name);
   charts.compare.data.datasets[0].data = currentPrices;
+  charts.compare.data.datasets[0].backgroundColor = filtered.map(c => c.color + 'cc');
+  charts.compare.data.datasets[0].borderColor = filtered.map(c => c.color);
   charts.compare.data.datasets[1].data = avg5yPrices;
   charts.compare.update();
 }
@@ -906,7 +1012,8 @@ function renderStats() {
 // Table
 function renderTable() {
   const tbody = document.getElementById('priceTable');
-  tbody.innerHTML = commodities.map(c => {
+  const filtered = commodities.filter(c => selectedCommodities.includes(c.name));
+  tbody.innerHTML = filtered.map(c => {
     const d6m = getData(c.name);
     const current = d6m.slice(-1)[0];
     const prev = d6m.slice(-2, -1)[0];
@@ -965,6 +1072,7 @@ function updateRegionLabel() {
 }
 
 // Init
+renderCommodityChips();
 initCharts();
 renderStats();
 renderTable();
