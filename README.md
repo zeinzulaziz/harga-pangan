@@ -26,7 +26,7 @@ Dashboard menggunakan **multi-source** untuk data yang lebih akurat:
 
 | Sumber | Data | Periode | Update |
 |--------|------|---------|--------|
-| [Badan Pangan Nasional](https://data.badanpangan.go.id) | Harga rata-rata bulanan nasional | 2021 – Jan 2026 | Bulanan |
+| [Badan Pangan Nasional](https://data.badanpangan.go.id) | Harga rata-rata bulanan nasional | 2021 – Sekarang | Bulanan |
 | [SISKAPERBAPO Jatim](https://siskaperbapo.jatimprov.go.id) | Harga live harian Jawa Timur | Hari ini | Setiap hari |
 | `data/history/YYYY-MM.json` | Database historis per bulan | Semua data (tanpa batas) | Otomatis |
 
@@ -35,15 +35,15 @@ Dashboard menggunakan **multi-source** untuk data yang lebih akurat:
 ```
 Grafik 5 tahun & 3 tahun
 ├── Data rata-rata tahunan dari Badan Pangan
-└── Tersedia untuk 9 komoditas (2021–2026)
+└── Tersedia untuk 9 komoditas (2021–sekarang)
 
-Grafik 1 tahun (13 bulan: Jul 2025 – Jul 2026)
-├── Jul 2025 – Jan 2026 → Data bulanan Badan Pangan
-└── Feb – Jul 2026 → Interpolasi dari Jan 2026 ke harga live SISKAPERBAPO
+Grafik 1 tahun (13 bulan terakhir)
+├── 7 bulan awal → Data bulanan Badan Pangan
+└── 6 bulan terakhir → Interpolasi linear ke harga live SISKAPERBAPO
 
-Grafik 6 bulan (Feb – Jul 2026)
+Grafik 6 bulan (6 bulan terakhir)
 ├── Rata-rata bulanan dari data/history/YYYY-MM.json (jika tersedia)
-└── Interpolasi linear dari harga Jan 2026 ke harga live
+└── Interpolasi linear dari harga bulan pertama ke harga live
 ```
 
 ### Regional Pricing
@@ -81,7 +81,7 @@ Browser (saat user buka website)
 ├── Load index.html
 ├── Fetch data/siskaperbapo.json (live price)
 ├── Fetch data/history/YYYY-MM.json (12 bulan terakhir)
-├── Apply interpolasi linear (Jan 2026 → harga live)
+├── Apply interpolasi linear (data Badan Pangan → harga live)
 ├── Apply history data (override interpolasi jika ada data aktual)
 └── Render chart dengan Chart.js
 ```
@@ -105,7 +105,6 @@ harga-pangan/
 │   └── workflows/
 │       └── update-prices.yml     # GitHub Actions workflow
 ├── package.json
-├── SETUP.md
 └── README.md
 ```
 
@@ -194,19 +193,21 @@ Setiap bulan punya file terpisah. Data akumulasi otomatis setiap hari, tanpa bat
 
 ### Interpolasi Linear
 
-Untuk mengisi gap data (Feb–Jul 2026), sistem menggunakan interpolasi linear:
+Untuk mengisi gap data (6 bulan terakhir), sistem menggunakan interpolasi linear:
 
 ```
-Harga Jan 2026 (Badan Pangan) ──────── Harga Jul 2026 (SISKAPERBAPO live)
+Harga bulan awal (Badan Pangan) ──────── Harga hari ini (SISKAPERBAPO live)
          │                                        │
-    Rp42,672                                 Rp35,469
+    Harga awal                                 Harga live
          │                                        │
-         ├── Feb: Rp41,449                       │
-         ├── Mar: Rp40,226                       │
-         ├── Apr: Rp39,003                       │
-         ├── Mei: Rp37,781                       │
-         └── Jun: Rp36,558                       │
+         ├── Bulan ke-2                          │
+         ├── Bulan ke-3                          │
+         ├── Bulan ke-4                          │
+         ├── Bulan ke-5                          │
+         └── Bulan ke-6                          │
 ```
+
+Sistem mencari titik data terakhir yang tersedia dari Badan Pangan, lalu menghubungkannya secara linear dengan harga live dari SISKAPERBAPO.
 
 ---
 
