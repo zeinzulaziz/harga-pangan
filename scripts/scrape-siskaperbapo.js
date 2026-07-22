@@ -300,16 +300,26 @@ async function main() {
   fs.writeFileSync(dayPath, JSON.stringify(dayData, null, 2));
   console.log(`✅ History ${todayStr}: tersimpan`);
   
-  // Hitung total file harian
-  let totalDays = 0;
-  const years = fs.readdirSync(historyDir).filter(f => f.match(/^\d{4}$/));
-  for (const y of years) {
+  // Regenerate history.json (gabungan semua data harian)
+  const allData = {};
+  for (const y of fs.readdirSync(historyDir).filter(f => f.match(/^\d{4}$/)).sort()) {
     const yDir = path.join(historyDir, y);
-    if (fs.statSync(yDir).isDirectory()) {
-      totalDays += fs.readdirSync(yDir).filter(f => f.endsWith('.json')).length;
+    if (!fs.statSync(yDir).isDirectory()) continue;
+    for (const f of fs.readdirSync(yDir).filter(f => f.endsWith('.json')).sort()) {
+      try {
+        const d = JSON.parse(fs.readFileSync(path.join(yDir, f), 'utf-8'));
+        if (d.prices) allData[d.date || f.replace('.json', '')] = d.prices;
+      } catch(e) {}
     }
   }
-  console.log(`📊 Total ${totalDays} hari tersimpan di history`);
+  
+  const historyJson = {
+    lastUpdate: now.toISOString(),
+    days: Object.keys(allData).length,
+    data: allData
+  };
+  fs.writeFileSync(path.join(outDir, 'history.json'), JSON.stringify(historyJson));
+  console.log(`📊 history.json: ${historyJson.days} hari (${(JSON.stringify(historyJson).length/1024).toFixed(0)} KB)`);
 }
 
 main();
