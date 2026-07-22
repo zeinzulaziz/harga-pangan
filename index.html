@@ -1514,25 +1514,25 @@ async function loadExternalData() {
     }
   });
 
-  // Sumber 4: Historical daily data (akumulasi per tahun dari scrape harian)
+  // Sumber 4: Historical daily data (akumulasi per bulan dari scrape harian)
   let historyData = { monthly: {} };
-  const currentYear = new Date().getFullYear();
-  const neededYears = [currentYear - 1, currentYear]; // 2025, 2026
+  const now = new Date();
+  const monthNames = ['01','02','03','04','05','06','07','08','09','10','11','12'];
   
-  for (const yr of neededYears) {
+  // Load 12 bulan terakhir (untuk 1y view: Jul 2025 – Jul 2026)
+  for (let i = 12; i >= 0; i--) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    const mk = `${d.getFullYear()}-${monthNames[d.getMonth()]}`;
     try {
-      const histResp = await fetch(`data/history/${yr}.json`, { signal: AbortSignal.timeout(5000) });
-      if (histResp.ok) {
-        const yearData = await histResp.json();
-        // Merge monthly data
-        if (yearData.monthly) {
-          Object.assign(historyData.monthly, yearData.monthly);
+      const resp = await fetch(`data/history/${mk}.json`, { signal: AbortSignal.timeout(3000) });
+      if (resp.ok) {
+        const monthData = await resp.json();
+        if (monthData.average) {
+          historyData.monthly[mk] = monthData.average;
         }
-        console.log(`📊 History ${yr}: ${Object.keys(yearData.daily || {}).length} hari, ${Object.keys(yearData.monthly || {}).length} bulan`);
+        console.log(`📊 History ${mk}: ${Object.keys(monthData.daily || {}).length} hari`);
       }
-    } catch(e) {
-      console.log(`ℹ History ${yr} belum tersedia`);
-    }
+    } catch(e) {}
   }
 
   for (const source of sources) {
@@ -1677,27 +1677,40 @@ function updateLivePrices(prices, producerPrices) {
 function applyHistoryData(history) {
   if (!history || !history.monthly) return;
   
-  const monthKeys = ['2026-02','2026-03','2026-04','2026-05','2026-06','2026-07'];
+  // Build month keys from chart labels
+  // 6m: ['Feb 2026','Mar 2026',...] → ['2026-02','2026-03',...]
+  const m6 = months6m.map(l => {
+    const [bulan, tahun] = l.split(' ');
+    const m = {'Jan':'01','Feb':'02','Mar':'03','Apr':'04','Mei':'05','Jun':'06',
+               'Jul':'07','Ags':'08','Sep':'09','Okt':'10','Nov':'11','Des':'12'}[bulan];
+    return `${tahun}-${m}`;
+  });
+  
+  // 1y: ['Jul 2025',...,'Jul 2026'] → ['2025-07',...,'2026-07']
+  const m1 = months1y.map(l => {
+    const [bulan, tahun] = l.split(' ');
+    const m = {'Jan':'01','Feb':'02','Mar':'03','Apr':'04','Mei':'05','Jun':'06',
+               'Jul':'07','Ags':'08','Sep':'09','Okt':'10','Nov':'11','Des':'12'}[bulan];
+    return `${tahun}-${m}`;
+  });
   
   for (const commodity of commodities) {
+    // Apply ke 6m array
     const arr6m = priceData[commodity.name]?.['6m'];
-    if (!arr6m) continue;
-    
-    for (let i = 0; i < monthKeys.length; i++) {
-      const mk = monthKeys[i];
-      if (history.monthly[mk] && history.monthly[mk][commodity.name] != null) {
-        // Override interpolated value dengan rata-rata aktual
-        arr6m[i] = history.monthly[mk][commodity.name];
+    if (arr6m) {
+      for (let i = 0; i < m6.length; i++) {
+        if (history.monthly[m6[i]] && history.monthly[m6[i]][commodity.name] != null) {
+          arr6m[i] = history.monthly[m6[i]][commodity.name];
+        }
       }
     }
     
-    // Update 1y array juga (indices 7-12 = Feb-Jul 2026)
+    // Apply ke 1y array
     const arr1y = priceData[commodity.name]?.['1y'];
     if (arr1y) {
-      for (let i = 0; i < monthKeys.length; i++) {
-        const mk = monthKeys[i];
-        if (history.monthly[mk] && history.monthly[mk][commodity.name] != null) {
-          arr1y[7 + i] = history.monthly[mk][commodity.name];
+      for (let i = 0; i < m1.length; i++) {
+        if (history.monthly[m1[i]] && history.monthly[m1[i]][commodity.name] != null) {
+          arr1y[i] = history.monthly[m1[i]][commodity.name];
         }
       }
     }
@@ -1707,11 +1720,18 @@ function applyHistoryData(history) {
   for (const commodity of commodities) {
     const arr6mP = priceDataProdusen[commodity.name]?.['6m'];
     if (arr6mP) {
-      for (let i = 0; i < monthKeys.length; i++) {
-        const mk = monthKeys[i];
-        const histKey = mk + '_produsen';
+      for (let i = 0; i < m6.length; i++) {
+        const histKey = m6[i];
         if (history.monthly[histKey] && history.monthly[histKey][commodity.name] != null) {
           arr6mP[i] = history.monthly[histKey][commodity.name];
+        }
+      }
+    }
+    const arr1yP = priceDataProdusen[commodity.name]?.['1y'];
+    if (arr1yP) {
+      for (let i = 0; i < m1.length; i++) {
+        if (history.monthly[m1[i]] && history.monthly[m1[i]][commodity.name] != null) {
+          arr1yP[i] = history.monthly[m1[i]][commodity.name];
         }
       }
     }

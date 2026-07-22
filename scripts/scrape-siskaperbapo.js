@@ -272,7 +272,7 @@ async function main() {
   console.log('\n✅ Data tersimpan di data/siskaperbapo.json');
   
   // ============================================
-  // AKUMULASI HISTORIS — database per tahun
+  // AKUMULASI HISTORIS — database per bulan
   // ============================================
   const historyDir = path.join(outDir, 'history');
   if (!fs.existsSync(historyDir)) {
@@ -281,47 +281,41 @@ async function main() {
   
   const now = new Date();
   const todayStr = now.toISOString().slice(0, 10); // YYYY-MM-DD
-  const year = now.getFullYear();
   const monthKey = todayStr.slice(0, 7); // YYYY-MM
-  const yearPath = path.join(historyDir, `${year}.json`);
+  const monthPath = path.join(historyDir, `${monthKey}.json`);
   
-  // Baca history tahun ini yang sudah ada
-  let yearData = { year, daily: {}, monthly: {} };
-  if (fs.existsSync(yearPath)) {
+  // Baca history bulan ini yang sudah ada
+  let monthData = { month: monthKey, daily: {}, average: {} };
+  if (fs.existsSync(monthPath)) {
     try {
-      yearData = JSON.parse(fs.readFileSync(yearPath, 'utf-8'));
+      monthData = JSON.parse(fs.readFileSync(monthPath, 'utf-8'));
     } catch(e) {
-      console.log(`⚠ History ${year} corrupt, mulai baru`);
-      yearData = { year, daily: {}, monthly: {} };
+      console.log(`⚠ History ${monthKey} corrupt, mulai baru`);
+      monthData = { month: monthKey, daily: {}, average: {} };
     }
   }
   
   // Simpan data hari ini
-  yearData.daily[todayStr] = {
+  monthData.daily[todayStr] = {
     prices: consumerPrices,
     producerPrices: Object.keys(producerPrices).length > 0 ? producerPrices : undefined
   };
   
-  // Update monthly averages — rata-rata semua hari dalam bulan tersebut
-  if (!yearData.monthly) yearData.monthly = {};
-  if (!yearData.monthly[monthKey]) yearData.monthly[monthKey] = {};
-  
-  const monthDays = Object.keys(yearData.daily).filter(d => d.startsWith(monthKey));
+  // Hitung rata-rata bulanan dari semua hari yang ada
+  const allDays = Object.keys(monthData.daily);
   for (const [name] of Object.entries(consumerPrices)) {
-    const prices = monthDays
-      .map(d => yearData.daily[d]?.prices?.[name])
+    const prices = allDays
+      .map(d => monthData.daily[d]?.prices?.[name])
       .filter(p => p != null);
     if (prices.length > 0) {
-      yearData.monthly[monthKey][name] = Math.round(prices.reduce((a,b) => a+b, 0) / prices.length);
+      monthData.average[name] = Math.round(prices.reduce((a,b) => a+b, 0) / prices.length);
     }
   }
   
-  yearData.lastUpdate = now.toISOString();
+  monthData.lastUpdate = now.toISOString();
   
-  fs.writeFileSync(yearPath, JSON.stringify(yearData, null, 2));
-  const dayCount = Object.keys(yearData.daily).length;
-  const monthCount = Object.keys(yearData.monthly).length;
-  console.log(`✅ History ${year}: ${dayCount} hari, ${monthCount} bulan tersimpan`);
+  fs.writeFileSync(monthPath, JSON.stringify(monthData, null, 2));
+  console.log(`✅ History ${monthKey}: ${allDays.length} hari tersimpan`);
 }
 
 main();

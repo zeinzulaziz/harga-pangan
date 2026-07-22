@@ -1,5 +1,5 @@
 {
-  "year": 2026,
+  "month": "2026-07",
   "daily": {
     "2026-07-22": {
       "prices": {
@@ -18,18 +18,16 @@
       }
     }
   },
-  "monthly": {
-    "2026-07": {
-      "Bawang Merah": 32893,
-      "Bawang Putih": 32951,
-      "Cabai Rawit": 38536,
-      "Cabai Merah": 32249,
-      "Beras": 12986,
-      "Gula Pasir": 17180,
-      "Minyak Goreng": 20321,
-      "Daging Ayam": 33701,
-      "Telur Ayam": 24980
-    }
+  "average": {
+    "Bawang Merah": 32893,
+    "Bawang Putih": 32951,
+    "Cabai Rawit": 38536,
+    "Cabai Merah": 32249,
+    "Beras": 12986,
+    "Gula Pasir": 17180,
+    "Minyak Goreng": 20321,
+    "Daging Ayam": 33701,
+    "Telur Ayam": 24980
   },
-  "lastUpdate": "2026-07-22T08:40:04.524Z"
+  "lastUpdate": "2026-07-22T09:17:27.896Z"
 }
