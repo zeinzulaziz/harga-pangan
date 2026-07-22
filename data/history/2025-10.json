@@ -1,0 +1,14 @@
+{
+  "month": "2025-10",
+  "source": "WFP/HDX (World Food Programme)",
+  "daily": {},
+  "average": {
+    "Telur Ayam": 30452,
+    "Daging Ayam": 38270,
+    "Gula Pasir": 17834,
+    "Minyak Goreng": 22179,
+    "Bawang Putih": 38005,
+    "Bawang Merah": 39388
+  },
+  "lastUpdate": "2026-07-22T00:00:00.000Z"
+}

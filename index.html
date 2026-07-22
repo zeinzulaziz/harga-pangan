@@ -1519,21 +1519,21 @@ async function loadExternalData() {
   const now = new Date();
   const monthNames = ['01','02','03','04','05','06','07','08','09','10','11','12'];
   
-  // Load 12 bulan terakhir (untuk 1y view: Jul 2025 – Jul 2026)
-  for (let i = 12; i >= 0; i--) {
+  // Load 60 bulan terakhir (untuk 5y view: 2021–2026)
+  for (let i = 60; i >= 0; i--) {
     const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
     const mk = `${d.getFullYear()}-${monthNames[d.getMonth()]}`;
     try {
-      const resp = await fetch(`data/history/${mk}.json`, { signal: AbortSignal.timeout(3000) });
+      const resp = await fetch(`data/history/${mk}.json`, { signal: AbortSignal.timeout(2000) });
       if (resp.ok) {
         const monthData = await resp.json();
         if (monthData.average) {
           historyData.monthly[mk] = monthData.average;
         }
-        console.log(`📊 History ${mk}: ${Object.keys(monthData.daily || {}).length} hari`);
       }
     } catch(e) {}
   }
+  console.log(`📊 Loaded ${Object.keys(historyData.monthly).length} months of history`);
 
   for (const source of sources) {
     try {
@@ -1711,6 +1711,32 @@ function applyHistoryData(history) {
       for (let i = 0; i < m1.length; i++) {
         if (history.monthly[m1[i]] && history.monthly[m1[i]][commodity.name] != null) {
           arr1y[i] = history.monthly[m1[i]][commodity.name];
+        }
+      }
+    }
+    
+    // Apply ke 3y array (rata-rata tahunan dari history)
+    const arr3y = priceData[commodity.name]?.['3y'];
+    if (arr3y) {
+      for (let yi = 0; yi < months3y.length; yi++) {
+        const year = months3y[yi];
+        const yearMonths = Object.keys(history.monthly).filter(mk => mk.startsWith(year));
+        const prices = yearMonths.map(mk => history.monthly[mk]?.[commodity.name]).filter(p => p != null);
+        if (prices.length > 0) {
+          arr3y[yi] = Math.round(prices.reduce((a,b) => a+b, 0) / prices.length);
+        }
+      }
+    }
+    
+    // Apply ke 5y array (rata-rata tahunan dari history)
+    const arr5y = priceData[commodity.name]?.['5y'];
+    if (arr5y) {
+      for (let yi = 0; yi < months5y.length; yi++) {
+        const year = months5y[yi];
+        const yearMonths = Object.keys(history.monthly).filter(mk => mk.startsWith(year));
+        const prices = yearMonths.map(mk => history.monthly[mk]?.[commodity.name]).filter(p => p != null);
+        if (prices.length > 0) {
+          arr5y[yi] = Math.round(prices.reduce((a,b) => a+b, 0) / prices.length);
         }
       }
     }
