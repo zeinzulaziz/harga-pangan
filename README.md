@@ -28,7 +28,7 @@ Dashboard menggunakan **multi-source** untuk data yang lebih akurat:
 |--------|------|---------|--------|
 | [Badan Pangan Nasional](https://data.badanpangan.go.id) | Harga rata-rata bulanan nasional | 2021 – Jan 2026 | Bulanan |
 | [SISKAPERBAPO Jatim](https://siskaperbapo.jatimprov.go.id) | Harga live harian Jawa Timur | Hari ini | Setiap hari |
-| `prices-history.json` | Akumulasi harga harian | 90 hari terakhir | Otomatis |
+| `data/history/YYYY.json` | Database historis per tahun | Semua data (tanpa batas) | Otomatis |
 
 ### Cara Data Digunakan
 
@@ -42,7 +42,7 @@ Grafik 1 tahun (13 bulan: Jul 2025 – Jul 2026)
 └── Feb – Jul 2026 → Interpolasi dari Jan 2026 ke harga live SISKAPERBAPO
 
 Grafik 6 bulan (Feb – Jul 2026)
-├── Rata-rata bulanan dari prices-history.json (jika tersedia)
+├── Rata-rata bulanan dari data/history/YYYY.json (jika tersedia)
 └── Interpolasi linear dari harga Jan 2026 ke harga live
 ```
 
@@ -72,7 +72,7 @@ GitHub Actions (setiap hari jam 14:00 WIB)
 │   ├── Fetch HTML dari siskaperbapo.jatimprov.go.id
 │   ├── Parse harga konsumen & produsen
 │   ├── Simpan → data/siskaperbapo.json (live hari ini)
-│   └── Akumulasi → data/prices-history.json (database historis)
+│   └── Akumulasi → data/history/YYYY.json (database per tahun)
 │
 └── update timestamp di index.html
 
@@ -80,7 +80,7 @@ Browser (saat user buka website)
 │
 ├── Load index.html
 ├── Fetch data/siskaperbapo.json (live price)
-├── Fetch data/prices-history.json (historical daily)
+├── Fetch data/history/2025.json + 2026.json (historical daily)
 ├── Apply interpolasi linear (Jan 2026 → harga live)
 ├── Apply history data (override interpolasi jika ada data aktual)
 └── Render chart dengan Chart.js
@@ -95,7 +95,9 @@ harga-pangan/
 ├── index.html                    # Dashboard utama (single-file app)
 ├── data/
 │   ├── siskaperbapo.json         # Data live dari SISKAPERBAPO (auto-update)
-│   └── prices-history.json       # Database historis harian (auto-akumulasi)
+│   └── history/
+│       ├── 2025.json             # Database historis 2025
+│       └── 2026.json             # Database historis 2026 (auto-akumulasi)
 ├── scripts/
 │   ├── scrape-siskaperbapo.js    # Scraper utama (konsumen + produsen)
 │   ├── fetch-prices.js           # Legacy: fetch dari API Badan Pangan
@@ -164,18 +166,24 @@ Scraper mengambil data dari dua halaman SISKAPERBAPO:
 
 Output:
 - `data/siskaperbapo.json` — data live hari ini
-- `data/prices-history.json` — akumulasi historis (90 hari terakhir)
+- `data/history/YYYY.json` — database historis per tahun (tanpa batas)
 
-### History Format (`prices-history.json`)
+### History Format (`data/history/YYYY.json`)
 
 ```json
 {
+  "year": 2026,
   "lastUpdate": "2026-07-22T07:00:00.000Z",
   "daily": {
     "2026-07-22": {
-      "Bawang Merah": 32893,
-      "Bawang Putih": 32951,
-      "Cabai Rawit": 38536
+      "prices": {
+        "Bawang Merah": 32893,
+        "Bawang Putih": 32951,
+        "Cabai Rawit": 38536
+      },
+      "producerPrices": {
+        "Bawang Merah": 20500
+      }
     }
   },
   "monthly": {
@@ -186,6 +194,8 @@ Output:
   }
 }
 ```
+
+Setiap tahun punya file terpisah. Data akumulasi otomatis setiap hari, tanpa batas waktu.
 
 ### Interpolasi Linear
 

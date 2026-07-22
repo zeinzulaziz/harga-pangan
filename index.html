@@ -643,7 +643,7 @@
     <span class="badge" id="regionBadge">Wilayah: Nasional</span>
     <span class="badge" id="priceTypeBadge">Harga Konsumen</span>
     <span class="badge">Sumber: Badan Pangan / SISKAPERBAPO / PIHPS</span>
-    <span class="badge">Update: 21 Juli 2026</span>
+    <span class="badge" id="updateBadge"></span>
     <span class="badge">9 Komoditas</span>
   </div>
 </header>
@@ -772,7 +772,7 @@
     <div class="chart-header">
       <div>
         <div class="chart-title">Detail Harga Komoditas</div>
-        <div class="chart-subtitle" id="tableSubtitle">Per 21 Juli 2026 — Sumber: Badan Pangan, SISKAPERBAPO, PIHPS</div>
+        <div class="chart-subtitle" id="tableSubtitle">Memuat data...</div>
       </div>
     </div>
     <div class="table-wrap">
@@ -1424,15 +1424,20 @@ function updateRegionLabel() {
   const priceTypeBadge = document.getElementById('priceTypeBadge');
   const priceLabel = currentPriceType === 'produsen' ? 'Harga Produsen' : 'Harga Konsumen';
   priceTypeBadge.textContent = priceLabel;
+  
+  const now = new Date();
+  const months = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+  const todayStr = `${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
+  
   if (currentRegion === 'Nasional') {
     mainTitle.textContent = `Tren ${priceLabel} Bahan Pangan Nasional`;
     mainSubtitle.textContent = `Harga rata-rata nasional per kg (Rp) — ${priceLabel}`;
-    tableSubtitle.textContent = `Per 21 Juli 2026 — ${priceLabel} — Sumber: Badan Pangan, SISKAPERBAPO, PIHPS`;
+    tableSubtitle.textContent = `Per ${todayStr} — ${priceLabel} — Sumber: Badan Pangan, SISKAPERBAPO, PIHPS`;
     regionBadge.textContent = `Wilayah: Nasional`;
   } else {
     mainTitle.textContent = `Tren ${priceLabel} Bahan Pangan — ${currentRegion}`;
     mainSubtitle.textContent = `Harga rata-rata ${currentRegion} per kg (Rp) — ${priceLabel}`;
-    tableSubtitle.textContent = `Per 21 Juli 2026 — Wilayah: ${currentRegion} — ${priceLabel} — Sumber: Badan Pangan, SISKAPERBAPO, PIHPS`;
+    tableSubtitle.textContent = `Per ${todayStr} — Wilayah: ${currentRegion} — ${priceLabel} — Sumber: Badan Pangan, SISKAPERBAPO, PIHPS`;
     regionBadge.textContent = `Wilayah: ${currentRegion}`;
   }
 }
@@ -1509,16 +1514,25 @@ async function loadExternalData() {
     }
   });
 
-  // Sumber 4: Historical daily data (akumulasi dari scrape harian)
-  let historyData = null;
-  try {
-    const histResp = await fetch('data/prices-history.json', { signal: AbortSignal.timeout(5000) });
-    if (histResp.ok) {
-      historyData = await histResp.json();
-      console.log(`📊 History loaded: ${Object.keys(historyData.daily || {}).length} hari, ${Object.keys(historyData.monthly || {}).length} bulan`);
+  // Sumber 4: Historical daily data (akumulasi per tahun dari scrape harian)
+  let historyData = { monthly: {} };
+  const currentYear = new Date().getFullYear();
+  const neededYears = [currentYear - 1, currentYear]; // 2025, 2026
+  
+  for (const yr of neededYears) {
+    try {
+      const histResp = await fetch(`data/history/${yr}.json`, { signal: AbortSignal.timeout(5000) });
+      if (histResp.ok) {
+        const yearData = await histResp.json();
+        // Merge monthly data
+        if (yearData.monthly) {
+          Object.assign(historyData.monthly, yearData.monthly);
+        }
+        console.log(`📊 History ${yr}: ${Object.keys(yearData.daily || {}).length} hari, ${Object.keys(yearData.monthly || {}).length} bulan`);
+      }
+    } catch(e) {
+      console.log(`ℹ History ${yr} belum tersedia`);
     }
-  } catch(e) {
-    console.log('ℹ History belum tersedia');
   }
 
   for (const source of sources) {
@@ -1558,7 +1572,7 @@ async function loadExternalData() {
         }
         
         // Apply history data — isi 6m array dengan rata-rata bulanan aktual
-        if (historyData && historyData.monthly) {
+        if (historyData && Object.keys(historyData.monthly).length > 0) {
           applyHistoryData(historyData);
         }
         
@@ -1719,6 +1733,12 @@ function showToast(msg, type = 'info', duration = 4000) {
 }
 
 async function init() {
+  // Set tanggal otomatis
+  const now = new Date();
+  const months = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+  const dateStr = `${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
+  document.getElementById('updateBadge').textContent = `Update: ${dateStr}`;
+  
   document.getElementById('loadingBar').classList.add('active');
   await loadExternalData();
   document.getElementById('loadingBar').classList.remove('active');

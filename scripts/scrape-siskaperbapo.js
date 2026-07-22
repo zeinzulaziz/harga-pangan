@@ -219,8 +219,23 @@ async function main() {
   }
   
   if (Object.keys(consumerPrices).length === 0 && Object.keys(producerPrices).length === 0) {
-    console.log('\n❌ Tidak dapat menemukan data harga');
-    return;
+    console.log('\n⚠ Tidak dapat menemukan data live, mencoba cache...');
+    // Fallback: gunakan data cache kemarin
+    const cachePath = path.join(__dirname, '..', 'data', 'siskaperbapo.json');
+    if (fs.existsSync(cachePath)) {
+      try {
+        const cached = JSON.parse(fs.readFileSync(cachePath, 'utf-8'));
+        if (cached.prices && Object.keys(cached.prices).length > 0) {
+          console.log('  ✓ Menggunakan data cache dari ' + cached.date);
+          Object.assign(consumerPrices, cached.prices);
+          if (cached.producerPrices) Object.assign(producerPrices, cached.producerPrices);
+        }
+      } catch(e) {}
+    }
+    if (Object.keys(consumerPrices).length === 0) {
+      console.log('❌ Tidak ada data tersedia');
+      return;
+    }
   }
   
   console.log('\n' + '─'.repeat(50));
@@ -257,64 +272,56 @@ async function main() {
   console.log('\n✅ Data tersimpan di data/siskaperbapo.json');
   
   // ============================================
-  // AKUMULASI HISTORIS — database harian
+  // AKUMULASI HISTORIS — database per tahun
   // ============================================
-  const historyPath = path.join(outDir, 'prices-history.json');
-  let history = { daily: {}, monthly: {} };
-  
-  // Baca history yang sudah ada
-  if (fs.existsSync(historyPath)) {
-    try {
-      history = JSON.parse(fs.readFileSync(historyPath, 'utf-8'));
-    } catch(e) {
-      console.log('⚠ History corrupt, mulai baru');
-      history = { daily: {}, monthly: {} };
-    }
+  const historyDir = path.join(outDir, 'history');
+  if (!fs.existsSync(historyDir)) {
+    fs.mkdirSync(historyDir, { recursive: true });
   }
   
-  // Simpan data hari ini ke daily
-  const todayStr = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
-  history.daily[todayStr] = consumerPrices;
-  if (Object.keys(producerPrices).length > 0) {
-    if (!history.daily[todayStr + '_produsen']) history.daily[todayStr + '_produsen'] = {};
-    history.daily[todayStr + '_produsen'] = producerPrices;
-  }
-  
-  // Simpan juga ke monthly (key: YYYY-MM)
+  const now = new Date();
+  const todayStr = now.toISOString().slice(0, 10); // YYYY-MM-DD
+  const year = now.getFullYear();
   const monthKey = todayStr.slice(0, 7); // YYYY-MM
-  if (!history.monthly) history.monthly = {};
-  if (!history.monthly[monthKey]) history.monthly[monthKey] = {};
-  // Rata-rata dari semua harga hari ini dalam bulan tersebut
-  // (akan di-update setiap hari, ambil rata-rata terakhir)
-  const daysInMonth = Object.keys(history.daily).filter(d => d.startsWith(monthKey)).length;
-  for (const [name, price] of Object.entries(consumerPrices)) {
-    const monthPrices = Object.entries(history.daily)
-      .filter(([d]) => d.startsWith(monthKey) && !d.endsWith('_produsen'))
-      .map(([, prices]) => prices[name])
+  const yearPath = path.join(historyDir, `${year}.json`);
+  
+  // Baca history tahun ini yang sudah ada
+  let yearData = { year, daily: {}, monthly: {} };
+  if (fs.existsSync(yearPath)) {
+    try {
+      yearData = JSON.parse(fs.readFileSync(yearPath, 'utf-8'));
+    } catch(e) {
+      console.log(`⚠ History ${year} corrupt, mulai baru`);
+      yearData = { year, daily: {}, monthly: {} };
+    }
+  }
+  
+  // Simpan data hari ini
+  yearData.daily[todayStr] = {
+    prices: consumerPrices,
+    producerPrices: Object.keys(producerPrices).length > 0 ? producerPrices : undefined
+  };
+  
+  // Update monthly averages — rata-rata semua hari dalam bulan tersebut
+  if (!yearData.monthly) yearData.monthly = {};
+  if (!yearData.monthly[monthKey]) yearData.monthly[monthKey] = {};
+  
+  const monthDays = Object.keys(yearData.daily).filter(d => d.startsWith(monthKey));
+  for (const [name] of Object.entries(consumerPrices)) {
+    const prices = monthDays
+      .map(d => yearData.daily[d]?.prices?.[name])
       .filter(p => p != null);
-    if (monthPrices.length > 0) {
-      history.monthly[monthKey][name] = Math.round(monthPrices.reduce((a,b) => a+b, 0) / monthPrices.length);
+    if (prices.length > 0) {
+      yearData.monthly[monthKey][name] = Math.round(prices.reduce((a,b) => a+b, 0) / prices.length);
     }
   }
   
-  // Bersihkan data lebih dari 90 hari (hemat storage)
-  const cutoff = new Date();
-  cutoff.setDate(cutoff.getDate() - 90);
-  const cutoffStr = cutoff.toISOString().slice(0, 10);
-  for (const key of Object.keys(history.daily)) {
-    if (key < cutoffStr && !key.endsWith('_produsen')) {
-      delete history.daily[key];
-    }
-    if ((key.replace('_produsen','') < cutoffStr) && key.endsWith('_produsen')) {
-      delete history.daily[key];
-    }
-  }
+  yearData.lastUpdate = now.toISOString();
   
-  history.lastUpdate = new Date().toISOString();
-  
-  fs.writeFileSync(historyPath, JSON.stringify(history, null, 2));
-  console.log(`✅ History akumulasi: ${Object.keys(history.daily).length} hari tersimpan`);
-  console.log(`   Monthly: ${Object.keys(history.monthly).length} bulan`);
+  fs.writeFileSync(yearPath, JSON.stringify(yearData, null, 2));
+  const dayCount = Object.keys(yearData.daily).length;
+  const monthCount = Object.keys(yearData.monthly).length;
+  console.log(`✅ History ${year}: ${dayCount} hari, ${monthCount} bulan tersimpan`);
 }
 
 main();

@@ -9,7 +9,7 @@ GitHub Actions (setiap hari jam 14:00 WIB)
   ↓
 Scrape SISKAPERBAPO Jatim
   ↓
-Simpan ke data/siskaperbapo.json + data/prices-history.json
+Simpan ke data/siskaperbapo.json + data/history/YYYY.json
   ↓
 Update timestamp di index.html
   ↓
