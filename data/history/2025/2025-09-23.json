@@ -1,0 +1,13 @@
+{
+  "date": "2025-09-23",
+  "prices": {
+    "Telur Ayam": 29622,
+    "Daging Ayam": 36087,
+    "Gula Pasir": 17944,
+    "Minyak Goreng": 22198,
+    "Bawang Putih": 38302,
+    "Bawang Merah": 47390
+  },
+  "source": "WFP/HDX (monthly average)",
+  "lastUpdate": "2026-07-22T00:00:00.000Z"
+}

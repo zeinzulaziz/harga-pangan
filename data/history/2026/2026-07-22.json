@@ -1,0 +1,18 @@
+{
+  "date": "2026-07-22",
+  "prices": {
+    "Bawang Merah": 32893,
+    "Bawang Putih": 32951,
+    "Cabai Rawit": 38536,
+    "Cabai Merah": 32249,
+    "Beras": 12986,
+    "Gula Pasir": 17180,
+    "Minyak Goreng": 20321,
+    "Daging Ayam": 33701,
+    "Telur Ayam": 24980
+  },
+  "producerPrices": {
+    "Bawang Merah": 20500
+  },
+  "lastUpdate": "2026-07-22T09:31:23.483Z"
+}

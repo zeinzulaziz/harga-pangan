@@ -272,7 +272,7 @@ async function main() {
   console.log('\n✅ Data tersimpan di data/siskaperbapo.json');
   
   // ============================================
-  // AKUMULASI HISTORIS — database per bulan
+  // AKUMULASI HISTORIS — database harian
   // ============================================
   const historyDir = path.join(outDir, 'history');
   if (!fs.existsSync(historyDir)) {
@@ -281,41 +281,35 @@ async function main() {
   
   const now = new Date();
   const todayStr = now.toISOString().slice(0, 10); // YYYY-MM-DD
-  const monthKey = todayStr.slice(0, 7); // YYYY-MM
-  const monthPath = path.join(historyDir, `${monthKey}.json`);
-  
-  // Baca history bulan ini yang sudah ada
-  let monthData = { month: monthKey, daily: {}, average: {} };
-  if (fs.existsSync(monthPath)) {
-    try {
-      monthData = JSON.parse(fs.readFileSync(monthPath, 'utf-8'));
-    } catch(e) {
-      console.log(`⚠ History ${monthKey} corrupt, mulai baru`);
-      monthData = { month: monthKey, daily: {}, average: {} };
-    }
+  const year = todayStr.slice(0, 4);
+  const yearDir = path.join(historyDir, year);
+  if (!fs.existsSync(yearDir)) {
+    fs.mkdirSync(yearDir, { recursive: true });
   }
+  
+  const dayPath = path.join(yearDir, `${todayStr}.json`);
   
   // Simpan data hari ini
-  monthData.daily[todayStr] = {
+  const dayData = {
+    date: todayStr,
     prices: consumerPrices,
-    producerPrices: Object.keys(producerPrices).length > 0 ? producerPrices : undefined
+    producerPrices: Object.keys(producerPrices).length > 0 ? producerPrices : undefined,
+    lastUpdate: now.toISOString()
   };
   
-  // Hitung rata-rata bulanan dari semua hari yang ada
-  const allDays = Object.keys(monthData.daily);
-  for (const [name] of Object.entries(consumerPrices)) {
-    const prices = allDays
-      .map(d => monthData.daily[d]?.prices?.[name])
-      .filter(p => p != null);
-    if (prices.length > 0) {
-      monthData.average[name] = Math.round(prices.reduce((a,b) => a+b, 0) / prices.length);
+  fs.writeFileSync(dayPath, JSON.stringify(dayData, null, 2));
+  console.log(`✅ History ${todayStr}: tersimpan`);
+  
+  // Hitung total file harian
+  let totalDays = 0;
+  const years = fs.readdirSync(historyDir).filter(f => f.match(/^\d{4}$/));
+  for (const y of years) {
+    const yDir = path.join(historyDir, y);
+    if (fs.statSync(yDir).isDirectory()) {
+      totalDays += fs.readdirSync(yDir).filter(f => f.endsWith('.json')).length;
     }
   }
-  
-  monthData.lastUpdate = now.toISOString();
-  
-  fs.writeFileSync(monthPath, JSON.stringify(monthData, null, 2));
-  console.log(`✅ History ${monthKey}: ${allDays.length} hari tersimpan`);
+  console.log(`📊 Total ${totalDays} hari tersimpan di history`);
 }
 
 main();

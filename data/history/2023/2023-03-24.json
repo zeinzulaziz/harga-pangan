@@ -1,0 +1,16 @@
+{
+  "date": "2023-03-24",
+  "prices": {
+    "Beras": 12997,
+    "Telur Ayam": 29014,
+    "Daging Ayam": 33562,
+    "Gula Pasir": 14617,
+    "Minyak Goreng": 19020,
+    "Cabai Rawit": 55999,
+    "Bawang Putih": 32515,
+    "Bawang Merah": 36741,
+    "Cabai Merah": 45150
+  },
+  "source": "WFP/HDX (monthly average)",
+  "lastUpdate": "2026-07-22T00:00:00.000Z"
+}

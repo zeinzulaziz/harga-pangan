@@ -1528,26 +1528,54 @@ async function loadExternalData() {
     }
   });
 
-  // Sumber 4: Historical daily data (akumulasi per bulan dari scrape harian)
-  let historyData = { monthly: {} };
+  // Sumber 4: Historical daily data (database harian)
+  let historyData = { daily: {}, monthly: {} };
   const now = new Date();
-  const monthNames = ['01','02','03','04','05','06','07','08','09','10','11','12'];
+  const monthNames = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Ags','Sep','Okt','Nov','Des'];
   
-  // Load 60 bulan terakhir (untuk 5y view: 2021–2026)
+  // Load daily files for last 60 months
   for (let i = 60; i >= 0; i--) {
     const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-    const mk = `${d.getFullYear()}-${monthNames[d.getMonth()]}`;
-    try {
-      const resp = await fetch(`data/history/${mk}.json`, { signal: AbortSignal.timeout(2000) });
-      if (resp.ok) {
-        const monthData = await resp.json();
-        if (monthData.average) {
-          historyData.monthly[mk] = monthData.average;
+    const year = d.getFullYear();
+    const month = d.getMonth();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    
+    for (let day = 1; day <= daysInMonth; day++) {
+      const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+      // Skip future dates
+      if (dateStr > now.toISOString().slice(0, 10)) continue;
+      
+      try {
+        const resp = await fetch(`data/history/${year}/${dateStr}.json`, { signal: AbortSignal.timeout(1500) });
+        if (resp.ok) {
+          const dayData = await resp.json();
+          if (dayData.prices) {
+            historyData.daily[dateStr] = dayData.prices;
+          }
         }
-      }
-    } catch(e) {}
+      } catch(e) {}
+    }
   }
-  console.log(`📊 Loaded ${Object.keys(historyData.monthly).length} months of history`);
+  
+  // Convert daily data to monthly averages for chart display
+  for (const [dateStr, prices] of Object.entries(historyData.daily)) {
+    const mk = dateStr.slice(0, 7); // YYYY-MM
+    if (!historyData.monthly[mk]) historyData.monthly[mk] = {};
+    for (const [commodity, price] of Object.entries(prices)) {
+      if (!historyData.monthly[mk][commodity]) historyData.monthly[mk][commodity] = [];
+      historyData.monthly[mk][commodity].push(price);
+    }
+  }
+  // Calculate averages
+  for (const mk of Object.keys(historyData.monthly)) {
+    for (const [commodity, prices] of Object.entries(historyData.monthly[mk])) {
+      if (prices.length > 0) {
+        historyData.monthly[mk][commodity] = Math.round(prices.reduce((a,b) => a+b, 0) / prices.length);
+      }
+    }
+  }
+  
+  console.log(`📊 Loaded ${Object.keys(historyData.daily).length} days, ${Object.keys(historyData.monthly).length} months`);
 
   for (const source of sources) {
     try {
