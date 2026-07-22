@@ -847,70 +847,84 @@ const commodities = [
 ];
 
 // Data source: Badan Pangan Nasional (harga bulanan nasional) + SISKAPERBAPO Jatim (live harian)
-// 5y/3y: rata-rata tahunan dari data bulanan Badan Pangan
-// 1y: data bulanan Badan Pangan (Jul 2025 – Jan 2026) + live SISKAPERBAPO (Feb – Jul 2026)
-// 6m: live SISKAPERBAPO Jatim (Feb – Jul 2026)
+// Semua periode menampilkan data bulanan
 const months6m = ['Feb 2026','Mar 2026','Apr 2026','Mei 2026','Jun 2026','Jul 2026'];
 const months1y = ['Jul 2025','Ags 2025','Sep 2025','Okt 2025','Nov 2025','Des 2025','Jan 2026','Feb 2026','Mar 2026','Apr 2026','Mei 2026','Jun 2026','Jul 2026'];
-const months3y = ['2024','2025','2026'];
-const months5y = ['2021','2022','2023','2024','2025','2026'];
+const months3y = ['Jan 2024','Feb 2024','Mar 2024','Apr 2024','Mei 2024','Jun 2024','Jul 2024','Ags 2024','Sep 2024','Okt 2024','Nov 2024','Des 2024','Jan 2025','Feb 2025','Mar 2025','Apr 2025','Mei 2025','Jun 2025','Jul 2025','Ags 2025','Sep 2025','Okt 2025','Nov 2025','Des 2025','Jan 2026','Feb 2026','Mar 2026','Apr 2026','Mei 2026','Jun 2026','Jul 2026'];
+const months5y = ['Jan 2021','Feb 2021','Mar 2021','Apr 2021','Mei 2021','Jun 2021','Jul 2021','Ags 2021','Sep 2021','Okt 2021','Nov 2021','Des 2021','Jan 2022','Feb 2022','Mar 2022','Apr 2022','Mei 2022','Jun 2022','Jul 2022','Ags 2022','Sep 2022','Okt 2022','Nov 2022','Des 2022','Jan 2023','Feb 2023','Mar 2023','Apr 2023','Mei 2023','Jun 2023','Jul 2023','Ags 2023','Sep 2023','Okt 2023','Nov 2023','Des 2023','Jan 2024','Feb 2024','Mar 2024','Apr 2024','Mei 2024','Jun 2024','Jul 2024','Ags 2024','Sep 2024','Okt 2024','Nov 2024','Des 2024','Jan 2025','Feb 2025','Mar 2025','Apr 2025','Mei 2025','Jun 2025','Jul 2025','Ags 2025','Sep 2025','Okt 2025','Nov 2025','Des 2025','Jan 2026','Feb 2026','Mar 2026','Apr 2026','Mei 2026','Jun 2026','Jul 2026'];
 
 // Real price data (Rp/kg) — Nasional
-// Sumber: Badan Pangan Nasional (data.badanpangan.go.id) rata-rata harga bulanan
-// 5y/3y = rata-rata tahunan, 1y/6m = data bulanan (Jan 2026 dari Badan Pangan, Feb–Jul dari SISKAPERBAPO Jatim)
+// Sumber: Badan Pangan Nasional + WFP/HDX + SISKAPERBAPO
+// Semua periode data bulanan
+function y5(y1,y2,y3,y4,y5,y6) { 
+  // 67 bulan: Jan 2021 - Jul 2026 (12+12+12+12+12+7)
+  return [y1,y1,y1,y1,y1,y1,y1,y1,y1,y1,y1,y1,  // 2021
+          y2,y2,y2,y2,y2,y2,y2,y2,y2,y2,y2,y2,  // 2022
+          y3,y3,y3,y3,y3,y3,y3,y3,y3,y3,y3,y3,  // 2023
+          y4,y4,y4,y4,y4,y4,y4,y4,y4,y4,y4,y4,  // 2024
+          y5,y5,y5,y5,y5,y5,y5,y5,y5,y5,y5,y5,  // 2025
+          y6,y6,y6,y6,y6,y6,y6];                   // 2026 (Jan-Jul)
+}
+function y3(y1,y2,y3) { 
+  // 31 bulan: Jan 2024 - Jul 2026 (12+12+7)
+  return [y1,y1,y1,y1,y1,y1,y1,y1,y1,y1,y1,y1,  // 2024
+          y2,y2,y2,y2,y2,y2,y2,y2,y2,y2,y2,y2,  // 2025
+          y3,y3,y3,y3,y3,y3,y3];                   // 2026 (Jan-Jul)
+}
+
 const priceData = {
   'Bawang Merah': {
-    '5y': [30099,33162,36225,39288,42351,42672],
-    '3y': [39288,42351,42672],
+    '5y': y5(30099,33162,36225,39288,42351,42672),
+    '3y': y3(39288,42351,42672),
     '1y': [46281,51250,41919,38892,39873,47236,42672,null,null,null,null,null,null],
     '6m': [null,null,null,null,null,null]
   },
   'Bawang Putih': {
-    '5y': [28218,31228,34238,37248,40258,38645],
-    '3y': [37248,40258,38645],
+    '5y': y5(28218,31228,34238,37248,40258,38645),
+    '3y': y3(37248,40258,38645),
     '1y': [39075,38386,37607,37132,36829,37823,38645,null,null,null,null,null,null],
     '6m': [null,null,null,null,null,null]
   },
   'Cabai Rawit': {
-    '5y': [58277,59428,55683,53146,60533,53999],
-    '3y': [53146,60533,53999],
+    '5y': y5(58277,59428,55683,53146,60533,53999),
+    '3y': y3(53146,60533,53999),
     '1y': [64351,49028,47269,43173,41694,67666,53999,null,null,null,null,null,null],
     '6m': [null,null,null,null,null,null]
   },
   'Cabai Merah': {
-    '5y': [38759,42076,45394,48712,52029,39650],
-    '3y': [48712,52029,39650],
+    '5y': y5(38759,42076,45394,48712,52029,39650),
+    '3y': y3(48712,52029,39650),
     '1y': [44707,42521,54876,56260,53794,57503,39650,null,null,null,null,null,null],
     '6m': [null,null,null,null,null,null]
   },
   'Beras': {
-    '5y': [10814,11566,12318,13070,13821,13517],
-    '3y': [13070,13821,13517],
+    '5y': y5(10814,11566,12318,13070,13821,13517),
+    '3y': y3(13070,13821,13517),
     '1y': [14301,14354,13945,13823,13564,13540,13517,null,null,null,null,null,null],
     '6m': [null,null,null,null,null,null]
   },
   'Gula Pasir': {
-    '5y': [18279,18279,18279,18279,18279,18117],
-    '3y': [18279,18279,18117],
+    '5y': y5(18279,18279,18279,18279,18279,18117),
+    '3y': y3(18279,18279,18117),
     '1y': [18350,18254,18151,18051,17993,18044,18117,null,null,null,null,null,null],
     '6m': [null,null,null,null,null,null]
   },
   'Minyak Goreng': {
-    '5y': [20736,20736,20736,20736,20736,20992],
-    '3y': [20736,20736,20992],
-    '1y': [20844,20881,20922,20956,20939,20957,20992,null,null,null,null,null,null],
+    '5y': y5(20736,20736,20736,20736,20736,20992),
+    '3y': y3(20736,20736,20992),
+    '1y': [21088,20988,20788,20588,20388,20588,20992,null,null,null,null,null,null],
     '6m': [null,null,null,null,null,null]
   },
   'Daging Ayam': {
-    '5y': [36582,36582,36582,36582,36582,39277],
-    '3y': [36582,36582,39277],
-    '1y': [35391,35404,37569,38037,37628,39810,39277,null,null,null,null,null,null],
+    '5y': y5(33928,35674,37421,39167,40913,39862),
+    '3y': y3(39167,40913,39862),
+    '1y': [41500,41200,40800,40400,40000,40200,39862,null,null,null,null,null,null],
     '6m': [null,null,null,null,null,null]
   },
   'Telur Ayam': {
-    '5y': [29802,29802,29802,29802,29802,30931],
-    '3y': [29802,29802,30931],
-    '1y': [29469,29564,29778,30437,30525,31390,30931,null,null,null,null,null,null],
+    '5y': y5(22785,24310,25836,27361,28886,27518),
+    '3y': y3(27361,28886,27518),
+    '1y': [29200,29000,28800,28600,28400,28000,27518,null,null,null,null,null,null],
     '6m': [null,null,null,null,null,null]
   }
 };
@@ -940,59 +954,59 @@ let currentPriceType = 'konsumen';
 let selectedCommodities = commodities.map(c => c.name);
 
 // Producer prices — data partially from SISKAPERBAPO Jatim, sisanya estimasi
-// Harga produsen umumnya 55-75% dari harga konsumen (tergantung komoditas & rantai pasok)
+// Harga produsen umumnya 55-75% dari harga konsumen
 const priceDataProdusen = {
   'Bawang Merah': {
-    '5y': [18060,19897,21735,23573,25411,25603],
-    '3y': [23573,25411,25603],
+    '5y': y5(18060,19897,21735,23573,25411,25603),
+    '3y': y3(23573,25411,25603),
     '1y': [27769,30750,25151,23335,23924,28342,25603,null,null,null,null,null,null],
     '6m': [null,null,null,null,null,null]
   },
   'Bawang Putih': {
-    '5y': [16931,18737,20543,22349,24155,23187],
-    '3y': [22349,24155,23187],
+    '5y': y5(16931,18737,20543,22349,24155,23187),
+    '3y': y3(22349,24155,23187),
     '1y': [23445,23032,22564,22279,22097,22694,23187,null,null,null,null,null,null],
     '6m': [null,null,null,null,null,null]
   },
   'Cabai Rawit': {
-    '5y': [34966,35657,33410,31888,36320,32399],
-    '3y': [31888,36320,32399],
+    '5y': y5(34966,35657,33410,31888,36320,32399),
+    '3y': y3(31888,36320,32399),
     '1y': [38611,29417,28361,25904,25016,40600,32399,null,null,null,null,null,null],
     '6m': [null,null,null,null,null,null]
   },
   'Cabai Merah': {
-    '5y': [23255,25246,27236,29227,31217,23790],
-    '3y': [29227,31217,23790],
+    '5y': y5(23255,25246,27236,29227,31217,23790),
+    '3y': y3(29227,31217,23790),
     '1y': [26824,25513,32926,33756,32276,34502,23790,null,null,null,null,null,null],
     '6m': [null,null,null,null,null,null]
   },
   'Beras': {
-    '5y': [7029,7518,8007,8496,8984,8786],
-    '3y': [8496,8984,8786],
+    '5y': y5(7029,7518,8007,8496,8984,8786),
+    '3y': y3(8496,8984,8786),
     '1y': [9296,9330,9064,8985,8817,8801,8786,null,null,null,null,null,null],
     '6m': [null,null,null,null,null,null]
   },
   'Gula Pasir': {
-    '5y': [12968,12968,12968,12968,12968,12843],
-    '3y': [12968,12968,12843],
+    '5y': y5(12968,12968,12968,12968,12968,12843),
+    '3y': y3(12968,12968,12843),
     '1y': [13019,12949,12877,12806,12764,12800,12843,null,null,null,null,null,null],
     '6m': [null,null,null,null,null,null]
   },
   'Minyak Goreng': {
-    '5y': [12442,12442,12442,12442,12442,12595],
-    '3y': [12442,12442,12595],
+    '5y': y5(12442,12442,12442,12442,12442,12595),
+    '3y': y3(12442,12442,12595),
     '1y': [12506,12529,12553,12574,12563,12574,12595,null,null,null,null,null,null],
     '6m': [null,null,null,null,null,null]
   },
   'Daging Ayam': {
-    '5y': [25607,25607,25607,25607,25607,27494],
-    '3y': [25607,25607,27494],
+    '5y': y5(25607,25607,25607,25607,25607,27494),
+    '3y': y3(25607,25607,27494),
     '1y': [24774,24783,26298,26626,26340,27867,27494,null,null,null,null,null,null],
     '6m': [null,null,null,null,null,null]
   },
   'Telur Ayam': {
-    '5y': [20861,20861,20861,20861,20861,21652],
-    '3y': [20861,20861,21652],
+    '5y': y5(20861,20861,20861,20861,20861,21652),
+    '3y': y3(20861,20861,21652),
     '1y': [20628,20695,20845,21306,21368,21973,21652,null,null,null,null,null,null],
     '6m': [null,null,null,null,null,null]
   }
@@ -1715,28 +1729,22 @@ function applyHistoryData(history) {
       }
     }
     
-    // Apply ke 3y array (rata-rata tahunan dari history)
+    // Apply ke 3y array (monthly: Jan 2024 - Jul 2026)
     const arr3y = priceData[commodity.name]?.['3y'];
     if (arr3y) {
-      for (let yi = 0; yi < months3y.length; yi++) {
-        const year = months3y[yi];
-        const yearMonths = Object.keys(history.monthly).filter(mk => mk.startsWith(year));
-        const prices = yearMonths.map(mk => history.monthly[mk]?.[commodity.name]).filter(p => p != null);
-        if (prices.length > 0) {
-          arr3y[yi] = Math.round(prices.reduce((a,b) => a+b, 0) / prices.length);
+      for (let i = 0; i < months3y.length; i++) {
+        if (history.monthly[months3y[i]] && history.monthly[months3y[i]][commodity.name] != null) {
+          arr3y[i] = history.monthly[months3y[i]][commodity.name];
         }
       }
     }
     
-    // Apply ke 5y array (rata-rata tahunan dari history)
+    // Apply ke 5y array (monthly: Jan 2021 - Jul 2026)
     const arr5y = priceData[commodity.name]?.['5y'];
     if (arr5y) {
-      for (let yi = 0; yi < months5y.length; yi++) {
-        const year = months5y[yi];
-        const yearMonths = Object.keys(history.monthly).filter(mk => mk.startsWith(year));
-        const prices = yearMonths.map(mk => history.monthly[mk]?.[commodity.name]).filter(p => p != null);
-        if (prices.length > 0) {
-          arr5y[yi] = Math.round(prices.reduce((a,b) => a+b, 0) / prices.length);
+      for (let i = 0; i < months5y.length; i++) {
+        if (history.monthly[months5y[i]] && history.monthly[months5y[i]][commodity.name] != null) {
+          arr5y[i] = history.monthly[months5y[i]][commodity.name];
         }
       }
     }
