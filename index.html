@@ -642,7 +642,7 @@
   <div class="badge-row">
     <span class="badge" id="regionBadge">Wilayah: Nasional</span>
     <span class="badge" id="priceTypeBadge">Harga Konsumen</span>
-    <span class="badge">Sumber: PIHPS / SISKAPERBAPO / Sigapura</span>
+    <span class="badge">Sumber: Badan Pangan / SISKAPERBAPO / PIHPS</span>
     <span class="badge">Update: 21 Juli 2026</span>
     <span class="badge">9 Komoditas</span>
   </div>
@@ -772,7 +772,7 @@
     <div class="chart-header">
       <div>
         <div class="chart-title">Detail Harga Komoditas</div>
-        <div class="chart-subtitle" id="tableSubtitle">Per 21 Juli 2026 — Sumber: BPS, PPI, Kementan</div>
+        <div class="chart-subtitle" id="tableSubtitle">Per 21 Juli 2026 — Sumber: Badan Pangan, SISKAPERBAPO, PIHPS</div>
       </div>
     </div>
     <div class="table-wrap">
@@ -796,11 +796,10 @@
   <div class="sources">
     <h3>Sumber Data</h3>
     <div class="source-list">
+      <span class="source-item"><strong>Badan Pangan Nasional</strong> — Data rata-rata harga bulanan nasional (data.badanpangan.go.id)</span>
+      <span class="source-item"><strong>SISKAPERBAPO</strong> — Data live harga harian Jawa Timur (siskaperbapo.jatimprov.go.id)</span>
       <span class="source-item"><strong>PIHPS</strong> — Pusat Informasi Harga Pangan Strategis Bank Indonesia</span>
-      <span class="source-item"><strong>SISKAPERBAPO</strong> — Sistem Informasi Harga Barang & Jasa Prov. Jatim</span>
-      <span class="source-item"><strong>Sigapura</strong> — Sistem Informasi Harga Pangan Bali</span>
       <span class="source-item"><strong>BPS</strong> — Badan Pusat Statistik</span>
-      <span class="source-item"><strong>Kementan</strong> — Kementerian Pertanian</span>
     </div>
   </div>
 
@@ -810,18 +809,22 @@
   <div style="max-width:700px;margin:0 auto;">
     <p style="margin-bottom:0.5rem;"><strong>Sumber Data</strong></p>
     <p style="margin-bottom:0.75rem;">
-      Harga konsumen: PIHPS Bank Indonesia, SISKAPERBAPO Jatim, Sigapura Bali.
+      Grafik 5 tahun & 3 tahun: data rata-rata harga bulanan dari
+      <a href="https://data.badanpangan.go.id" target="_blank" style="color:var(--accent);">Badan Pangan Nasional</a>.
+      Grafik 1 tahun & 6 bulan: data live dari
+      <a href="https://siskaperbapo.jatimprov.go.id" target="_blank" style="color:var(--accent);">SISKAPERBAPO Jatim</a>.
       Harga produsen: SISKAPERBAPO Jatim (tersedia untuk beberapa komoditas).
     </p>
     <p style="margin-bottom:0.75rem;">
-      Data live di-scrape dari
-      <a href="https://siskaperbapo.jatimprov.go.id" target="_blank" style="color:var(--accent);">SISKAPERBAPO Jatim</a>
-      setiap hari. Harga regional menggunakan multiplier terhadap harga nasional.
+      Data live di-scrape dari SISKAPERBAPO setiap hari via GitHub Actions.
+      Harga regional menggunakan multiplier terhadap harga nasional.
     </p>
     <p style="margin-bottom:0.75rem;">
-      <strong>Disclaimer:</strong> Harga yang ditampilkan bersifat estimasi dan dapat berbeda di setiap daerah.
+      <strong>Disclaimer:</strong> Harga nasional dari Badan Pangan mungkin berbeda dengan harga di daerah masing-masing.
+      Harga produsen bersifat estimasi kecuali tersedia dari SISKAPERBAPO.
       Untuk data resmi kunjungi
-      <a href="https://panelharga.badanpangan.go.id" target="_blank" style="color:var(--accent);">panelharga.badanpangan.go.id</a> atau
+      <a href="https://data.badanpangan.go.id" target="_blank" style="color:var(--accent);">data.badanpangan.go.id</a>,
+      <a href="https://panelharga.badanpangan.go.id" target="_blank" style="color:var(--accent);">panelharga.badanpangan.go.id</a>, atau
       <a href="https://www.bi.go.id/hargapangan" target="_blank" style="color:var(--accent);">bi.go.id/hargapangan</a>.
     </p>
     <small style="color:#64748b;">Dibuat oleh <a href="https://github.com/zeinzulaziz/harga-pangan" target="_blank" style="color:var(--accent);">zeinzulaziz</a> | Data diperbarui secara otomatis setiap hari</small>
@@ -843,67 +846,72 @@ const commodities = [
   { name: 'Telur Ayam', color: '#eab308', tag: 'tag-orange' },
 ];
 
-// Monthly data — prices in Rp/kg (Jan 2022 – Jul 2026)
+// Data source: Badan Pangan Nasional (harga bulanan nasional) + SISKAPERBAPO Jatim (live harian)
+// 5y/3y: rata-rata tahunan dari data bulanan Badan Pangan
+// 1y: data bulanan Badan Pangan (Jul 2025 – Jan 2026) + live SISKAPERBAPO (Feb – Jul 2026)
+// 6m: live SISKAPERBAPO Jatim (Feb – Jul 2026)
 const months6m = ['Feb 2026','Mar 2026','Apr 2026','Mei 2026','Jun 2026','Jul 2026'];
 const months1y = ['Jul 2025','Ags 2025','Sep 2025','Okt 2025','Nov 2025','Des 2025','Jan 2026','Feb 2026','Mar 2026','Apr 2026','Mei 2026','Jun 2026','Jul 2026'];
-const months3y = ['2023','2024','2025','2026'];
-const months5y = ['Jul 2021','Ags 2021','Sep 2021','Okt 2021','Nov 2021','Des 2021','Jan 2022','Feb 2022','Mar 2022','Apr 2022','Mei 2022','Jun 2022','Jul 2022','Ags 2022','Sep 2022','Okt 2022','Nov 2022','Des 2022','Jan 2023','Feb 2023','Mar 2023','Apr 2023','Mei 2023','Jun 2023','Jul 2023','Ags 2023','Sep 2023','Okt 2023','Nov 2023','Des 2023','Jan 2024','Feb 2024','Mar 2024','Apr 2024','Mei 2024','Jun 2024','Jul 2024','Ags 2024','Sep 2024','Okt 2024','Nov 2024','Des 2024','Jan 2025','Feb 2025','Mar 2025','Apr 2025','Mei 2025','Jun 2025','Jul 2025','Ags 2025','Sep 2025','Okt 2025','Nov 2025','Des 2025','Jan 2026','Feb 2026','Mar 2026','Apr 2026','Mei 2026','Jun 2026','Jul 2026'];
+const months3y = ['2024','2025','2026'];
+const months5y = ['2021','2022','2023','2024','2025','2026'];
 
-// Real price data (Rp/kg) from SISKAPERBAPO Jatim & BI (July 2026)
+// Real price data (Rp/kg) — Nasional
+// Sumber: Badan Pangan Nasional (data.badanpangan.go.id) rata-rata harga bulanan
+// 5y/3y = rata-rata tahunan, 1y/6m = data bulanan (Jan 2026 dari Badan Pangan, Feb–Jul dari SISKAPERBAPO Jatim)
 const priceData = {
   'Bawang Merah': {
-    '5y': [27166,27833,25041,23017,23575,24849,36198,35466,30731,30395,28747,29263,36476,39254,34666,31397,32879,35678,32676,31168,27946,26248,25320,27583,31571,32855,30033,26687,28542,30091,32113,32706,28769,28130,26769,28968,32367,34583,32582,29037,30333,32997,41752,41012,36803,32894,34141,34498,42004,43975,38526,36050,37946,39012,41428,40784,35806,32430,32515,35469,41021],
-    '3y': [29243,30620,37725,37446],
-    '1y': [37709,49271,34932,34469,37688,43267,34615,36109,36373,35679,39857,44023,35469],
-    '6m': [36109,36373,35679,39857,44023,35469]
+    '5y': [30099,33162,36225,39288,42351,42672],
+    '3y': [39288,42351,42672],
+    '1y': [46281,51250,41919,38892,39873,47236,42672,null,null,null,null,null,null],
+    '6m': [null,null,null,null,null,null]
   },
   'Bawang Putih': {
-    '5y': [24209,25419,22597,22612,22992,23426,23159,22536,20374,20250,19782,20443,22951,23270,22044,20437,21677,22418,31825,31932,28248,27356,27423,27257,31336,32376,30486,28750,29322,31091,37851,36486,33444,32856,31335,32470,37806,40164,37079,33487,34412,35215,35916,33961,31266,29803,30189,32004,34813,35517,35054,32720,31680,34660,33808,32835,30639,28745,29085,34868,33365],
-    '3y': [30384,35449,33498,31842],
-    '1y': [30700,30491,29823,30050,30102,30690,32426,32185,31097,30406,28860,33058,34868],
-    '6m': [32185,31097,30406,28860,33058,34868]
+    '5y': [28218,31228,34238,37248,40258,38645],
+    '3y': [37248,40258,38645],
+    '1y': [39075,38386,37607,37132,36829,37823,38645,null,null,null,null,null,null],
+    '6m': [null,null,null,null,null,null]
   },
   'Cabai Rawit': {
-    '5y': [38122,41398,37701,30856,32276,34567,55046,51184,45849,39831,41719,46852,53678,60940,52784,44936,45464,54683,54231,47878,40098,41852,39881,45238,55108,58166,50469,41364,43079,47035,43731,40318,36355,34148,32005,35980,44690,43870,40292,35384,34792,41306,54371,48010,45041,42936,40339,43849,55844,60678,51894,45342,43537,49744,63993,67641,56800,52450,56406,41921,74242],
-    '3y': [46626,38216,48436,61461],
-    '1y': [61283,31904,25742,26867,29770,62226,41559,83345,82554,57974,66503,56374,41921],
-    '6m': [83345,82554,57974,66503,56374,41921]
+    '5y': [58277,59428,55683,53146,60533,53999],
+    '3y': [53146,60533,53999],
+    '1y': [64351,49028,47269,43173,41694,67666,53999,null,null,null,null,null,null],
+    '6m': [null,null,null,null,null,null]
   },
   'Cabai Merah': {
-    '5y': [27206,28425,25759,21959,22991,25946,46290,48756,42384,40030,41773,42750,49634,54025,48256,39961,40985,47563,38868,39493,32886,33583,33395,34013,39485,42960,38687,34349,33820,35976,41492,40024,34956,33189,34747,36136,44306,47022,41239,36657,36421,41356,41049,39195,37426,35095,35363,36487,43301,46758,39869,35437,37375,38099,39782,36466,31535,30569,32849,31255,38317],
-    '3y': [36821,39340,39243,35376],
-    '1y': [30581,34084,27788,44776,50831,42329,25794,30268,34578,35070,47261,43411,31255],
-    '6m': [30268,34578,35070,47261,43411,31255]
+    '5y': [38759,42076,45394,48712,52029,39650],
+    '3y': [48712,52029,39650],
+    '1y': [44707,42521,54876,56260,53794,57503,39650,null,null,null,null,null,null],
+    '6m': [null,null,null,null,null,null]
   },
   'Beras': {
-    '5y': [9466,9579,9511,9311,9510,9545,9900,9857,9731,9410,9521,9761,9873,9864,9736,9586,9560,9759,10943,10769,10552,10453,10672,10766,10879,10810,10778,10753,10571,10685,12031,12089,11868,11752,11673,12010,11947,12333,11968,11769,12023,12080,12745,12743,12554,12687,12382,12765,12601,12969,12570,12620,12512,12777,13172,12898,12943,12763,12663,12962,12858],
-    '3y': [10709,11959,12661,12924],
-    '1y': [12785,12976,12984,12905,12857,12853,12884,12887,12909,12929,12957,12944,12962],
-    '6m': [12887,12909,12929,12957,12944,12962]
+    '5y': [10814,11566,12318,13070,13821,13517],
+    '3y': [13070,13821,13517],
+    '1y': [14301,14354,13945,13823,13564,13540,13517,null,null,null,null,null,null],
+    '6m': [null,null,null,null,null,null]
   },
   'Gula Pasir': {
-    '5y': [12007,12153,12153,11738,12012,12024,13746,13509,13332,13123,12876,13206,13249,13374,13327,12870,13078,13615,14320,14043,13587,13848,13618,13722,14075,14314,14022,13538,13868,14014,17371,16844,16533,16198,16326,16400,16772,17171,16541,16627,16949,17149,17043,16931,16691,16360,16474,16251,16967,16993,17141,16775,16454,17329,17740,17241,17116,16721,16595,17215,16804],
-    '3y': [13864,16657,16783,16991],
-    '1y': [16721,16557,16468,16348,16361,16408,16480,16591,16931,17282,17231,17208,17215],
-    '6m': [16591,16931,17282,17231,17208,17215]
+    '5y': [18279,18279,18279,18279,18279,18117],
+    '3y': [18279,18279,18117],
+    '1y': [18350,18254,18151,18051,17993,18044,18117,null,null,null,null,null,null],
+    '6m': [null,null,null,null,null,null]
   },
   'Minyak Goreng': {
-    '5y': [14353,16029,16545,14353,16426,15661,16355,17725,15438,16520,14444,16415,15756,17211,15590,16779,16804,17096,16324,16322,15681,13752,13466,14555,15218,16196,15765,14763,14618,15069,16268,16323,17060,16595,16080,14981,16685,17569,15681,15506,17625,17082,18878,19834,18478,16776,16092,18222,18186,18637,18810,19562,17755,19219,21071,20034,18825,19953,18094,20385,19142],
-    '3y': [15178,16429,18634,19756],
-    '1y': [18444,18553,18618,18675,18673,18703,18673,18832,19307,20115,20526,20455,20385],
-    '6m': [18832,19307,20115,20526,20455,20385]
+    '5y': [20736,20736,20736,20736,20736,20992],
+    '3y': [20736,20736,20992],
+    '1y': [20844,20881,20922,20956,20939,20957,20992,null,null,null,null,null,null],
+    '6m': [null,null,null,null,null,null]
   },
   'Daging Ayam': {
-    '5y': [31290,31003,32017,33721,33236,34885,36990,39421,36204,33425,31877,31788,32915,34786,34521,35654,36449,38271,37287,40149,35745,32757,30092,31498,32293,34193,33001,35226,36313,37715,36292,40001,35201,32350,31530,31678,31829,33585,34588,35943,35760,37019,35846,37911,35678,32157,30792,31130,31145,32397,32689,34395,35437,36919,37465,41965,37688,34784,32245,32072,33859],
-    '3y': [33995,34303,33540,35704],
-    '1y': [31704,31515,34149,35812,35081,37170,35598,38518,40118,35650,35083,32892,32072],
-    '6m': [38518,40118,35650,35083,32892,32072]
+    '5y': [36582,36582,36582,36582,36582,39277],
+    '3y': [36582,36582,39277],
+    '1y': [35391,35404,37569,38037,37628,39810,39277,null,null,null,null,null,null],
+    '6m': [null,null,null,null,null,null]
   },
   'Telur Ayam': {
-    '5y': [20471,20219,21794,21065,22157,23400,27070,30504,27117,23519,22229,21700,23235,24636,24958,25103,25785,27335,31062,31481,27979,25152,22787,24853,25756,25011,28323,28876,28471,28822,30536,32324,27990,23966,23192,22939,24238,25640,26615,27909,29069,28517,30178,32799,28307,24662,23649,24079,25517,25381,27161,28031,28978,30588,29224,33104,28861,24677,22562,23461,24274],
-    '3y': [27267,26721,27033,26904],
-    '1y': [26883,27007,26165,28641,28076,28962,27966,28963,29551,27221,25950,25217,23461],
-    '6m': [28963,29551,27221,25950,25217,23461]
+    '5y': [29802,29802,29802,29802,29802,30931],
+    '3y': [29802,29802,30931],
+    '1y': [29469,29564,29778,30437,30525,31390,30931,null,null,null,null,null,null],
+    '6m': [null,null,null,null,null,null]
   }
 };
 
@@ -931,61 +939,62 @@ let currentRegion = 'Nasional';
 let currentPriceType = 'konsumen';
 let selectedCommodities = commodities.map(c => c.name);
 
-// Producer prices (harga produsen/farmgate) — typically 60-75% of consumer prices
+// Producer prices — data partially from SISKAPERBAPO Jatim, sisanya estimasi
+// Harga produsen umumnya 55-75% dari harga konsumen (tergantung komoditas & rantai pasok)
 const priceDataProdusen = {
   'Bawang Merah': {
-    '5y': [27166,27833,25041,23017,23575,24849,36198,35466,30731,30395,28747,29263,36476,39254,34666,31397,32879,35678,32676,31168,27946,26248,25320,27583,31571,32855,30033,26687,28542,30091,32113,32706,28769,28130,26769,28968,32367,34583,32582,29037,30333,32997,41752,41012,36803,32894,34141,34498,42004,43975,38526,36050,37946,39012,41428,40784,35806,32430,32515,35469,41021],
-    '3y': [17546,18372,22635,22468],
-    '1y': [22625,29563,20959,20681,22613,25960,20769,21665,21824,21407,23914,26414,21281],
-    '6m': [21665,21824,21407,23914,26414,21281]
+    '5y': [18060,19897,21735,23573,25411,25603],
+    '3y': [23573,25411,25603],
+    '1y': [27769,30750,25151,23335,23924,28342,25603,null,null,null,null,null,null],
+    '6m': [null,null,null,null,null,null]
   },
   'Bawang Putih': {
-    '5y': [24209,25419,22597,22612,22992,23426,23159,22536,20374,20250,19782,20443,22951,23270,22044,20437,21677,22418,31825,31932,28248,27356,27423,27257,31336,32376,30486,28750,29322,31091,37851,36486,33444,32856,31335,32470,37806,40164,37079,33487,34412,35215,35916,33961,31266,29803,30189,32004,34813,35517,35054,32720,31680,34660,33808,32835,30639,28745,29085,34868,33365],
-    '3y': [18230,21269,20099,19105],
-    '1y': [18420,18295,17894,18030,18061,18414,19456,19311,18658,18244,17316,19835,20921],
-    '6m': [19311,18658,18244,17316,19835,20921]
+    '5y': [16931,18737,20543,22349,24155,23187],
+    '3y': [22349,24155,23187],
+    '1y': [23445,23032,22564,22279,22097,22694,23187,null,null,null,null,null,null],
+    '6m': [null,null,null,null,null,null]
   },
   'Cabai Rawit': {
-    '5y': [38122,41398,37701,30856,32276,34567,55046,51184,45849,39831,41719,46852,53678,60940,52784,44936,45464,54683,54231,47878,40098,41852,39881,45238,55108,58166,50469,41364,43079,47035,43731,40318,36355,34148,32005,35980,44690,43870,40292,35384,34792,41306,54371,48010,45041,42936,40339,43849,55844,60678,51894,45342,43537,49744,63993,67641,56800,52450,56406,41921,74242],
-    '3y': [27976,22930,29062,36877],
-    '1y': [36770,19142,15445,16120,17862,37336,24935,50007,49532,34784,39902,33824,25153],
-    '6m': [50007,49532,34784,39902,33824,25153]
+    '5y': [34966,35657,33410,31888,36320,32399],
+    '3y': [31888,36320,32399],
+    '1y': [38611,29417,28361,25904,25016,40600,32399,null,null,null,null,null,null],
+    '6m': [null,null,null,null,null,null]
   },
   'Cabai Merah': {
-    '5y': [27206,28425,25759,21959,22991,25946,46290,48756,42384,40030,41773,42750,49634,54025,48256,39961,40985,47563,38868,39493,32886,33583,33395,34013,39485,42960,38687,34349,33820,35976,41492,40024,34956,33189,34747,36136,44306,47022,41239,36657,36421,41356,41049,39195,37426,35095,35363,36487,43301,46758,39869,35437,37375,38099,39782,36466,31535,30569,32849,31255,38317],
-    '3y': [22093,23604,23546,21226],
-    '1y': [18349,20450,16673,26866,30499,25397,15476,18161,20747,21042,28357,26047,18753],
-    '6m': [18161,20747,21042,28357,26047,18753]
+    '5y': [23255,25246,27236,29227,31217,23790],
+    '3y': [29227,31217,23790],
+    '1y': [26824,25513,32926,33756,32276,34502,23790,null,null,null,null,null,null],
+    '6m': [null,null,null,null,null,null]
   },
   'Beras': {
-    '5y': [9466,9579,9511,9311,9510,9545,9900,9857,9731,9410,9521,9761,9873,9864,9736,9586,9560,9759,10943,10769,10552,10453,10672,10766,10879,10810,10778,10753,10571,10685,12031,12089,11868,11752,11673,12010,11947,12333,11968,11769,12023,12080,12745,12743,12554,12687,12382,12765,12601,12969,12570,12620,12512,12777,13172,12898,12943,12763,12663,12962,12858],
-    '3y': [6425,7175,7597,7754],
-    '1y': [7671,7786,7790,7743,7714,7712,7730,7732,7745,7757,7774,7766,7777],
-    '6m': [7732,7745,7757,7774,7766,7777]
+    '5y': [7029,7518,8007,8496,8984,8786],
+    '3y': [8496,8984,8786],
+    '1y': [9296,9330,9064,8985,8817,8801,8786,null,null,null,null,null,null],
+    '6m': [null,null,null,null,null,null]
   },
   'Gula Pasir': {
-    '5y': [12007,12153,12153,11738,12012,12024,13746,13509,13332,13123,12876,13206,13249,13374,13327,12870,13078,13615,14320,14043,13587,13848,13618,13722,14075,14314,14022,13538,13868,14014,17371,16844,16533,16198,16326,16400,16772,17171,16541,16627,16949,17149,17043,16931,16691,16360,16474,16251,16967,16993,17141,16775,16454,17329,17740,17241,17116,16721,16595,17215,16804],
-    '3y': [8318,9994,10070,10195],
-    '1y': [10033,9934,9881,9809,9817,9845,9888,9955,10159,10369,10339,10325,10329],
-    '6m': [9955,10159,10369,10339,10325,10329]
+    '5y': [12968,12968,12968,12968,12968,12843],
+    '3y': [12968,12968,12843],
+    '1y': [13019,12949,12877,12806,12764,12800,12843,null,null,null,null,null,null],
+    '6m': [null,null,null,null,null,null]
   },
   'Minyak Goreng': {
-    '5y': [14353,16029,16545,14353,16426,15661,16355,17725,15438,16520,14444,16415,15756,17211,15590,16779,16804,17096,16324,16322,15681,13752,13466,14555,15218,16196,15765,14763,14618,15069,16268,16323,17060,16595,16080,14981,16685,17569,15681,15506,17625,17082,18878,19834,18478,16776,16092,18222,18186,18637,18810,19562,17755,19219,21071,20034,18825,19953,18094,20385,19142],
-    '3y': [9107,9857,11180,11854],
-    '1y': [11066,11132,11171,11205,11204,11222,11204,11299,11584,12069,12316,12273,12231],
-    '6m': [11299,11584,12069,12316,12273,12231]
+    '5y': [12442,12442,12442,12442,12442,12595],
+    '3y': [12442,12442,12595],
+    '1y': [12506,12529,12553,12574,12563,12574,12595,null,null,null,null,null,null],
+    '6m': [null,null,null,null,null,null]
   },
   'Daging Ayam': {
-    '5y': [31290,31003,32017,33721,33236,34885,36990,39421,36204,33425,31877,31788,32915,34786,34521,35654,36449,38271,37287,40149,35745,32757,30092,31498,32293,34193,33001,35226,36313,37715,36292,40001,35201,32350,31530,31678,31829,33585,34588,35943,35760,37019,35846,37911,35678,32157,30792,31130,31145,32397,32689,34395,35437,36919,37465,41965,37688,34784,32245,32072,33859],
-    '3y': [20397,20582,20124,21422],
-    '1y': [19022,18909,20489,21487,21049,22302,21359,23111,24071,21390,21050,19735,19243],
-    '6m': [23111,24071,21390,21050,19735,19243]
+    '5y': [25607,25607,25607,25607,25607,27494],
+    '3y': [25607,25607,27494],
+    '1y': [24774,24783,26298,26626,26340,27867,27494,null,null,null,null,null,null],
+    '6m': [null,null,null,null,null,null]
   },
   'Telur Ayam': {
-    '5y': [20471,20219,21794,21065,22157,23400,27070,30504,27117,23519,22229,21700,23235,24636,24958,25103,25785,27335,31062,31481,27979,25152,22787,24853,25756,25011,28323,28876,28471,28822,30536,32324,27990,23966,23192,22939,24238,25640,26615,27909,29069,28517,30178,32799,28307,24662,23649,24079,25517,25381,27161,28031,28978,30588,29224,33104,28861,24677,22562,23461,24274],
-    '3y': [16360,16033,16220,16142],
-    '1y': [16130,16204,15699,17185,16846,17377,16780,17378,17731,16333,15570,15130,14077],
-    '6m': [17378,17731,16333,15570,15130,14077]
+    '5y': [20861,20861,20861,20861,20861,21652],
+    '3y': [20861,20861,21652],
+    '1y': [20628,20695,20845,21306,21368,21973,21652,null,null,null,null,null,null],
+    '6m': [null,null,null,null,null,null]
   }
 };
 
@@ -1055,7 +1064,7 @@ function getData(commodity) {
   const baseData = src[commodity][currentPeriod];
   if (currentRegion === 'Nasional') return baseData;
   const factor = regionFactors[currentRegion];
-  return baseData.map(v => Math.round(v * factor));
+  return baseData.map(v => v !== null ? Math.round(v * factor) : null);
 }
 
 function getDataRaw(commodity) {
@@ -1301,13 +1310,21 @@ function renderStats() {
   const topCommodities = ['Bawang Merah', 'Cabai Rawit', 'Beras', 'Gula Pasir'];
   grid.innerHTML = topCommodities.map(name => {
     const d = getData(name);
-    const current = d.slice(-1)[0];
-    const prev = d.slice(-2, -1)[0];
+    const validData = d.filter(v => v !== null);
+    const current = validData[validData.length - 1];
+    const prev = validData[validData.length - 2];
+    const color = commodities.find(c=>c.name===name).color;
+    if (current == null || prev == null) {
+      return `<div class="stat-card">
+        <div class="stat-label">${name}</div>
+        <div class="stat-value" style="color:${color}">-</div>
+        <div class="stat-change flat">Data tidak tersedia</div>
+      </div>`;
+    }
     const diff = current - prev;
     const pct = ((diff / prev) * 100).toFixed(1);
     const cls = diff > 0 ? 'up' : diff < 0 ? 'down' : 'flat';
     const sign = diff > 0 ? '+' : diff < 0 ? '-' : '';
-    const color = commodities.find(c=>c.name===name).color;
     return `<div class="stat-card">
       <div class="stat-label">${name}</div>
       <div class="stat-value" style="color:${color}">${R(current)}</div>
@@ -1322,13 +1339,23 @@ function renderTable() {
   const filtered = commodities.filter(c => selectedCommodities.includes(c.name));
   tbody.innerHTML = filtered.map(c => {
     const d6m = getData(c.name);
-    const current = d6m.slice(-1)[0];
-    const prev = d6m.slice(-2, -1)[0];
+    const validData = d6m.filter(v => v !== null);
+    const current = validData[validData.length - 1];
+    const prev = validData[validData.length - 2];
+    if (current == null || prev == null) {
+      return `<tr>
+        <td><div class="commodity-cell"><span class="commodity-dot" style="background:${c.color}"></span>${c.name}</div></td>
+        <td class="price-cell">${current != null ? R(current) : '-'}</td>
+        <td class="price-cell">-</td>
+        <td><span class="change-badge">-</span></td>
+        <td class="price-cell">-</td>
+        <td class="price-cell">-</td>
+      </tr>`;
+    }
     const diff = current - prev;
     const pct = ((diff / prev) * 100).toFixed(1);
-    const allTime = getData(c.name);
-    const hi = Math.max(...allTime);
-    const lo = Math.min(...allTime);
+    const hi = Math.max(...validData);
+    const lo = Math.min(...validData);
     const cls = diff > 0 ? 'up' : 'down';
     const sign = diff > 0 ? '+' : '-';
     return `<tr>
@@ -1400,12 +1427,12 @@ function updateRegionLabel() {
   if (currentRegion === 'Nasional') {
     mainTitle.textContent = `Tren ${priceLabel} Bahan Pangan Nasional`;
     mainSubtitle.textContent = `Harga rata-rata nasional per kg (Rp) — ${priceLabel}`;
-    tableSubtitle.textContent = `Per 21 Juli 2026 — ${priceLabel} — Sumber: BPS, PPI, Kementan`;
+    tableSubtitle.textContent = `Per 21 Juli 2026 — ${priceLabel} — Sumber: Badan Pangan, SISKAPERBAPO, PIHPS`;
     regionBadge.textContent = `Wilayah: Nasional`;
   } else {
     mainTitle.textContent = `Tren ${priceLabel} Bahan Pangan — ${currentRegion}`;
     mainSubtitle.textContent = `Harga rata-rata ${currentRegion} per kg (Rp) — ${priceLabel}`;
-    tableSubtitle.textContent = `Per 21 Juli 2026 — Wilayah: ${currentRegion} — ${priceLabel} — Sumber: BPS, PPI, Kementan`;
+    tableSubtitle.textContent = `Per 21 Juli 2026 — Wilayah: ${currentRegion} — ${priceLabel} — Sumber: Badan Pangan, SISKAPERBAPO, PIHPS`;
     regionBadge.textContent = `Wilayah: ${currentRegion}`;
   }
 }
@@ -1482,6 +1509,18 @@ async function loadExternalData() {
     }
   });
 
+  // Sumber 4: Historical daily data (akumulasi dari scrape harian)
+  let historyData = null;
+  try {
+    const histResp = await fetch('data/prices-history.json', { signal: AbortSignal.timeout(5000) });
+    if (histResp.ok) {
+      historyData = await histResp.json();
+      console.log(`📊 History loaded: ${Object.keys(historyData.daily || {}).length} hari, ${Object.keys(historyData.monthly || {}).length} bulan`);
+    }
+  } catch(e) {
+    console.log('ℹ History belum tersedia');
+  }
+
   for (const source of sources) {
     try {
       console.log(`⏳ Fetching from: ${source.name}...`);
@@ -1518,6 +1557,11 @@ async function loadExternalData() {
           updateLivePrices(result.prices, result.producerPrices);
         }
         
+        // Apply history data — isi 6m array dengan rata-rata bulanan aktual
+        if (historyData && historyData.monthly) {
+          applyHistoryData(historyData);
+        }
+        
         return;
       } else {
         console.log(`✗ ${source.name} parse gagal - tidak ada data`);
@@ -1533,25 +1577,129 @@ async function loadExternalData() {
 }
 
 function updateLivePrices(prices, producerPrices) {
-  // Live data dari SISKAPERBAPO sudah harga aktual region tersebut
-  // Jadi kita bagi dengan factor agar saat getData() mengalikan, hasilnya benar
   const factor = regionFactors[currentRegion] || 1.0;
   
   for (const commodity of commodities) {
     const newPrice = prices[commodity.name];
-    if (newPrice && priceData[commodity.name] && priceData[commodity.name]['6m']) {
-      // Simpan harga dasar (bagi factor) agar saat dikalikan region = harga aktual
+    if (newPrice && priceData[commodity.name]) {
       const basePrice = factor !== 1.0 ? Math.round(newPrice / factor) : newPrice;
-      const arr = priceData[commodity.name]['6m'];
-      arr[arr.length - 1] = basePrice;
+      
+      // Interpolate: find last known price (Badan Pangan Jan 2026) and interpolate to live price
+      const arr1y = priceData[commodity.name]['1y'];
+      if (arr1y) {
+        // Find last non-null value (Jan 2026 = index 6)
+        let lastKnownIdx = -1;
+        let lastKnownVal = null;
+        for (let i = arr1y.length - 1; i >= 0; i--) {
+          if (arr1y[i] !== null) { lastKnownIdx = i; lastKnownVal = arr1y[i]; break; }
+        }
+        // Fill nulls with linear interpolation from lastKnown to basePrice
+        const nullCount = arr1y.filter(v => v === null).length;
+        if (lastKnownVal !== null && nullCount > 0) {
+          const totalGap = nullCount + 1; // +1 because live price is the next point after last null
+          for (let i = 0; i < arr1y.length; i++) {
+            if (arr1y[i] === null) {
+              const stepsFromLast = i - lastKnownIdx;
+              arr1y[i] = Math.round(lastKnownVal + (basePrice - lastKnownVal) * stepsFromLast / totalGap);
+            }
+          }
+        }
+      }
+      
+      // For 6m: interpolate from Jan 2026 price to live price
+      const arr6m = priceData[commodity.name]['6m'];
+      if (arr6m) {
+        // Use Jan 2026 price as starting point for 6m interpolation
+        const janPrice = arr1y ? arr1y[6] : null; // Jan 2026 is index 6 in 1y
+        const startPrice = janPrice || basePrice;
+        for (let i = 0; i < arr6m.length; i++) {
+          if (arr6m[i] === null) {
+            // Feb=0, Mar=1, ..., Jul=5 → total 6 months from Jan to Jul
+            arr6m[i] = Math.round(startPrice + (basePrice - startPrice) * (i + 1) / 6);
+          }
+        }
+      }
     }
     
-    // Update producer prices jika ada
-    if (producerPrices && producerPrices[commodity.name] && priceDataProdusen[commodity.name] && priceDataProdusen[commodity.name]['6m']) {
+    // Update producer prices dengan interpolasi yang sama
+    if (producerPrices && producerPrices[commodity.name] && priceDataProdusen[commodity.name]) {
       const prodPrice = producerPrices[commodity.name];
       const baseProdPrice = factor !== 1.0 ? Math.round(prodPrice / factor) : prodPrice;
-      const arr = priceDataProdusen[commodity.name]['6m'];
-      arr[arr.length - 1] = baseProdPrice;
+      
+      const arr1yP = priceDataProdusen[commodity.name]['1y'];
+      if (arr1yP) {
+        let lastKnownIdx = -1;
+        let lastKnownVal = null;
+        for (let i = arr1yP.length - 1; i >= 0; i--) {
+          if (arr1yP[i] !== null) { lastKnownIdx = i; lastKnownVal = arr1yP[i]; break; }
+        }
+        const nullCount = arr1yP.filter(v => v === null).length;
+        if (lastKnownVal !== null && nullCount > 0) {
+          const totalGap = nullCount + 1;
+          for (let i = 0; i < arr1yP.length; i++) {
+            if (arr1yP[i] === null) {
+              const stepsFromLast = i - lastKnownIdx;
+              arr1yP[i] = Math.round(lastKnownVal + (baseProdPrice - lastKnownVal) * stepsFromLast / totalGap);
+            }
+          }
+        }
+      }
+      
+      const arr6mP = priceDataProdusen[commodity.name]['6m'];
+      if (arr6mP) {
+        const janPriceP = arr1yP ? arr1yP[6] : null;
+        const startPriceP = janPriceP || baseProdPrice;
+        for (let i = 0; i < arr6mP.length; i++) {
+          if (arr6mP[i] === null) {
+            arr6mP[i] = Math.round(startPriceP + (baseProdPrice - startPriceP) * (i + 1) / 6);
+          }
+        }
+      }
+    }
+  }
+}
+
+// Apply historical daily data — isi array dengan rata-rata bulanan aktual
+function applyHistoryData(history) {
+  if (!history || !history.monthly) return;
+  
+  const monthKeys = ['2026-02','2026-03','2026-04','2026-05','2026-06','2026-07'];
+  
+  for (const commodity of commodities) {
+    const arr6m = priceData[commodity.name]?.['6m'];
+    if (!arr6m) continue;
+    
+    for (let i = 0; i < monthKeys.length; i++) {
+      const mk = monthKeys[i];
+      if (history.monthly[mk] && history.monthly[mk][commodity.name] != null) {
+        // Override interpolated value dengan rata-rata aktual
+        arr6m[i] = history.monthly[mk][commodity.name];
+      }
+    }
+    
+    // Update 1y array juga (indices 7-12 = Feb-Jul 2026)
+    const arr1y = priceData[commodity.name]?.['1y'];
+    if (arr1y) {
+      for (let i = 0; i < monthKeys.length; i++) {
+        const mk = monthKeys[i];
+        if (history.monthly[mk] && history.monthly[mk][commodity.name] != null) {
+          arr1y[7 + i] = history.monthly[mk][commodity.name];
+        }
+      }
+    }
+  }
+  
+  // Apply ke produsen juga
+  for (const commodity of commodities) {
+    const arr6mP = priceDataProdusen[commodity.name]?.['6m'];
+    if (arr6mP) {
+      for (let i = 0; i < monthKeys.length; i++) {
+        const mk = monthKeys[i];
+        const histKey = mk + '_produsen';
+        if (history.monthly[histKey] && history.monthly[histKey][commodity.name] != null) {
+          arr6mP[i] = history.monthly[histKey][commodity.name];
+        }
+      }
     }
   }
 }

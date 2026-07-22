@@ -235,7 +235,7 @@ async function main() {
     console.log(`    ${name}: Rp${price.toLocaleString('id-ID')}/kg`);
   }
   
-  // Output JSON
+  // Output JSON (live data untuk today)
   const output = {
     source: 'SISKAPERBAPO Jatim',
     region: 'Jawa Timur',
@@ -255,6 +255,66 @@ async function main() {
   );
   
   console.log('\n✅ Data tersimpan di data/siskaperbapo.json');
+  
+  // ============================================
+  // AKUMULASI HISTORIS — database harian
+  // ============================================
+  const historyPath = path.join(outDir, 'prices-history.json');
+  let history = { daily: {}, monthly: {} };
+  
+  // Baca history yang sudah ada
+  if (fs.existsSync(historyPath)) {
+    try {
+      history = JSON.parse(fs.readFileSync(historyPath, 'utf-8'));
+    } catch(e) {
+      console.log('⚠ History corrupt, mulai baru');
+      history = { daily: {}, monthly: {} };
+    }
+  }
+  
+  // Simpan data hari ini ke daily
+  const todayStr = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+  history.daily[todayStr] = consumerPrices;
+  if (Object.keys(producerPrices).length > 0) {
+    if (!history.daily[todayStr + '_produsen']) history.daily[todayStr + '_produsen'] = {};
+    history.daily[todayStr + '_produsen'] = producerPrices;
+  }
+  
+  // Simpan juga ke monthly (key: YYYY-MM)
+  const monthKey = todayStr.slice(0, 7); // YYYY-MM
+  if (!history.monthly) history.monthly = {};
+  if (!history.monthly[monthKey]) history.monthly[monthKey] = {};
+  // Rata-rata dari semua harga hari ini dalam bulan tersebut
+  // (akan di-update setiap hari, ambil rata-rata terakhir)
+  const daysInMonth = Object.keys(history.daily).filter(d => d.startsWith(monthKey)).length;
+  for (const [name, price] of Object.entries(consumerPrices)) {
+    const monthPrices = Object.entries(history.daily)
+      .filter(([d]) => d.startsWith(monthKey) && !d.endsWith('_produsen'))
+      .map(([, prices]) => prices[name])
+      .filter(p => p != null);
+    if (monthPrices.length > 0) {
+      history.monthly[monthKey][name] = Math.round(monthPrices.reduce((a,b) => a+b, 0) / monthPrices.length);
+    }
+  }
+  
+  // Bersihkan data lebih dari 90 hari (hemat storage)
+  const cutoff = new Date();
+  cutoff.setDate(cutoff.getDate() - 90);
+  const cutoffStr = cutoff.toISOString().slice(0, 10);
+  for (const key of Object.keys(history.daily)) {
+    if (key < cutoffStr && !key.endsWith('_produsen')) {
+      delete history.daily[key];
+    }
+    if ((key.replace('_produsen','') < cutoffStr) && key.endsWith('_produsen')) {
+      delete history.daily[key];
+    }
+  }
+  
+  history.lastUpdate = new Date().toISOString();
+  
+  fs.writeFileSync(historyPath, JSON.stringify(history, null, 2));
+  console.log(`✅ History akumulasi: ${Object.keys(history.daily).length} hari tersimpan`);
+  console.log(`   Monthly: ${Object.keys(history.monthly).length} bulan`);
 }
 
 main();
