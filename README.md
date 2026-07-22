@@ -99,10 +99,7 @@ harga-pangan/
 │       ├── 2025.json             # Database historis 2025
 │       └── 2026.json             # Database historis 2026 (auto-akumulasi)
 ├── scripts/
-│   ├── scrape-siskaperbapo.js    # Scraper utama (konsumen + produsen)
-│   ├── fetch-prices.js           # Legacy: fetch dari API Badan Pangan
-│   ├── scrape-pihps.js           # Legacy: scrape PIHPS
-│   └── update.js                 # Legacy: update script
+│   └── scrape-siskaperbapo.js    # Scraper utama (konsumen + produsen)
 ├── .github/
 │   └── workflows/
 │       └── update-prices.yml     # GitHub Actions workflow
