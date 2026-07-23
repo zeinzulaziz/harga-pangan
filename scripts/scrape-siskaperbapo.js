@@ -88,6 +88,52 @@ function fetchUrlWithPost(url, postData) {
   });
 }
 
+function fetchProducerFromGrafik(commodity, date) {
+  return new Promise((resolve) => {
+    const url = `https://siskaperbapo.jatimprov.go.id/produsen/grafik/?tanggal=${date}&bhnpokok=${encodeURIComponent(commodity)}`;
+    https.get(url, { headers: { 'User-Agent': 'Mozilla/5.0' } }, (res) => {
+      let data = '';
+      res.on('data', chunk => data += chunk);
+      res.on('end', () => {
+        try {
+          const start = data.indexOf('"rows"');
+          if (start === -1) return resolve(null);
+          
+          const rowsStart = data.indexOf('[', start);
+          let depth = 0, rowsEnd = rowsStart;
+          for (let i = rowsStart; i < data.length; i++) {
+            if (data[i] === '[') depth++;
+            if (data[i] === ']') depth--;
+            if (depth === 0) { rowsEnd = i + 1; break; }
+          }
+          
+          let rowsStr = data.substring(rowsStart, rowsEnd);
+          rowsStr = rowsStr.replace(/,\s*]/g, ']').replace(/,\s*}/g, '}');
+          const rows = JSON.parse(rowsStr);
+          
+          // Rata-rata 7 hari terakhir
+          const recentRows = rows.slice(-7);
+          const allPrices = [];
+          for (const row of recentRows) {
+            for (let i = 1; i < row.c.length; i++) {
+              const v = row.c[i].v;
+              if (v && v > 0) allPrices.push(v);
+            }
+          }
+          
+          if (allPrices.length > 0) {
+            resolve(Math.round(allPrices.reduce((a,b) => a+b, 0) / allPrices.length));
+          } else {
+            resolve(null);
+          }
+        } catch(e) {
+          resolve(null);
+        }
+      });
+    }).on('error', () => resolve(null));
+  });
+}
+
 function parsePrices(html) {
   const prices = {};
   
@@ -183,7 +229,8 @@ async function main() {
   console.log('  📅 ' + new Date().toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' }));
   console.log('═'.repeat(50));
   
-  const today = new Date().toISOString().slice(0, 10);
+  const now = new Date();
+  const today = now.toISOString().slice(0, 10);
   
   // 1. Scrape harga konsumen
   console.log('\n📡 Mengambil data harga konsumen...');
@@ -197,18 +244,36 @@ async function main() {
     console.log(`   ✗ Gagal mengambil data konsumen: ${err.message}`);
   }
   
-  // 2. Scrape harga produsen
+  // 2. Scrape harga produsen dari grafik endpoint (lebih lengkap)
   console.log('\n📡 Mengambil data harga produsen...');
   let producerPrices = {};
+  
+  const grafikCommodities = {
+    'Bawang Merah': 'Bawang Merah',
+    'Bawang Putih': 'Bawang Putih',
+    'Cabai Rawit': 'Cabe Rawit',
+    'Cabai Merah': 'Cabe Besar',
+    'Beras': 'Beras',
+    'Gula Pasir': 'Gula',
+    'Minyak Goreng': 'Minyak Goreng',
+    'Daging Ayam': 'Ayam Potong',
+    'Telur Ayam': 'Telur'
+  };
+  
   try {
-    const prodHtml = await fetchUrlWithPost(
-      'https://siskaperbapo.jatimprov.go.id/produsen/tabel.nodesign/',
-      `tanggal=${today}`
+    const yesterday = new Date(now.getTime() - 86400000).toISOString().slice(0, 10);
+    const results = await Promise.all(
+      Object.entries(grafikCommodities).map(([ourName, siteName]) =>
+        fetchProducerFromGrafik(siteName, yesterday).then(price => ({ ourName, price }))
+      )
     );
-    console.log(`   ✓ Halaman produsen berhasil diambil (${(prodHtml.length / 1024).toFixed(1)} KB)`);
-    producerPrices = parseProducerPrices(prodHtml);
+    
+    for (const { ourName, price } of results) {
+      if (price) producerPrices[ourName] = price;
+    }
+    
     const count = Object.keys(producerPrices).length;
-    console.log(`   ✓ ${count} komoditas ditemukan`);
+    console.log(`   ✓ ${count} komoditas ditemukan dari grafik`);
     if (count > 0) {
       for (const [name, price] of Object.entries(producerPrices)) {
         console.log(`     - ${name}: Rp${price.toLocaleString('id-ID')}/kg`);
@@ -279,7 +344,6 @@ async function main() {
     fs.mkdirSync(historyDir, { recursive: true });
   }
   
-  const now = new Date();
   const todayStr = now.toISOString().slice(0, 10); // YYYY-MM-DD
   const year = todayStr.slice(0, 4);
   const yearDir = path.join(historyDir, year);
