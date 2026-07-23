@@ -1,7 +1,5 @@
 {
-  "source": "SISKAPERBAPO Jatim",
-  "region": "Jawa Timur",
-  "date": "2026-07-23T09:28:34.452Z",
+  "date": "2026-07-23",
   "prices": {
     "Bawang Merah": 32893,
     "Bawang Putih": 32951,
@@ -15,5 +13,6 @@
   },
   "producerPrices": {
     "Bawang Merah": 20500
-  }
+  },
+  "lastUpdate": "2026-07-23T09:28:34.236Z"
 }
