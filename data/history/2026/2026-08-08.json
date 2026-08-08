@@ -1,7 +1,5 @@
 {
-  "source": "SISKAPERBAPO Jatim",
-  "region": "Jawa Timur",
-  "date": "2026-08-08T07:52:42.040Z",
+  "date": "2026-08-08",
   "prices": {
     "Bawang Merah": 15447,
     "Bawang Putih": 13079,
@@ -19,5 +17,6 @@
     "Cabai Merah": 19700,
     "Beras": 14000,
     "Daging Ayam": 19500
-  }
+  },
+  "lastUpdate": "2026-08-08T07:52:41.918Z"
 }
