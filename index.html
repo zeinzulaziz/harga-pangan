@@ -41,14 +41,29 @@
     .chart-subtitle { font-size: 0.75rem; color: var(--text-dim); margin-top: 0.15rem; }
     .chart-wrap { position: relative; }
     .chart-wrap canvas { max-width: 100%; touch-action: pan-y; }
-    .stats-row { display: flex; gap: 0.75rem; flex-wrap: wrap; margin-bottom: 1rem; }
-    .stat { background: rgba(51,65,85,0.4); border-radius: 8px; padding: 0.5rem 0.75rem; font-size: 0.8rem; }
-    .stat-label { color: var(--text-dim); font-size: 0.7rem; text-transform: uppercase; }
-    .stat-value { font-weight: 700; color: var(--accent4); font-size: 1rem; }
-    .legend-box { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 1rem; }
-    .legend-item { display: flex; align-items: center; gap: 0.4rem; font-size: 0.8rem; color: var(--text-dim); }
-    .legend-dot { width: 10px; height: 10px; border-radius: 50%; }
     .zoom-hint { font-size: 0.7rem; color: var(--text-dim); text-align: center; margin-top: 0.5rem; }
+    .pasar-section { margin-bottom: 1.5rem; }
+    .pasar-section-title { font-size: 0.85rem; font-weight: 600; color: var(--text-dim); margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.5rem; }
+    .pasar-section-title span { font-size: 0.7rem; color: var(--text-dim); font-weight: 400; }
+    .pasar-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 0.6rem; }
+    .pasar-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 0.75rem 1rem; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 0.75rem; user-select: none; }
+    .pasar-card:hover { background: var(--card-hover); border-color: rgba(255,255,255,0.1); }
+    .pasar-card.active { border-color: var(--pasar-color, var(--accent)); background: color-mix(in srgb, var(--pasar-color, var(--accent)) 8%, var(--card)); }
+    .pasar-card.inactive { opacity: 0.45; }
+    .pasar-card.inactive:hover { opacity: 0.7; }
+    .pasar-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; border: 2px solid transparent; transition: all 0.2s; }
+    .pasar-card.active .pasar-dot { box-shadow: 0 0 8px var(--pasar-color, var(--accent)); border-color: var(--pasar-color, var(--accent)); }
+    .pasar-info { flex: 1; min-width: 0; }
+    .pasar-name { font-size: 0.82rem; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .pasar-location { font-size: 0.7rem; color: var(--text-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .pasar-price { text-align: right; flex-shrink: 0; }
+    .pasar-price-value { font-size: 0.9rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+    .pasar-price-label { font-size: 0.6rem; color: var(--text-dim); text-transform: uppercase; }
+    .pasar-toggle { width: 18px; height: 18px; border-radius: 4px; border: 2px solid var(--border); flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all 0.2s; font-size: 0.65rem; }
+    .pasar-card.active .pasar-toggle { background: var(--pasar-color, var(--accent)); border-color: var(--pasar-color, var(--accent)); color: #0f172a; }
+    .select-actions { display: flex; gap: 0.4rem; margin-bottom: 0.75rem; }
+    .select-action { padding: 0.3rem 0.7rem; border-radius: 6px; border: 1px solid var(--border); background: transparent; color: var(--text-dim); font-family: inherit; font-size: 0.72rem; cursor: pointer; transition: all 0.2s; }
+    .select-action:hover { border-color: var(--accent); color: var(--text); }
     .toast-container { position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 9999; display: flex; flex-direction: column; gap: 0.5rem; }
     .toast { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 0.75rem 1rem; font-size: 0.8rem; color: var(--text); box-shadow: 0 8px 24px rgba(0,0,0,0.3); }
     .toast.success { border-left: 3px solid var(--green); } .toast.error { border-left: 3px solid var(--red); }
@@ -60,6 +75,7 @@
       .tab { padding: 0.4rem 0.7rem; font-size: 0.75rem; }
       .chart-card { padding: 0.75rem; }
       .filter-btn { padding: 0.3rem 0.6rem; font-size: 0.72rem; }
+      .pasar-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -80,9 +96,14 @@
 <main class="container">
   <div class="tabs" id="commodityTabs"></div>
 
-  <div id="statsRow" class="stats-row"></div>
-
-  <div id="legendBox" class="legend-box"></div>
+  <div class="pasar-section">
+    <div class="pasar-section-title">Pilih Pasar <span id="pasarCount"></span></div>
+    <div class="select-actions">
+      <button class="select-action" id="selectAllBtn">Pilih Semua</button>
+      <button class="select-action" id="deselectAllBtn">Hapus Semua</button>
+    </div>
+    <div class="pasar-grid" id="pasarGrid"></div>
+  </div>
 
   <div class="filter-bar">
     <label>Periode:</label>
@@ -117,6 +138,7 @@ const COLORS = ['#38bdf8','#818cf8','#f472b6','#34d399','#fb923c','#a78bfa','#ea
 let data = null;
 let currentCommodity = null;
 let currentPeriod = 'all';
+let selectedPasars = new Set();
 let chart = null;
 
 function showToast(msg, type = 'info') {
@@ -153,51 +175,89 @@ function renderTabs() {
   container.querySelectorAll('.tab').forEach(btn => {
     btn.addEventListener('click', () => {
       currentCommodity = btn.dataset.commodity;
+      initPasarSelection();
       renderTabs();
-      renderStats();
+      renderPasarGrid();
       renderChart();
     });
   });
 }
 
-function renderStats() {
+function initPasarSelection() {
   const commodity = data.commodities[currentCommodity];
   if (!commodity) return;
-  const allDates = Object.keys(commodity.prices).sort();
-  const dates = getFilteredDates(allDates);
-  const allValues = [];
-  for (const d of dates) {
-    for (const v of commodity.prices[d]) {
-      if (v != null && v > 0) allValues.push(v);
-    }
-  }
-
-  const latest = dates[dates.length - 1];
-  const latestPrices = commodity.prices[latest] || [];
-  const avg = allValues.length > 0 ? Math.round(allValues.reduce((a, b) => a + b, 0) / allValues.length) : null;
-  const hi = allValues.length > 0 ? Math.max(...allValues) : null;
-  const lo = allValues.length > 0 ? Math.min(...allValues) : null;
-
-  let latestHtml = '';
-  if (commodity.columns && commodity.columns.length > 0) {
-    latestHtml = latestPrices.map((p, i) => {
-      if (p == null) return '';
-      const colName = commodity.columns[i] || `Kolom ${i + 1}`;
-      return `<div class="stat"><div class="stat-label">${colName}</div><div class="stat-value">${R(p)}</div></div>`;
-    }).join('');
-  } else {
-    latestHtml = latestPrices.map((p, i) =>
-      p != null ? `<div class="stat"><div class="stat-label">Data ${i + 1}</div><div class="stat-value">${R(p)}</div></div>` : ''
-    ).join('');
-  }
-
-  document.getElementById('statsRow').innerHTML =
-    latestHtml +
-    `<div class="stat"><div class="stat-label">Rata-rata</div><div class="stat-value">${R(avg)}</div></div>` +
-    `<div class="stat"><div class="stat-label">Tertinggi</div><div class="stat-value">${R(hi)}</div></div>` +
-    `<div class="stat"><div class="stat-label">Terendah</div><div class="stat-value">${R(lo)}</div></div>` +
-    `<div class="stat"><div class="stat-label">Data</div><div class="stat-value">${dates.length} hari</div></div>`;
+  const cols = commodity.columns || [];
+  selectedPasars = new Set(cols.map((_, i) => i));
 }
+
+function renderPasarGrid() {
+  const commodity = data.commodities[currentCommodity];
+  if (!commodity) return;
+  const cols = commodity.columns || [];
+  const dates = Object.keys(commodity.prices).sort();
+  const latestDate = dates[dates.length - 1];
+  const latestPrices = commodity.prices[latestDate] || [];
+
+  const grid = document.getElementById('pasarGrid');
+  const countEl = document.getElementById('pasarCount');
+  countEl.textContent = `(${selectedPasars.size}/${cols.length} aktif)`;
+
+  if (cols.length === 0) {
+    grid.innerHTML = '<div style="color:var(--text-dim);font-size:0.8rem;">Tidak ada data pasar</div>';
+    return;
+  }
+
+  grid.innerHTML = cols.map((col, i) => {
+    const isActive = selectedPasars.has(i);
+    const color = COLORS[i % COLORS.length];
+    const price = latestPrices[i];
+    const parts = col.split(' ');
+    const name = parts[0] === 'Pasar' || parts[0] === 'UD' || parts[0] === 'UD.' || parts[0] === 'PS' || parts[0] === 'RPH' || parts[0] === 'Peternak' || parts[0] === 'Distributor' || parts[0] === 'Kawasan' || parts[0] === 'Kec.' ? parts.slice(0, 2).join(' ') : parts[0];
+    const location = parts.slice(parts[0] === 'Pasar' || parts[0] === 'UD' || parts[0] === 'UD.' || parts[0] === 'PS' || parts[0] === 'RPH' || parts[0] === 'Peternak' || parts[0] === 'Distributor' || parts[0] === 'Kawasan' || parts[0] === 'Kec.' ? 2 : 1).join(' ');
+
+    return `<div class="pasar-card ${isActive ? 'active' : 'inactive'}" data-index="${i}" style="--pasar-color:${color}">
+      <div class="pasar-dot" style="background:${isActive ? color : 'var(--border)'}"></div>
+      <div class="pasar-info">
+        <div class="pasar-name">${name}</div>
+        <div class="pasar-location">${location}</div>
+      </div>
+      <div class="pasar-price">
+        <div class="pasar-price-value" style="color:${isActive ? color : 'var(--text-dim)'}">${price != null ? R(price) : '-'}</div>
+        <div class="pasar-price-label">Harga</div>
+      </div>
+      <div class="pasar-toggle">${isActive ? '✓' : ''}</div>
+    </div>`;
+  }).join('');
+
+  grid.querySelectorAll('.pasar-card').forEach(card => {
+    card.addEventListener('click', () => {
+      const idx = parseInt(card.dataset.index);
+      if (selectedPasars.has(idx)) {
+        if (selectedPasars.size > 1) selectedPasars.delete(idx);
+      } else {
+        selectedPasars.add(idx);
+      }
+      renderPasarGrid();
+      renderChart();
+    });
+  });
+}
+
+document.getElementById('selectAllBtn').addEventListener('click', () => {
+  const commodity = data.commodities[currentCommodity];
+  if (!commodity) return;
+  selectedPasars = new Set(commodity.columns.map((_, i) => i));
+  renderPasarGrid();
+  renderChart();
+});
+
+document.getElementById('deselectAllBtn').addEventListener('click', () => {
+  const commodity = data.commodities[currentCommodity];
+  if (!commodity) return;
+  selectedPasars = new Set([0]);
+  renderPasarGrid();
+  renderChart();
+});
 
 function renderChart() {
   const commodity = data.commodities[currentCommodity];
@@ -211,10 +271,10 @@ function renderChart() {
 
   const numCols = commodity.columns ? commodity.columns.length : 0;
   const datasets = [];
-  const legendBox = document.getElementById('legendBox');
 
   if (numCols > 0) {
     for (let i = 0; i < numCols; i++) {
+      if (!selectedPasars.has(i)) continue;
       const values = dates.map(d => {
         const arr = commodity.prices[d];
         return arr && arr[i] != null ? arr[i] : null;
@@ -231,9 +291,6 @@ function renderChart() {
         borderWidth: 2
       });
     }
-    legendBox.innerHTML = commodity.columns.map((col, i) =>
-      `<div class="legend-item"><span class="legend-dot" style="background:${COLORS[i % COLORS.length]}"></span>${col}</div>`
-    ).join('');
   } else {
     const values = dates.map(d => {
       const arr = commodity.prices[d];
@@ -249,7 +306,6 @@ function renderChart() {
       pointHoverRadius: 5,
       borderWidth: 2
     });
-    legendBox.innerHTML = '';
   }
 
   const ctx = document.getElementById('priceChart').getContext('2d');
@@ -290,7 +346,7 @@ function renderChart() {
   });
 
   document.getElementById('chartTitle').textContent = `Tren Harga ${currentCommodity}`;
-  document.getElementById('chartSubtitle').textContent = `${dates.length} hari data produsen`;
+  document.getElementById('chartSubtitle').textContent = `${dates.length} hari · ${selectedPasars.size} pasar aktif`;
 }
 
 document.querySelectorAll('.filter-btn').forEach(btn => {
@@ -298,7 +354,6 @@ document.querySelectorAll('.filter-btn').forEach(btn => {
     document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     currentPeriod = btn.dataset.period;
-    renderStats();
     renderChart();
   });
 });
@@ -323,8 +378,9 @@ async function init() {
     document.getElementById('commodityBadge').textContent = `${commodities.length} komoditas`;
     document.getElementById('resetZoomBtn').style.opacity = '0.5';
 
+    initPasarSelection();
     renderTabs();
-    renderStats();
+    renderPasarGrid();
     renderChart();
     showToast(`${commodities.length} komoditas dimuat`, 'success');
   } catch (e) {
