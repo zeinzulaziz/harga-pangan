@@ -5,7 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Harga Produsen Pangan — SISKAPERBAPO Jawa Timur</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.0.1/dist/chartjs-plugin-zoom.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/hammerjs@2.0.8/hammer.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.2.0/dist/chartjs-plugin-zoom.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -27,11 +28,19 @@
     .tab { padding: 0.5rem 1rem; border-radius: 8px; border: 1px solid var(--border); background: var(--card); color: var(--text-dim); font-family: inherit; font-size: 0.85rem; font-weight: 500; cursor: pointer; transition: all 0.2s; }
     .tab:hover { border-color: var(--accent4); color: var(--text); }
     .tab.active { background: var(--accent4); color: #0f172a; border-color: var(--accent4); font-weight: 600; }
+    .filter-bar { display: flex; gap: 0.4rem; margin-bottom: 1rem; flex-wrap: wrap; align-items: center; }
+    .filter-bar label { font-size: 0.8rem; color: var(--text-dim); font-weight: 500; margin-right: 0.3rem; }
+    .filter-btn { padding: 0.35rem 0.8rem; border-radius: 6px; border: 1px solid var(--border); background: var(--card); color: var(--text-dim); font-family: inherit; font-size: 0.78rem; font-weight: 500; cursor: pointer; transition: all 0.2s; }
+    .filter-btn:hover { border-color: var(--accent); color: var(--text); }
+    .filter-btn.active { background: var(--accent); color: #0f172a; border-color: var(--accent); font-weight: 600; }
+    .zoom-btn { padding: 0.35rem 0.6rem; border-radius: 6px; border: 1px solid var(--border); background: var(--card); color: var(--text-dim); font-family: inherit; font-size: 0.78rem; cursor: pointer; transition: all 0.2s; margin-left: auto; }
+    .zoom-btn:hover { background: var(--accent5); color: #0f172a; border-color: var(--accent5); }
     .chart-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 1.25rem; margin-bottom: 1.5rem; }
     .chart-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; gap: 0.5rem; flex-wrap: wrap; }
     .chart-title { font-size: 1rem; font-weight: 600; }
     .chart-subtitle { font-size: 0.75rem; color: var(--text-dim); margin-top: 0.15rem; }
-    .chart-wrap canvas { max-width: 100%; }
+    .chart-wrap { position: relative; }
+    .chart-wrap canvas { max-width: 100%; touch-action: pan-y; }
     .stats-row { display: flex; gap: 0.75rem; flex-wrap: wrap; margin-bottom: 1rem; }
     .stat { background: rgba(51,65,85,0.4); border-radius: 8px; padding: 0.5rem 0.75rem; font-size: 0.8rem; }
     .stat-label { color: var(--text-dim); font-size: 0.7rem; text-transform: uppercase; }
@@ -39,6 +48,7 @@
     .legend-box { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 1rem; }
     .legend-item { display: flex; align-items: center; gap: 0.4rem; font-size: 0.8rem; color: var(--text-dim); }
     .legend-dot { width: 10px; height: 10px; border-radius: 50%; }
+    .zoom-hint { font-size: 0.7rem; color: var(--text-dim); text-align: center; margin-top: 0.5rem; }
     .toast-container { position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 9999; display: flex; flex-direction: column; gap: 0.5rem; }
     .toast { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 0.75rem 1rem; font-size: 0.8rem; color: var(--text); box-shadow: 0 8px 24px rgba(0,0,0,0.3); }
     .toast.success { border-left: 3px solid var(--green); } .toast.error { border-left: 3px solid var(--red); }
@@ -49,6 +59,7 @@
       .tabs { gap: 0.35rem; }
       .tab { padding: 0.4rem 0.7rem; font-size: 0.75rem; }
       .chart-card { padding: 0.75rem; }
+      .filter-btn { padding: 0.3rem 0.6rem; font-size: 0.72rem; }
     }
   </style>
 </head>
@@ -73,6 +84,17 @@
 
   <div id="legendBox" class="legend-box"></div>
 
+  <div class="filter-bar">
+    <label>Periode:</label>
+    <button class="filter-btn" data-period="1w">1 Minggu</button>
+    <button class="filter-btn" data-period="1m">1 Bulan</button>
+    <button class="filter-btn" data-period="3m">3 Bulan</button>
+    <button class="filter-btn" data-period="6m">6 Bulan</button>
+    <button class="filter-btn" data-period="1y">1 Tahun</button>
+    <button class="filter-btn active" data-period="all">Semua</button>
+    <button class="zoom-btn" id="resetZoomBtn" title="Reset zoom">↺ Reset Zoom</button>
+  </div>
+
   <div class="chart-card">
     <div class="chart-header">
       <div>
@@ -81,6 +103,7 @@
       </div>
     </div>
     <div class="chart-wrap"><canvas id="priceChart"></canvas></div>
+    <div class="zoom-hint">Scroll untuk zoom | Drag untuk geser | Double-click untuk reset</div>
   </div>
 </main>
 
@@ -93,6 +116,7 @@ const R = n => n ? 'Rp' + n.toLocaleString('id-ID') : '-';
 const COLORS = ['#38bdf8','#818cf8','#f472b6','#34d399','#fb923c','#a78bfa','#eab308','#ef4444'];
 let data = null;
 let currentCommodity = null;
+let currentPeriod = 'all';
 let chart = null;
 
 function showToast(msg, type = 'info') {
@@ -102,6 +126,22 @@ function showToast(msg, type = 'info') {
   t.textContent = msg;
   c.appendChild(t);
   setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 300); }, 4000);
+}
+
+function getFilteredDates(allDates) {
+  if (currentPeriod === 'all') return allDates;
+  const now = new Date();
+  let cutoff;
+  switch (currentPeriod) {
+    case '1w': cutoff = new Date(now - 7 * 86400000); break;
+    case '1m': cutoff = new Date(now - 30 * 86400000); break;
+    case '3m': cutoff = new Date(now - 90 * 86400000); break;
+    case '6m': cutoff = new Date(now - 180 * 86400000); break;
+    case '1y': cutoff = new Date(now - 365 * 86400000); break;
+    default: return allDates;
+  }
+  const cutoffStr = cutoff.toISOString().slice(0, 10);
+  return allDates.filter(d => d >= cutoffStr);
 }
 
 function renderTabs() {
@@ -123,7 +163,8 @@ function renderTabs() {
 function renderStats() {
   const commodity = data.commodities[currentCommodity];
   if (!commodity) return;
-  const dates = Object.keys(commodity.prices).sort();
+  const allDates = Object.keys(commodity.prices).sort();
+  const dates = getFilteredDates(allDates);
   const allValues = [];
   for (const d of dates) {
     for (const v of commodity.prices[d]) {
@@ -155,16 +196,17 @@ function renderStats() {
     `<div class="stat"><div class="stat-label">Rata-rata</div><div class="stat-value">${R(avg)}</div></div>` +
     `<div class="stat"><div class="stat-label">Tertinggi</div><div class="stat-value">${R(hi)}</div></div>` +
     `<div class="stat"><div class="stat-label">Terendah</div><div class="stat-value">${R(lo)}</div></div>` +
-    `<div class="stat"><div class="stat-label">Total Hari</div><div class="stat-value">${dates.length}</div></div>`;
+    `<div class="stat"><div class="stat-label">Data</div><div class="stat-value">${dates.length} hari</div></div>`;
 }
 
 function renderChart() {
   const commodity = data.commodities[currentCommodity];
   if (!commodity) return;
-  const dates = Object.keys(commodity.prices).sort();
+  const allDates = Object.keys(commodity.prices).sort();
+  const dates = getFilteredDates(allDates);
   const labels = dates.map(d => {
     const dt = new Date(d + 'T00:00:00');
-    return dt.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
+    return dt.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: '2-digit' });
   });
 
   const numCols = commodity.columns ? commodity.columns.length : 0;
@@ -184,8 +226,8 @@ function renderChart() {
         borderColor: COLORS[i % COLORS.length],
         backgroundColor: 'transparent',
         tension: 0.3,
-        pointRadius: 0,
-        pointHoverRadius: 4,
+        pointRadius: dates.length < 100 ? 2 : 0,
+        pointHoverRadius: 5,
         borderWidth: 2
       });
     }
@@ -203,8 +245,8 @@ function renderChart() {
       borderColor: COLORS[0],
       backgroundColor: 'transparent',
       tension: 0.3,
-      pointRadius: 0,
-      pointHoverRadius: 4,
+      pointRadius: dates.length < 100 ? 2 : 0,
+      pointHoverRadius: 5,
       borderWidth: 2
     });
     legendBox.innerHTML = '';
@@ -217,12 +259,27 @@ function renderChart() {
     type: 'line',
     data: { labels, datasets },
     options: {
-      responsive: true, maintainAspectRatio: true,
+      responsive: true,
+      maintainAspectRatio: true,
       interaction: { mode: 'index', intersect: false },
       plugins: {
         legend: { display: datasets.length > 1, position: 'bottom', labels: { color: '#94a3b8', font: { size: 10 } } },
-        tooltip: { backgroundColor: '#1e293b', titleColor: '#f1f5f9', bodyColor: '#94a3b8', borderColor: '#334155', borderWidth: 1,
+        tooltip: {
+          backgroundColor: '#1e293b', titleColor: '#f1f5f9', bodyColor: '#94a3b8',
+          borderColor: '#334155', borderWidth: 1,
           callbacks: { label: ctx => `${ctx.dataset.label}: ${R(ctx.parsed.y)}` }
+        },
+        zoom: {
+          pan: { enabled: true, mode: 'x', modifierKey: null },
+          zoom: {
+            wheel: { enabled: true },
+            pinch: { enabled: true },
+            drag: { enabled: true, backgroundColor: 'rgba(56,189,248,0.1)', borderColor: 'rgba(56,189,248,0.5)', borderWidth: 1 },
+            mode: 'x',
+            onZoomComplete: () => { document.getElementById('resetZoomBtn').style.opacity = '1'; },
+            onPanComplete: () => { document.getElementById('resetZoomBtn').style.opacity = '1'; }
+          },
+          limits: { x: { minRange: 3 } }
         }
       },
       scales: {
@@ -236,6 +293,23 @@ function renderChart() {
   document.getElementById('chartSubtitle').textContent = `${dates.length} hari data produsen`;
 }
 
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentPeriod = btn.dataset.period;
+    renderStats();
+    renderChart();
+  });
+});
+
+document.getElementById('resetZoomBtn').addEventListener('click', () => {
+  if (chart) {
+    chart.resetZoom();
+    document.getElementById('resetZoomBtn').style.opacity = '0.5';
+  }
+});
+
 async function init() {
   try {
     const resp = await fetch('data/produsen.json');
@@ -247,6 +321,7 @@ async function init() {
 
     document.getElementById('updateBadge').textContent = `Update: ${new Date(data.lastUpdate).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}`;
     document.getElementById('commodityBadge').textContent = `${commodities.length} komoditas`;
+    document.getElementById('resetZoomBtn').style.opacity = '0.5';
 
     renderTabs();
     renderStats();
