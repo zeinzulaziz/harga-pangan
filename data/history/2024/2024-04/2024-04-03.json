@@ -1,0 +1,34 @@
+{
+  "date": "2024-04-03",
+  "source": "SISKAPERBAPO Jatim",
+  "type": "produsen",
+  "Bawang Merah": {
+    "Pasar Dlinggu Kabupaten Probolinggo": 30000,
+    "Pasar Sukomoro Kabupaten Nganjuk": 23000
+  },
+  "Beras": {
+    "UD Hasil Tani Kabupaten Probolinggo": 12800,
+    "PS Bendul Mrisi Kota Surabaya": 14000
+  },
+  "Cabe Rawit": {
+    "Pasar Tanjung Kabupaten Jember": 23000,
+    "Pasar Tulung Rejo Kabupaten Kediri": 15000
+  },
+  "Cabe Besar": {
+    "Pasar Pare Kabupaten Kediri": 23000,
+    "Kec. Gending Kabupaten Probolinggo": 25000
+  },
+  "Telur": {
+    "UD. Telur Intan Kabupaten Blitar": 21200,
+    "Peternak Kec. Srengat Kabupaten Kediri": 22800
+  },
+  "Ayam Potong": {
+    "Pasar Gringging Kabupaten Kediri": 22000
+  },
+  "Daging Sapi": {
+    "RPH Pegirikan  Kota Surabaya": 110000,
+    "UD RPH Kota Malang": 110000,
+    "RPH Krian Kabupaten Sidoarjo": 68000
+  },
+  "Kentang": {}
+}
