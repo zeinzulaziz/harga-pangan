@@ -1,73 +1,19 @@
 #!/usr/bin/env node
 
-/**
- * ============================================
- * SCRAPE SISKAPERBAPO JAWA TIMUR
- * ============================================
- * 
- * Scrape harga pangan dari siskaperbapo.jatimprov.go.id
- * 
- * Cara pakai:
- *   node scripts/scrape-siskaperbapo.js
- */
-
 const https = require('https');
-const http = require('http');
 const fs = require('fs');
 const path = require('path');
 
-// Komoditas yang diambil (sesuai nama di SISKAPERBAPO)
-const COMMODITY_MAP = {
-  'Bawang Merah': 'Bawang Merah / kg',
-  'Bawang Putih': 'Bawang Putih / kg',
-  'Cabai Rawit': 'Cabe Rawit Merah / kg',
-  'Cabai Merah': 'Cabe Merah Besar / kg',
-  'Beras': 'Beras Medium / kg',
-  'Gula Pasir': 'Gula Kristal Putih / kg',
-  'Minyak Goreng': 'Minyak Goreng Curah / kg',
-  'Daging Ayam': 'Daging Ayam Ras / kg',
-  'Telur Ayam': 'Telur Ayam Ras / kg'
-};
+const KOMODITAS_ID = '39';
+const KOMODITAS_NAME = 'Bawang Merah';
 
-// Nama komoditas di halaman produsen (berbeda dari konsumen)
-const PRODUCER_COMMODITY_MAP = {
-  'Bawang Merah': ['Bawang Merah'],
-  'Bawang Putih': ['Bawang Putih'],
-  'Cabai Rawit': ['Cabe Rawit'],
-  'Cabai Merah': ['Cabe Besar'],
-  'Beras': ['Beras'],
-  'Gula Pasir': ['Gula'],
-  'Minyak Goreng': ['Minyak Goreng'],
-  'Daging Ayam': ['Ayam Potong'],
-  'Telur Ayam': ['Telur']
-};
-
-function fetchUrl(url) {
+function fetchPost(url, formData) {
   return new Promise((resolve, reject) => {
-    const client = url.startsWith('https') ? https : http;
-    client.get(url, {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-        'Accept': 'text/html,application/xhtml+xml'
-      }
-    }, (res) => {
-      if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
-        return fetchUrl(res.headers.location).then(resolve).catch(reject);
-      }
-      let data = '';
-      res.on('data', chunk => data += chunk);
-      res.on('end', () => resolve(data));
-    }).on('error', reject);
-  });
-}
-
-function fetchUrlWithPost(url, postData) {
-  return new Promise((resolve, reject) => {
-    const client = url.startsWith('https') ? https : http;
     const urlObj = new URL(url);
+    const postData = new URLSearchParams(formData).toString();
     const options = {
       hostname: urlObj.hostname,
-      port: urlObj.port || (urlObj.protocol === 'https:' ? 443 : 80),
+      port: 443,
       path: urlObj.pathname,
       method: 'POST',
       headers: {
@@ -77,7 +23,10 @@ function fetchUrlWithPost(url, postData) {
         'Content-Length': Buffer.byteLength(postData)
       }
     };
-    const req = client.request(options, (res) => {
+    const req = https.request(options, (res) => {
+      if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
+        return fetchPost(res.headers.location, formData).then(resolve).catch(reject);
+      }
       let data = '';
       res.on('data', chunk => data += chunk);
       res.on('end', () => resolve(data));
@@ -88,302 +37,112 @@ function fetchUrlWithPost(url, postData) {
   });
 }
 
-function fetchProducerFromGrafik(commodity, date) {
-  return new Promise((resolve) => {
-    const url = `https://siskaperbapo.jatimprov.go.id/produsen/grafik/?tanggal=${date}&bhnpokok=${encodeURIComponent(commodity)}`;
-    https.get(url, { headers: { 'User-Agent': 'Mozilla/5.0' } }, (res) => {
-      let data = '';
-      res.on('data', chunk => data += chunk);
-      res.on('end', () => {
-        try {
-          const start = data.indexOf('"rows"');
-          if (start === -1) return resolve(null);
-          
-          const rowsStart = data.indexOf('[', start);
-          let depth = 0, rowsEnd = rowsStart;
-          for (let i = rowsStart; i < data.length; i++) {
-            if (data[i] === '[') depth++;
-            if (data[i] === ']') depth--;
-            if (depth === 0) { rowsEnd = i + 1; break; }
-          }
-          
-          let rowsStr = data.substring(rowsStart, rowsEnd);
-          rowsStr = rowsStr.replace(/,\s*]/g, ']').replace(/,\s*}/g, '}');
-          const rows = JSON.parse(rowsStr);
-          
-          // Rata-rata 7 hari terakhir
-          const recentRows = rows.slice(-7);
-          const allPrices = [];
-          for (const row of recentRows) {
-            for (let i = 1; i < row.c.length; i++) {
-              const v = row.c[i].v;
-              if (v && v > 0) allPrices.push(v);
-            }
-          }
-          
-          if (allPrices.length > 0) {
-            resolve(Math.round(allPrices.reduce((a,b) => a+b, 0) / allPrices.length));
-          } else {
-            resolve(null);
-          }
-        } catch(e) {
-          resolve(null);
-        }
-      });
-    }).on('error', () => resolve(null));
-  });
-}
+function parseProvinceRow(html) {
+  const dates = [];
+  const dateRegex = /<th class="right">(\d{4}-\d{2}-\d{2})<\/th>/g;
+  let m;
+  while ((m = dateRegex.exec(html)) !== null) dates.push(m[1]);
 
-function parsePrices(html) {
+  const propinsiMatch = html.match(/Propinsi Jawa Timur<\/td>([\s\S]*?)<\/tr>/i);
+  if (!propinsiMatch) return {};
+
+  const cellRegex = /<td class="right">([\d.]+)<\/td>/g;
   const prices = {};
-  
-  for (const [ourName, siskaperbapoName] of Object.entries(COMMODITY_MAP)) {
-    // Pattern: <td>Nama Komoditas</td> ... <td>HARGA</td>
-    // Harga format: 32.893 (dengan titik sebagai pemisah ribuan)
-    const escaped = siskaperbapoName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    
-    // Cari baris yang mengandung nama komoditas, lalu ambil harga
-    const rowRegex = new RegExp(
-      escaped + '</td>[\\s\\S]*?<td[^>]*>([\\d.,]+)\\s*<span',
-      'i'
-    );
-    
-    const match = html.match(rowRegex);
-    if (match) {
-      // Format: 32.893 (titik = pemisah ribuan)
-      const priceStr = match[1].replace(/\./g, '');
-      const price = parseInt(priceStr);
-      if (price > 1000 && price < 500000) {
-        prices[ourName] = price;
-      }
+  let idx = 0;
+  let cm;
+  while ((cm = cellRegex.exec(propinsiMatch[1])) !== null) {
+    if (dates[idx]) {
+      const price = parseInt(cm[1].replace(/\./g, ''));
+      if (price > 1000 && price < 500000) prices[dates[idx]] = price;
     }
+    idx++;
   }
-  
   return prices;
 }
 
-function parseProducerPrices(html) {
-  // Parse halaman produsen: per pasar, per komoditas
-  // Format per row: <tr>...<td>Nama</td>...<td class="right">KEMARIN</td><td class="right">SEKARANG</td>...
-  const allPrices = {};
-  
-  for (const [ourName, aliases] of Object.entries(PRODUCER_COMMODITY_MAP)) {
-    allPrices[ourName] = [];
-  }
-  
-  // Split by <tr> to process each row
-  const rows = html.split(/<tr>/i);
-  
-  for (const row of rows) {
-    // Skip header rows
-    if (!row.includes('<td>')) continue;
-    
-    // Extract all <td> content
-    const cells = [];
-    const cellRegex = /<td[^>]*>([\s\S]*?)<\/td>/gi;
-    let cellMatch;
-    while ((cellMatch = cellRegex.exec(row)) !== null) {
-      cells.push(cellMatch[1].trim().replace(/<[^>]+>/g, '').trim());
-    }
-    
-    // Need at least 7 cells: NO, NAMA, TITIK_PANTAU, KABUPATEN, SATUAN, KEMARIN, SEKARANG
-    if (cells.length < 7) continue;
-    
-    const commodityName = cells[1];
-    const hargaKemarin = cells[5];
-    const hargaSekarang = cells[6];
-    
-    // Skip if harga sekarang is "-"
-    if (hargaSekarang === '-' || hargaSekarang === '') continue;
-    
-    // Parse harga
-    const priceStr = hargaSekarang.replace(/\./g, '').replace(/,/g, '');
-    const price = parseInt(priceStr);
-    if (isNaN(price) || price < 1000 || price > 500000) continue;
-    
-    // Match commodity name
-    for (const [ourName, aliases] of Object.entries(PRODUCER_COMMODITY_MAP)) {
-      for (const alias of aliases) {
-        if (commodityName.toLowerCase().includes(alias.toLowerCase())) {
-          allPrices[ourName].push(price);
-          break;
-        }
-      }
-    }
-  }
-  
-  // Rata-ratakan per komoditas
-  const avgPrices = {};
-  for (const [name, prices] of Object.entries(allPrices)) {
-    if (prices.length > 0) {
-      avgPrices[name] = Math.round(prices.reduce((a, b) => a + b, 0) / prices.length);
-    }
-  }
-  
-  return avgPrices;
+function formatDate(d) {
+  return d.toISOString().slice(0, 10);
+}
+
+function addDays(d, n) {
+  const r = new Date(d);
+  r.setDate(r.getDate() + n);
+  return r;
 }
 
 async function main() {
   console.log('\n' + '═'.repeat(50));
-  console.log('  🍚 SCRAPE SISKAPERBAPO JAWA TIMUR');
+  console.log('  🧅 SCRAPE HARGA BAWANG MERAH — SISKAPERBAPO JATIM');
   console.log('  📅 ' + new Date().toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' }));
   console.log('═'.repeat(50));
-  
+
   const now = new Date();
-  const today = now.toISOString().slice(0, 10);
-  
-  // 1. Scrape harga konsumen
-  console.log('\n📡 Mengambil data harga konsumen...');
-  let consumerPrices = {};
-  try {
-    const html = await fetchUrl('https://siskaperbapo.jatimprov.go.id/');
-    console.log(`   ✓ Halaman konsumen berhasil diambil (${(html.length / 1024).toFixed(1)} KB)`);
-    consumerPrices = parsePrices(html);
-    console.log(`   ✓ ${Object.keys(consumerPrices).length} komoditas ditemukan`);
-  } catch (err) {
-    console.log(`   ✗ Gagal mengambil data konsumen: ${err.message}`);
-  }
-  
-  // 2. Scrape harga produsen dari grafik endpoint (lebih lengkap)
-  console.log('\n📡 Mengambil data harga produsen...');
-  let producerPrices = {};
-  
-  const grafikCommodities = {
-    'Bawang Merah': 'Bawang Merah',
-    'Bawang Putih': 'Bawang Putih',
-    'Cabai Rawit': 'Cabe Rawit',
-    'Cabai Merah': 'Cabe Besar',
-    'Beras': 'Beras',
-    'Gula Pasir': 'Gula',
-    'Minyak Goreng': 'Minyak Goreng',
-    'Daging Ayam': 'Ayam Potong',
-    'Telur Ayam': 'Telur'
-  };
-  
-  try {
-    const yesterday = new Date(now.getTime() - 86400000).toISOString().slice(0, 10);
-    const results = await Promise.all(
-      Object.entries(grafikCommodities).map(([ourName, siteName]) =>
-        fetchProducerFromGrafik(siteName, yesterday).then(price => ({ ourName, price }))
-      )
-    );
-    
-    for (const { ourName, price } of results) {
-      if (price) producerPrices[ourName] = price;
-    }
-    
-    const count = Object.keys(producerPrices).length;
-    console.log(`   ✓ ${count} komoditas ditemukan dari grafik`);
-    if (count > 0) {
-      for (const [name, price] of Object.entries(producerPrices)) {
-        console.log(`     - ${name}: Rp${price.toLocaleString('id-ID')}/kg`);
-      }
-    }
-  } catch (err) {
-    console.log(`   ✗ Gagal mengambil data produsen: ${err.message}`);
-  }
-  
-  if (Object.keys(consumerPrices).length === 0 && Object.keys(producerPrices).length === 0) {
-    console.log('\n⚠ Tidak dapat menemukan data live, mencoba cache...');
-    // Fallback: gunakan data cache kemarin
-    const cachePath = path.join(__dirname, '..', 'data', 'siskaperbapo.json');
-    if (fs.existsSync(cachePath)) {
-      try {
-        const cached = JSON.parse(fs.readFileSync(cachePath, 'utf-8'));
-        if (cached.prices && Object.keys(cached.prices).length > 0) {
-          console.log('  ✓ Menggunakan data cache dari ' + cached.date);
-          Object.assign(consumerPrices, cached.prices);
-          if (cached.producerPrices) Object.assign(producerPrices, cached.producerPrices);
-        }
-      } catch(e) {}
-    }
-    if (Object.keys(consumerPrices).length === 0) {
-      console.log('❌ Tidak ada data tersedia');
-      return;
+  const allPrices = {};
+
+  for (let i = 0; i < 5; i++) {
+    const endDate = addDays(now, -i * 7);
+    const tanggal = formatDate(endDate);
+    console.log(`\n📡 Fetch tanggal ${tanggal} (7 hari ke belakang)...`);
+
+    try {
+      const html = await fetchPost('https://siskaperbapo.jatimprov.go.id/harga-komoditas', {
+        tanggal_akhir: tanggal,
+        komoditas: KOMODITAS_ID
+      });
+
+      const prices = parseProvinceRow(html);
+      const count = Object.keys(prices).length;
+      console.log(`   ✓ ${count} hari ditemukan`);
+      Object.assign(allPrices, prices);
+    } catch (err) {
+      console.log(`   ✗ Gagal: ${err.message}`);
     }
   }
-  
+
+  const sortedDates = Object.keys(allPrices).sort();
+  if (sortedDates.length === 0) {
+    console.log('\n❌ Tidak ada data tersedia');
+    process.exit(1);
+  }
+
   console.log('\n' + '─'.repeat(50));
-  console.log('📊 HARGA PANGAN JAWA TIMUR (SISKAPERBAPO):');
+  console.log(`📊 HARGA BAWANG MERAH JAWA TIMUR (${sortedDates.length} hari):`);
   console.log('─'.repeat(50));
-  console.log('  Konsumen:');
-  for (const [name, price] of Object.entries(consumerPrices)) {
-    console.log(`    ${name}: Rp${price.toLocaleString('id-ID')}/kg`);
+  for (const d of sortedDates) {
+    console.log(`  ${d}: Rp${allPrices[d].toLocaleString('id-ID')}/kg`);
   }
-  console.log('  Produsen:');
-  for (const [name, price] of Object.entries(producerPrices)) {
-    console.log(`    ${name}: Rp${price.toLocaleString('id-ID')}/kg`);
-  }
-  
-  // Output JSON (live data untuk today)
+
+  const outDir = path.join(__dirname, '..', 'data');
+  if (!fs.existsSync(outDir)) fs.mkdirSync(outDir, { recursive: true });
+
   const output = {
     source: 'SISKAPERBAPO Jatim',
+    commodity: KOMODITAS_NAME,
     region: 'Jawa Timur',
-    date: new Date().toISOString(),
-    prices: consumerPrices,
-    producerPrices: producerPrices
+    lastUpdate: now.toISOString(),
+    days: sortedDates.length,
+    dateRange: { from: sortedDates[0], to: sortedDates[sortedDates.length - 1] },
+    prices: allPrices
   };
-  
-  const outDir = path.join(__dirname, '..', 'data');
-  if (!fs.existsSync(outDir)) {
-    fs.mkdirSync(outDir, { recursive: true });
-  }
-  
-  fs.writeFileSync(
-    path.join(outDir, 'siskaperbapo.json'),
-    JSON.stringify(output, null, 2)
-  );
-  
-  console.log('\n✅ Data tersimpan di data/siskaperbapo.json');
-  
-  // ============================================
-  // AKUMULASI HISTORIS — database harian
-  // ============================================
+
+  fs.writeFileSync(path.join(outDir, 'bawang-merah.json'), JSON.stringify(output, null, 2));
+  console.log(`\n✅ Tersimpan di data/bawang-merah.json (${sortedDates.length} hari)`);
+
   const historyDir = path.join(outDir, 'history');
-  if (!fs.existsSync(historyDir)) {
-    fs.mkdirSync(historyDir, { recursive: true });
-  }
-  
-  const todayStr = now.toISOString().slice(0, 10); // YYYY-MM-DD
+  if (!fs.existsSync(historyDir)) fs.mkdirSync(historyDir, { recursive: true });
+
+  const todayStr = formatDate(now);
   const year = todayStr.slice(0, 4);
   const yearDir = path.join(historyDir, year);
-  if (!fs.existsSync(yearDir)) {
-    fs.mkdirSync(yearDir, { recursive: true });
-  }
-  
+  if (!fs.existsSync(yearDir)) fs.mkdirSync(yearDir, { recursive: true });
+
   const dayPath = path.join(yearDir, `${todayStr}.json`);
-  
-  // Simpan data hari ini
-  const dayData = {
+  fs.writeFileSync(dayPath, JSON.stringify({
     date: todayStr,
-    prices: consumerPrices,
-    producerPrices: Object.keys(producerPrices).length > 0 ? producerPrices : undefined,
+    prices: { [KOMODITAS_NAME]: allPrices[todayStr] || null },
     lastUpdate: now.toISOString()
-  };
-  
-  fs.writeFileSync(dayPath, JSON.stringify(dayData, null, 2));
+  }, null, 2));
   console.log(`✅ History ${todayStr}: tersimpan`);
-  
-  // Regenerate history.json (gabungan semua data harian)
-  const allData = {};
-  for (const y of fs.readdirSync(historyDir).filter(f => f.match(/^\d{4}$/)).sort()) {
-    const yDir = path.join(historyDir, y);
-    if (!fs.statSync(yDir).isDirectory()) continue;
-    for (const f of fs.readdirSync(yDir).filter(f => f.endsWith('.json')).sort()) {
-      try {
-        const d = JSON.parse(fs.readFileSync(path.join(yDir, f), 'utf-8'));
-        if (d.prices) allData[d.date || f.replace('.json', '')] = d.prices;
-      } catch(e) {}
-    }
-  }
-  
-  const historyJson = {
-    lastUpdate: now.toISOString(),
-    days: Object.keys(allData).length,
-    data: allData
-  };
-  fs.writeFileSync(path.join(outDir, 'history.json'), JSON.stringify(historyJson));
-  console.log(`📊 history.json: ${historyJson.days} hari (${(JSON.stringify(historyJson).length/1024).toFixed(0)} KB)`);
 }
 
 main();

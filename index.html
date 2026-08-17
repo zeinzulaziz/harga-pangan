@@ -3,1846 +3,285 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Grafik Harga Bahan Pangan Indonesia</title>
+  <title>Harga Bawang Merah — Jawa Timur</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/hammerjs@2.0.8/hammer.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.0.1/dist/chartjs-plugin-zoom.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
     :root {
       --bg: #0f172a;
       --card: #1e293b;
       --card-hover: #273549;
-      --accent: #38bdf8;
-      --accent2: #818cf8;
-      --accent3: #f472b6;
-      --accent4: #34d399;
-      --accent5: #fb923c;
-      --accent6: #a78bfa;
+      --accent: #fb923c;
       --text: #f1f5f9;
       --text-dim: #94a3b8;
       --border: #334155;
       --green: #22c55e;
       --red: #ef4444;
-      --yellow: #eab308;
     }
-
-    body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      line-height: 1.6;
-      min-height: 100vh;
-    }
-
+    body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
     .hero {
-      background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 50%, #0f172a 100%);
-      padding: 2.5rem 1.5rem 2rem;
-      text-align: center;
-      border-bottom: 1px solid var(--border);
-      position: relative;
-      overflow: hidden;
+      background: linear-gradient(135deg, #0f172a 0%, #3b1a0a 50%, #0f172a 100%);
+      padding: 2rem 1.5rem; text-align: center; border-bottom: 1px solid var(--border);
     }
-
-    .hero::before {
-      content: '';
-      position: absolute;
-      top: -50%;
-      left: -50%;
-      width: 200%;
-      height: 200%;
-      background: radial-gradient(circle at 30% 50%, rgba(56, 189, 248, 0.08) 0%, transparent 50%),
-                  radial-gradient(circle at 70% 50%, rgba(129, 140, 248, 0.06) 0%, transparent 50%);
-      animation: pulse 8s ease-in-out infinite alternate;
-    }
-
-    @keyframes pulse {
-      from { transform: scale(1); opacity: 0.5; }
-      to { transform: scale(1.1); opacity: 1; }
-    }
-
-    .hero h1 {
-      font-size: clamp(1.5rem, 4vw, 2.2rem);
-      font-weight: 800;
-      background: linear-gradient(135deg, var(--accent), var(--accent2));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      position: relative;
-      margin-bottom: 0.3rem;
-    }
-
-    .hero p {
-      color: var(--text-dim);
-      font-size: 0.95rem;
-      position: relative;
-    }
-
-    .badge-row {
-      display: flex;
-      gap: 0.5rem;
-      justify-content: center;
-      flex-wrap: wrap;
-      margin-top: 1rem;
-      position: relative;
-    }
-
-    .badge {
-      background: rgba(56, 189, 248, 0.1);
-      border: 1px solid rgba(56, 189, 248, 0.2);
-      color: var(--accent);
-      padding: 0.25rem 0.75rem;
-      border-radius: 999px;
-      font-size: 0.75rem;
-      font-weight: 500;
-    }
-
-    .container {
-      max-width: 1280px;
-      margin: 0 auto;
-      padding: 1.5rem 1rem;
-    }
-
-    /* Stats Cards */
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 1rem;
-      margin-bottom: 1.5rem;
-    }
-
-    .stat-card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 1rem 1.25rem;
-      transition: all 0.2s;
-    }
-
-    .stat-card:hover { background: var(--card-hover); transform: translateY(-2px); }
-
-    .stat-label {
-      font-size: 0.75rem;
-      color: var(--text-dim);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      margin-bottom: 0.35rem;
-    }
-
-    .stat-value {
-      font-size: 1.4rem;
-      font-weight: 700;
-    }
-
-    .stat-change {
-      font-size: 0.8rem;
-      font-weight: 500;
-      margin-top: 0.2rem;
-    }
-
-    .up { color: var(--green); }
-    .down { color: var(--red); }
-    .flat { color: var(--yellow); }
-
-    /* Filter Tabs */
-    .filter-bar {
-      display: flex;
-      gap: 0.5rem;
-      margin-bottom: 1.5rem;
-      flex-wrap: wrap;
-      align-items: center;
-    }
-
-    .filter-bar label {
-      font-size: 0.85rem;
-      color: var(--text-dim);
-      font-weight: 500;
-    }
-
-    .tab-group {
-      display: flex;
-      gap: 0.35rem;
-      background: var(--card);
-      border-radius: 10px;
-      padding: 0.25rem;
-      border: 1px solid var(--border);
-    }
-
-    .tab {
-      padding: 0.4rem 1rem;
-      border-radius: 8px;
-      border: none;
-      background: transparent;
-      color: var(--text-dim);
-      font-family: inherit;
-      font-size: 0.8rem;
-      font-weight: 500;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-
-    .tab:hover { color: var(--text); }
-    .tab.active {
-      background: var(--accent);
-      color: #0f172a;
-      font-weight: 600;
-    }
-
-    .region-select {
-      padding: 0.4rem 0.75rem;
-      border-radius: 8px;
-      border: 1px solid var(--border);
-      background: var(--card);
-      color: var(--text);
-      font-family: inherit;
-      font-size: 0.8rem;
-      font-weight: 500;
-      cursor: pointer;
-      outline: none;
-      transition: all 0.2s;
-    }
-
-    .region-select:hover { border-color: var(--accent); }
-    .region-select:focus { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2); }
-    .region-select option { background: var(--card); color: var(--text); }
-
-    /* Price Type Toggle */
-    .price-toggle {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-    .price-toggle span {
-      font-size: 0.8rem;
-      font-weight: 500;
-      color: var(--text-dim);
-      cursor: pointer;
-      transition: color 0.2s;
-    }
-    .price-toggle span.active { color: var(--accent); font-weight: 600; }
-    .toggle-track {
-      width: 36px;
-      height: 20px;
-      background: var(--border);
-      border-radius: 999px;
-      cursor: pointer;
-      position: relative;
-      transition: background 0.2s;
-    }
-    .toggle-track.active { background: var(--accent); }
-    .toggle-thumb {
-      width: 16px;
-      height: 16px;
-      background: #fff;
-      border-radius: 50%;
-      position: absolute;
-      top: 2px;
-      left: 2px;
-      transition: transform 0.2s;
-    }
-    .toggle-track.active .toggle-thumb { transform: translateX(16px); }
-
-    /* Loading Bar */
-    .loading-bar {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 3px;
-      z-index: 9999;
-      overflow: hidden;
-      display: none;
-    }
-    .loading-bar.active { display: block; }
-    .loading-bar::after {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -40%;
-      width: 40%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, var(--accent), transparent);
-      animation: loadingSlide 1s ease-in-out infinite;
-    }
-    @keyframes loadingSlide {
-      0% { left: -40%; }
-      100% { left: 100%; }
-    }
-
-    /* Toast */
-    .toast-container {
-      position: fixed;
-      bottom: 1.5rem;
-      right: 1.5rem;
-      z-index: 9999;
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-    }
-    .toast {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 0.75rem 1rem;
-      font-size: 0.8rem;
-      color: var(--text);
-      box-shadow: 0 8px 24px rgba(0,0,0,0.3);
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      animation: toastIn 0.3s ease;
-      max-width: 320px;
-    }
+    .hero h1 { font-size: clamp(1.4rem, 4vw, 2rem); font-weight: 800; color: var(--accent); }
+    .hero p { color: var(--text-dim); font-size: 0.9rem; margin-top: 0.3rem; }
+    .badge-row { display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap; margin-top: 0.75rem; }
+    .badge { background: rgba(251,146,60,0.1); border: 1px solid rgba(251,146,60,0.2); color: var(--accent); padding: 0.2rem 0.7rem; border-radius: 999px; font-size: 0.75rem; }
+    .container { max-width: 960px; margin: 0 auto; padding: 1.5rem 1rem; }
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
+    .stat-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 1rem 1.25rem; }
+    .stat-label { font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.3rem; }
+    .stat-value { font-size: 1.4rem; font-weight: 700; color: var(--accent); }
+    .stat-change { font-size: 0.8rem; font-weight: 500; margin-top: 0.2rem; }
+    .up { color: var(--green); } .down { color: var(--red); } .flat { color: var(--text-dim); }
+    .chart-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 1.25rem; margin-bottom: 1.5rem; }
+    .chart-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+    .chart-title { font-size: 1rem; font-weight: 600; }
+    .chart-subtitle { font-size: 0.75rem; color: var(--text-dim); margin-top: 0.15rem; }
+    .chart-wrap canvas { max-width: 100%; }
+    .table-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; margin-bottom: 1.5rem; }
+    .table-card .chart-header { padding: 1.25rem 1.25rem 0; }
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+    thead { background: rgba(51,65,85,0.5); }
+    th { padding: 0.75rem 1rem; text-align: left; font-weight: 600; color: var(--text-dim); font-size: 0.75rem; text-transform: uppercase; }
+    td { padding: 0.7rem 1rem; border-top: 1px solid var(--border); }
+    tr:hover td { background: rgba(51,65,85,0.3); }
+    .price-cell { font-weight: 600; font-variant-numeric: tabular-nums; }
+    .change-badge { display: inline-flex; padding: 0.15rem 0.5rem; border-radius: 6px; font-size: 0.75rem; font-weight: 600; }
+    .change-badge.up { background: rgba(34,197,94,0.15); color: var(--green); }
+    .change-badge.down { background: rgba(239,68,68,0.15); color: var(--red); }
+    .sources { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 1.25rem; margin-bottom: 2rem; font-size: 0.8rem; color: var(--text-dim); }
+    .sources a { color: var(--accent); }
+    .toast-container { position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 9999; display: flex; flex-direction: column; gap: 0.5rem; }
+    .toast { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 0.75rem 1rem; font-size: 0.8rem; color: var(--text); box-shadow: 0 8px 24px rgba(0,0,0,0.3); }
     .toast.success { border-left: 3px solid var(--green); }
     .toast.error { border-left: 3px solid var(--red); }
     .toast.info { border-left: 3px solid var(--accent); }
-    .toast.hide { animation: toastOut 0.3s ease forwards; }
-    @keyframes toastIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-    @keyframes toastOut { from { opacity: 1; transform: translateY(0); } to { opacity: 0; transform: translateY(10px); } }
-
-    /* Produsen Disclaimer */
-    .produsen-disclaimer {
-      background: rgba(251, 146, 60, 0.1);
-      border: 1px solid rgba(251, 146, 60, 0.3);
-      border-radius: 10px;
-      padding: 0.6rem 1rem;
-      margin-bottom: 1rem;
-      font-size: 0.8rem;
-      color: #fb923c;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    /* Download Button */
-    .download-btn {
-      background: var(--card);
-      border: 1px solid var(--border);
-      color: var(--text-dim);
-      width: 28px;
-      height: 28px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 0.8rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.2s;
-    }
-    .download-btn:hover { background: var(--accent); color: #0f172a; border-color: var(--accent); }
-
-    /* Commodity Filter */
-    .commodity-filter {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      margin-bottom: 1.25rem;
-      flex-wrap: wrap;
-    }
-
-    .commodity-filter > label {
-      font-size: 0.8rem;
-      color: var(--text-dim);
-      font-weight: 500;
-      white-space: nowrap;
-    }
-
-    .commodity-chips {
-      display: flex;
-      gap: 0.4rem;
-      flex-wrap: wrap;
-    }
-
-    .chip {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.35rem;
-      padding: 0.3rem 0.6rem;
-      border-radius: 999px;
-      border: 1px solid var(--border);
-      background: var(--card);
-      color: var(--text-dim);
-      font-size: 0.7rem;
-      font-weight: 500;
-      cursor: pointer;
-      transition: all 0.2s;
-      user-select: none;
-    }
-
-    .chip:hover { border-color: var(--accent); color: var(--text); }
-
-    .chip.active {
-      border-color: var(--chip-color, var(--accent));
-      background: color-mix(in srgb, var(--chip-color, var(--accent)) 15%, transparent);
-      color: var(--chip-color, var(--accent));
-    }
-
-    .chip-dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: var(--chip-color, var(--text-dim));
-    }
-
-    .chip.active .chip-dot {
-      background: var(--chip-color, var(--accent));
-    }
-
-    .clear-filter-btn {
-      padding: 0.3rem 0.6rem;
-      border-radius: 999px;
-      border: 1px solid rgba(239,68,68,0.3);
-      background: rgba(239,68,68,0.1);
-      color: #ef4444;
-      font-family: inherit;
-      font-size: 0.7rem;
-      font-weight: 500;
-      cursor: pointer;
-      transition: all 0.2s;
-      white-space: nowrap;
-    }
-
-    .clear-filter-btn:hover {
-      background: rgba(239,68,68,0.2);
-      border-color: rgba(239,68,68,0.5);
-    }
-
-    /* Charts Grid */
-    .charts-grid {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 1rem;
-      margin-bottom: 1.5rem;
-    }
-
-    @media (min-width: 640px) {
-      .charts-grid {
-        grid-template-columns: repeat(auto-fit, minmax(min(100%, 480px), 1fr));
-        gap: 1.25rem;
-      }
-    }
-
-    .chart-card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 1rem;
-      transition: all 0.2s;
-      overflow: hidden;
-    }
-
-    @media (min-width: 640px) {
-      .chart-card { padding: 1.25rem; }
-    }
-
-    .chart-card:hover { border-color: rgba(56, 189, 248, 0.3); }
-
-    .chart-card.full-width {
-      grid-column: 1 / -1;
-    }
-
-    .chart-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      margin-bottom: 0.75rem;
-      gap: 0.5rem;
-    }
-
-    @media (min-width: 640px) {
-      .chart-header { margin-bottom: 1rem; }
-    }
-
-    .chart-title {
-      font-size: 0.85rem;
-      font-weight: 600;
-      line-height: 1.3;
-    }
-
-    @media (min-width: 640px) {
-      .chart-title { font-size: 1rem; }
-    }
-
-    .chart-subtitle {
-      font-size: 0.7rem;
-      color: var(--text-dim);
-      margin-top: 0.15rem;
-    }
-
-    @media (min-width: 640px) {
-      .chart-subtitle { font-size: 0.75rem; }
-    }
-
-    .chart-tag {
-      font-size: 0.6rem;
-      padding: 0.15rem 0.4rem;
-      border-radius: 6px;
-      font-weight: 600;
-      white-space: nowrap;
-    }
-
-    .tag-blue { background: rgba(56,189,248,0.15); color: var(--accent); }
-    .tag-green { background: rgba(34,197,94,0.15); color: var(--green); }
-    .tag-orange { background: rgba(251,146,60,0.15); color: var(--accent5); }
-    .tag-pink { background: rgba(244,114,182,0.15); color: var(--accent3); }
-    .tag-purple { background: rgba(167,139,250,0.15); color: var(--accent6); }
-
-    .chart-wrap {
-      position: relative;
-      width: 100%;
-      overflow: hidden;
-    }
-
-    .chart-wrap canvas {
-      max-width: 100%;
-      touch-action: pan-y;
-    }
-
-    /* Table */
-    .table-card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      overflow: hidden;
-      margin-bottom: 1.5rem;
-    }
-
-    .table-card .chart-header { padding: 1.25rem 1.25rem 0; }
-
-    .table-wrap {
-      overflow-x: auto;
-      -webkit-overflow-scrolling: touch;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.85rem;
-    }
-
-    thead { background: rgba(51, 65, 85, 0.5); }
-
-    th {
-      padding: 0.75rem 1rem;
-      text-align: left;
-      font-weight: 600;
-      color: var(--text-dim);
-      font-size: 0.75rem;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      white-space: nowrap;
-    }
-
-    td {
-      padding: 0.7rem 1rem;
-      border-top: 1px solid var(--border);
-      white-space: nowrap;
-    }
-
-    tr:hover td { background: rgba(51, 65, 85, 0.3); }
-
-    .commodity-cell {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .commodity-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      flex-shrink: 0;
-    }
-
-    .price-cell { font-weight: 600; font-variant-numeric: tabular-nums; }
-
-    .change-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.2rem;
-      padding: 0.15rem 0.5rem;
-      border-radius: 6px;
-      font-size: 0.75rem;
-      font-weight: 600;
-    }
-
-    .change-badge.up { background: rgba(34,197,94,0.15); color: var(--green); }
-    .change-badge.down { background: rgba(239,68,68,0.15); color: var(--red); }
-
-    /* Sources */
-    .sources {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 1.25rem;
-      margin-bottom: 2rem;
-    }
-
-    .sources h3 {
-      font-size: 0.9rem;
-      margin-bottom: 0.75rem;
-      color: var(--text-dim);
-    }
-
-    .source-list {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-    }
-
-    .source-item {
-      background: rgba(51, 65, 85, 0.4);
-      border: 1px solid var(--border);
-      padding: 0.35rem 0.75rem;
-      border-radius: 8px;
-      font-size: 0.75rem;
-      color: var(--text-dim);
-    }
-
-    .source-item strong { color: var(--text); font-weight: 500; }
-
-    footer {
-      text-align: center;
-      padding: 1.5rem;
-      color: var(--text-dim);
-      font-size: 0.75rem;
-      border-top: 1px solid var(--border);
-    }
-
+    footer { text-align: center; padding: 1.5rem; color: var(--text-dim); font-size: 0.75rem; border-top: 1px solid var(--border); }
+    footer a { color: var(--accent); }
+    .download-btn { background: var(--card); border: 1px solid var(--border); color: var(--text-dim); width: 28px; height: 28px; border-radius: 6px; cursor: pointer; font-size: 0.8rem; display: flex; align-items: center; justify-content: center; }
+    .download-btn:hover { background: var(--accent); color: #0f172a; }
     @media (max-width: 640px) {
-      .hero { padding: 1.5rem 1rem 1.25rem; }
+      .hero { padding: 1.5rem 1rem; }
       .stats-grid { grid-template-columns: repeat(2, 1fr); }
-      .charts-grid { grid-template-columns: 1fr; }
       .chart-card { padding: 0.75rem; }
-      .chart-header { flex-direction: column; gap: 0.3rem; }
-      .chart-tag { align-self: flex-start; }
-      .tab { padding: 0.35rem 0.7rem; font-size: 0.75rem; }
-      .region-select { margin-left: 0 !important; margin-top: 0.5rem; width: 100%; }
-      .price-toggle { margin-left: 0 !important; margin-top: 0.5rem; }
-      th, td { padding: 0.5rem 0.75rem; }
-      th { font-size: 0.65rem; }
-      td { font-size: 0.75rem; }
-      footer { padding: 1rem; font-size: 0.7rem; }
-      footer small { font-size: 0.6rem; }
-      .toast-container { bottom: 1rem; right: 1rem; left: 1rem; }
-      .toast { max-width: 100%; }
+      th, td { padding: 0.5rem 0.75rem; font-size: 0.75rem; }
     }
   </style>
 </head>
 <body>
 
-<div class="loading-bar" id="loadingBar"></div>
 <div class="toast-container" id="toastContainer"></div>
 
 <header class="hero">
-  <h1>Harga Bahan Pangan Indonesia</h1>
-  <p>Data harga komoditas pangan pokok dari berbagai sumber terpercaya</p>
+  <h1>Harga Bawang Merah</h1>
+  <p>Data harga harian dari SISKAPERBAPO Jawa Timur</p>
   <div class="badge-row">
-    <span class="badge" id="regionBadge">Wilayah: Nasional</span>
-    <span class="badge" id="priceTypeBadge">Harga Konsumen</span>
-    <span class="badge">Sumber: Badan Pangan / SISKAPERBAPO / PIHPS</span>
-    <span class="badge" id="updateBadge"></span>
-    <span class="badge">9 Komoditas</span>
+    <span class="badge" id="updateBadge">Memuat...</span>
+    <span class="badge">Sumber: siskaperbapo.jatimprov.go.id</span>
+    <span class="badge" id="daysBadge"></span>
   </div>
 </header>
 
 <main class="container">
-
-  <!-- Stats -->
   <section class="stats-grid" id="statsGrid"></section>
 
-  <!-- Filter -->
-  <div class="filter-bar">
-    <label>Periode:</label>
-    <div class="tab-group" id="periodTabs">
-      <button class="tab active" data-period="6m">6 Bulan</button>
-      <button class="tab" data-period="1y">1 Tahun</button>
-      <button class="tab" data-period="3y">3 Tahun</button>
-      <button class="tab" data-period="5y">5 Tahun</button>
-    </div>
-    <label style="margin-left: 1rem;">Wilayah:</label>
-    <select id="regionSelect" class="region-select">
-      <option value="Nasional">Nasional</option>
-      <option value="Jawa Timur">Jawa Timur</option>
-      <option value="Jawa Tengah">Jawa Tengah</option>
-      <option value="Jawa Barat">Jawa Barat</option>
-      <option value="DKI Jakarta">DKI Jakarta</option>
-      <option value="Sumatera Utara">Sumatera Utara</option>
-      <option value="Sulawesi Selatan">Sulawesi Selatan</option>
-      <option value="Bali">Bali</option>
-    </select>
-    <div class="price-toggle" style="margin-left: 1rem;">
-      <span id="labelKonsumen" class="active">Konsumen</span>
-      <div class="toggle-track" id="priceToggle" onclick="togglePriceType()">
-        <div class="toggle-thumb"></div>
+  <div class="chart-card">
+    <div class="chart-header">
+      <div>
+        <div class="chart-title">Tren Harga Bawang Merah</div>
+        <div class="chart-subtitle">Harga rata-rata provinsi Jawa Timur per kg (Rp)</div>
       </div>
-      <span id="labelProdusen">Produsen</span>
+      <button class="download-btn" id="downloadChart" title="Download chart">⬇</button>
     </div>
+    <div class="chart-wrap"><canvas id="priceChart"></canvas></div>
   </div>
 
-  <!-- Komoditas Filter  -->
-  <div class="commodity-filter" id="commodityFilter">
-    <label>Komoditas:</label>
-    <div class="commodity-chips" id="commodityChips"></div>
-    <button class="clear-filter-btn" id="clearFilterBtn" onclick="clearAllFilters()">Reset Filter</button>
-  </div>
-
-  <!-- Disclaimer Produsen -->
-  <div class="produsen-disclaimer" id="produsenDisclaimer" style="display:none;">
-    <span>ℹ️</span> Harga produsen diambil dari SISKAPERBAPO Jatim. Data tidak tersedia untuk semua komoditas.
-  </div>
-
-  <!-- Charts -->
-  <section class="charts-grid">
-    <div class="chart-card full-width">
-      <div class="chart-header">
-        <div>
-          <div class="chart-title">Tren Harga Bahan Pangan Nasional</div>
-          <div class="chart-subtitle">Harga rata-rata nasional per kg (Rp)</div>
-        </div>
-        <div style="display:flex;gap:0.5rem;align-items:center;">
-          <span class="chart-tag tag-blue">Multi Komoditas</span>
-          <button class="download-btn" id="resetZoomBtn" title="Reset zoom" style="display:none;">↺</button>
-          <button class="download-btn" id="downloadMainChart" title="Download chart sebagai PNG">⬇</button>
-        </div>
-      </div>
-      <div class="chart-wrap"><canvas id="mainChart"></canvas></div>
-    </div>
-
-    <div class="chart-card">
-      <div class="chart-header">
-        <div>
-          <div class="chart-title">Bawang Merah</div>
-          <div class="chart-subtitle">Harga rata-rata per kg</div>
-        </div>
-        <span class="chart-tag tag-orange">Komoditas Utama</span>
-      </div>
-      <div class="chart-wrap"><canvas id="bawangChart"></canvas></div>
-    </div>
-
-    <div class="chart-card">
-      <div class="chart-header">
-        <div>
-          <div class="chart-title">Cabai Rawit</div>
-          <div class="chart-subtitle">Harga rata-rata per kg</div>
-        </div>
-        <span class="chart-tag tag-pink">Komoditas Utama</span>
-      </div>
-      <div class="chart-wrap"><canvas id="cabaiChart"></canvas></div>
-    </div>
-
-    <div class="chart-card">
-      <div class="chart-header">
-        <div>
-          <div class="chart-title">Beras</div>
-          <div class="chart-subtitle">Harga rata-rata per kg</div>
-        </div>
-        <span class="chart-tag tag-green">Pangan Pokok</span>
-      </div>
-      <div class="chart-wrap"><canvas id="berasChart"></canvas></div>
-    </div>
-
-    <div class="chart-card">
-      <div class="chart-header">
-        <div>
-          <div class="chart-title">Gula Pasir</div>
-          <div class="chart-subtitle">Harga rata-rata per kg</div>
-        </div>
-        <span class="chart-tag tag-purple">Pangan Pokok</span>
-      </div>
-      <div class="chart-wrap"><canvas id="gulaChart"></canvas></div>
-    </div>
-
-    <div class="chart-card full-width">
-      <div class="chart-header">
-        <div>
-          <div class="chart-title">Perbandingan Harga Antar Komoditas</div>
-          <div class="chart-subtitle">Harga saat ini vs rata-rata 5 tahun</div>
-        </div>
-        <span class="chart-tag tag-blue">Analisis</span>
-      </div>
-      <div class="chart-wrap"><canvas id="compareChart"></canvas></div>
-    </div>
-  </section>
-
-  <!-- Table -->
   <div class="table-card">
     <div class="chart-header">
       <div>
-        <div class="chart-title">Detail Harga Komoditas</div>
+        <div class="chart-title">Data Harian</div>
         <div class="chart-subtitle" id="tableSubtitle">Memuat data...</div>
       </div>
     </div>
     <div class="table-wrap">
       <table>
-        <thead>
-          <tr>
-            <th>Komoditas</th>
-            <th>Harga/kg (Rp)</th>
-            <th>Bulan Lalu</th>
-            <th>Perubahan</th>
-            <th>Harga Tertinggi</th>
-            <th>Harga Terendah</th>
-          </tr>
-        </thead>
+        <thead><tr><th>Tanggal</th><th>Harga/kg (Rp)</th><th>Perubahan</th></tr></thead>
         <tbody id="priceTable"></tbody>
       </table>
     </div>
   </div>
 
-  <!-- Sources -->
   <div class="sources">
-    <h3>Sumber Data</h3>
-    <div class="source-list">
-      <span class="source-item"><strong>Badan Pangan Nasional</strong> — Data rata-rata harga bulanan nasional (data.badanpangan.go.id)</span>
-      <span class="source-item"><strong>SISKAPERBAPO</strong> — Data live harga harian Jawa Timur (siskaperbapo.jatimprov.go.id)</span>
-      <span class="source-item"><strong>PIHPS</strong> — Pusat Informasi Harga Pangan Strategis Bank Indonesia</span>
-      <span class="source-item"><strong>BPS</strong> — Badan Pusat Statistik</span>
-    </div>
+    <strong>Sumber Data:</strong> <a href="https://siskaperbapo.jatimprov.go.id/harga-komoditas" target="_blank">SISKAPERBAPO Jawa Timur</a> — Harga rata-rata Provinsi Jawa Timur. Data di-scrape otomatis setiap hari via GitHub Actions.
   </div>
-
 </main>
 
 <footer>
-  <div style="max-width:700px;margin:0 auto;">
-    <p style="margin-bottom:0.5rem;"><strong>Sumber Data</strong></p>
-    <p style="margin-bottom:0.75rem;">
-      Grafik 5 tahun & 3 tahun: data rata-rata harga bulanan dari
-      <a href="https://data.badanpangan.go.id" target="_blank" style="color:var(--accent);">Badan Pangan Nasional</a>.
-      Grafik 1 tahun & 6 bulan: data live dari
-      <a href="https://siskaperbapo.jatimprov.go.id" target="_blank" style="color:var(--accent);">SISKAPERBAPO Jatim</a>.
-      Harga produsen: SISKAPERBAPO Jatim (tersedia untuk beberapa komoditas).
-    </p>
-    <p style="margin-bottom:0.75rem;">
-      Data live di-scrape dari SISKAPERBAPO setiap hari via GitHub Actions.
-      Harga regional menggunakan multiplier terhadap harga nasional.
-    </p>
-    <p style="margin-bottom:0.75rem;">
-      <strong>Disclaimer:</strong> Harga nasional dari Badan Pangan mungkin berbeda dengan harga di daerah masing-masing.
-      Harga produsen bersifat estimasi kecuali tersedia dari SISKAPERBAPO.
-      Untuk data resmi kunjungi
-      <a href="https://data.badanpangan.go.id" target="_blank" style="color:var(--accent);">data.badanpangan.go.id</a>,
-      <a href="https://panelharga.badanpangan.go.id" target="_blank" style="color:var(--accent);">panelharga.badanpangan.go.id</a>, atau
-      <a href="https://www.bi.go.id/hargapangan" target="_blank" style="color:var(--accent);">bi.go.id/hargapangan</a>.
-    </p>
-    <small style="color:#64748b;">Dibuat oleh <a href="https://github.com/zeinzulaziz/harga-pangan" target="_blank" style="color:var(--accent);">zeinzulaziz</a> | Data diperbarui secara otomatis setiap hari</small>
-  </div>
+  <small>Dibuat otomatis | Data diperbarui setiap hari dari SISKAPERBAPO Jatim</small>
 </footer>
 
 <script>
 const R = n => 'Rp' + n.toLocaleString('id-ID');
+let priceData = {};
+let chart = null;
 
-const commodities = [
-  { name: 'Bawang Merah', color: '#fb923c', tag: 'tag-orange' },
-  { name: 'Bawang Putih', color: '#fbbf24', tag: 'tag-orange' },
-  { name: 'Cabai Rawit', color: '#f472b6', tag: 'tag-pink' },
-  { name: 'Cabai Merah', color: '#ef4444', tag: 'tag-pink' },
-  { name: 'Beras', color: '#38bdf8', tag: 'tag-blue' },
-  { name: 'Gula Pasir', color: '#a78bfa', tag: 'tag-purple' },
-  { name: 'Minyak Goreng', color: '#34d399', tag: 'tag-green' },
-  { name: 'Daging Ayam', color: '#818cf8', tag: 'tag-purple' },
-  { name: 'Telur Ayam', color: '#eab308', tag: 'tag-orange' },
-];
-
-// Data source: Badan Pangan Nasional (harga bulanan nasional) + SISKAPERBAPO Jatim (live harian)
-// Semua periode menampilkan data bulanan
-const months6m = ['Feb 2026','Mar 2026','Apr 2026','Mei 2026','Jun 2026','Jul 2026'];
-const months1y = ['Jul 2025','Ags 2025','Sep 2025','Okt 2025','Nov 2025','Des 2025','Jan 2026','Feb 2026','Mar 2026','Apr 2026','Mei 2026','Jun 2026','Jul 2026'];
-const months3y = ['Jan 2024','Feb 2024','Mar 2024','Apr 2024','Mei 2024','Jun 2024','Jul 2024','Ags 2024','Sep 2024','Okt 2024','Nov 2024','Des 2024','Jan 2025','Feb 2025','Mar 2025','Apr 2025','Mei 2025','Jun 2025','Jul 2025','Ags 2025','Sep 2025','Okt 2025','Nov 2025','Des 2025','Jan 2026','Feb 2026','Mar 2026','Apr 2026','Mei 2026','Jun 2026','Jul 2026'];
-const months5y = ['Jan 2021','Feb 2021','Mar 2021','Apr 2021','Mei 2021','Jun 2021','Jul 2021','Ags 2021','Sep 2021','Okt 2021','Nov 2021','Des 2021','Jan 2022','Feb 2022','Mar 2022','Apr 2022','Mei 2022','Jun 2022','Jul 2022','Ags 2022','Sep 2022','Okt 2022','Nov 2022','Des 2022','Jan 2023','Feb 2023','Mar 2023','Apr 2023','Mei 2023','Jun 2023','Jul 2023','Ags 2023','Sep 2023','Okt 2023','Nov 2023','Des 2023','Jan 2024','Feb 2024','Mar 2024','Apr 2024','Mei 2024','Jun 2024','Jul 2024','Ags 2024','Sep 2024','Okt 2024','Nov 2024','Des 2024','Jan 2025','Feb 2025','Mar 2025','Apr 2025','Mei 2025','Jun 2025','Jul 2025','Ags 2025','Sep 2025','Okt 2025','Nov 2025','Des 2025','Jan 2026','Feb 2026','Mar 2026','Apr 2026','Mei 2026','Jun 2026','Jul 2026'];
-
-// Real price data (Rp/kg) — Nasional
-// Sumber: Badan Pangan Nasional + WFP/HDX + SISKAPERBAPO
-// Semua periode data bulanan
-function y5(y1,y2,y3,y4,y5,y6) { 
-  // 67 bulan: Jan 2021 - Jul 2026 (12+12+12+12+12+7)
-  return [y1,y1,y1,y1,y1,y1,y1,y1,y1,y1,y1,y1,  // 2021
-          y2,y2,y2,y2,y2,y2,y2,y2,y2,y2,y2,y2,  // 2022
-          y3,y3,y3,y3,y3,y3,y3,y3,y3,y3,y3,y3,  // 2023
-          y4,y4,y4,y4,y4,y4,y4,y4,y4,y4,y4,y4,  // 2024
-          y5,y5,y5,y5,y5,y5,y5,y5,y5,y5,y5,y5,  // 2025
-          y6,y6,y6,y6,y6,y6,y6];                   // 2026 (Jan-Jul)
-}
-function y3(y1,y2,y3) { 
-  // 31 bulan: Jan 2024 - Jul 2026 (12+12+7)
-  return [y1,y1,y1,y1,y1,y1,y1,y1,y1,y1,y1,y1,  // 2024
-          y2,y2,y2,y2,y2,y2,y2,y2,y2,y2,y2,y2,  // 2025
-          y3,y3,y3,y3,y3,y3,y3];                   // 2026 (Jan-Jul)
+function showToast(msg, type = 'info') {
+  const c = document.getElementById('toastContainer');
+  const t = document.createElement('div');
+  t.className = `toast ${type}`;
+  t.textContent = msg;
+  c.appendChild(t);
+  setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 300); }, 4000);
 }
 
-const priceData = {
-  'Bawang Merah': {
-    '5y': y5(30099,33162,36225,39288,42351,42672),
-    '3y': y3(39288,42351,42672),
-    '1y': [46281,51250,41919,38892,39873,47236,42672,null,null,null,null,null,null],
-    '6m': [null,null,null,null,null,null]
-  },
-  'Bawang Putih': {
-    '5y': y5(28218,31228,34238,37248,40258,38645),
-    '3y': y3(37248,40258,38645),
-    '1y': [39075,38386,37607,37132,36829,37823,38645,null,null,null,null,null,null],
-    '6m': [null,null,null,null,null,null]
-  },
-  'Cabai Rawit': {
-    '5y': y5(58277,59428,55683,53146,60533,53999),
-    '3y': y3(53146,60533,53999),
-    '1y': [64351,49028,47269,43173,41694,67666,53999,null,null,null,null,null,null],
-    '6m': [null,null,null,null,null,null]
-  },
-  'Cabai Merah': {
-    '5y': y5(38759,42076,45394,48712,52029,39650),
-    '3y': y3(48712,52029,39650),
-    '1y': [44707,42521,54876,56260,53794,57503,39650,null,null,null,null,null,null],
-    '6m': [null,null,null,null,null,null]
-  },
-  'Beras': {
-    '5y': y5(10814,11566,12318,13070,13821,13517),
-    '3y': y3(13070,13821,13517),
-    '1y': [14301,14354,13945,13823,13564,13540,13517,null,null,null,null,null,null],
-    '6m': [null,null,null,null,null,null]
-  },
-  'Gula Pasir': {
-    '5y': y5(18279,18279,18279,18279,18279,18117),
-    '3y': y3(18279,18279,18117),
-    '1y': [18350,18254,18151,18051,17993,18044,18117,null,null,null,null,null,null],
-    '6m': [null,null,null,null,null,null]
-  },
-  'Minyak Goreng': {
-    '5y': y5(20736,20736,20736,20736,20736,20992),
-    '3y': y3(20736,20736,20992),
-    '1y': [21088,20988,20788,20588,20388,20588,20992,null,null,null,null,null,null],
-    '6m': [null,null,null,null,null,null]
-  },
-  'Daging Ayam': {
-    '5y': y5(33928,35674,37421,39167,40913,39862),
-    '3y': y3(39167,40913,39862),
-    '1y': [41500,41200,40800,40400,40000,40200,39862,null,null,null,null,null,null],
-    '6m': [null,null,null,null,null,null]
-  },
-  'Telur Ayam': {
-    '5y': y5(22785,24310,25836,27361,28886,27518),
-    '3y': y3(27361,28886,27518),
-    '1y': [29200,29000,28800,28600,28400,28000,27518,null,null,null,null,null,null],
-    '6m': [null,null,null,null,null,null]
-  }
-};
+function renderStats(prices) {
+  const dates = Object.keys(prices).sort();
+  const values = dates.map(d => prices[d]);
+  const current = values[values.length - 1];
+  const prev = values.length > 1 ? values[values.length - 2] : current;
+  const diff = current - prev;
+  const pct = ((diff / prev) * 100).toFixed(1);
+  const hi = Math.max(...values);
+  const lo = Math.min(...values);
+  const avg = Math.round(values.reduce((a, b) => a + b, 0) / values.length);
 
-// Regional price data — prices in Rp/kg per province
-const regions = ['Nasional', 'Jawa Timur', 'Jawa Tengah', 'Jawa Barat', 'DKI Jakarta', 'Sumatera Utara', 'Sulawesi Selatan', 'Bali'];
+  const cls = diff > 0 ? 'up' : diff < 0 ? 'down' : 'flat';
+  const sign = diff > 0 ? '+' : '';
 
-// Regional price multipliers based on real PIHPS/SISKAPERBAPO data (July 2026)
-// Bawang Merah: Nasional Rp46.100, Jatim Rp33.978, Jabar Rp44.950, Jakarta Rp51.443, Bali Rp32.900
-const regionFactors = {
-  'Nasional': 1.0,
-  'Jawa Timur': 0.74,      // Rp33.978 vs Rp46.100 nasional
-  'Jawa Tengah': 0.80,     // estimasi lebih murah dari nasional
-  'Jawa Barat': 0.97,      // Rp44.950 vs Rp46.100 nasional
-  'DKI Jakarta': 1.12,     // Rp51.443 vs Rp46.100 nasional
-  'Sumatera Utara': 1.05,  // beras Rp16.900 vs Rp16.350 nasional
-  'Sulawesi Selatan': 0.95,// beras Rp14.000 vs Rp16.350 nasional
-  'Bali': 0.71              // Rp32.900 vs Rp46.100 nasional
-};
+  document.getElementById('statsGrid').innerHTML = `
+    <div class="stat-card">
+      <div class="stat-label">Harga Hari Ini</div>
+      <div class="stat-value">${R(current)}</div>
+      <div class="stat-change ${cls}">${sign}${diff.toLocaleString('id-ID')} (${Math.abs(pct)}%)</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Rata-rata</div>
+      <div class="stat-value">${R(avg)}</div>
+      <div class="stat-change flat">${dates.length} hari</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Tertinggi</div>
+      <div class="stat-value">${R(hi)}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Terendah</div>
+      <div class="stat-value">${R(lo)}</div>
+    </div>`;
+}
 
-const allLabels = { '6m': months6m, '1y': months1y, '3y': months3y, '5y': months5y };
-
-let charts = {};
-let currentPeriod = '6m';
-let currentRegion = 'Nasional';
-let currentPriceType = 'konsumen';
-let selectedCommodities = commodities.map(c => c.name);
-
-// Producer prices — data partially from SISKAPERBAPO Jatim, sisanya estimasi
-// Harga produsen umumnya 55-75% dari harga konsumen
-const priceDataProdusen = {
-  'Bawang Merah': {
-    '5y': y5(18060,19897,21735,23573,25411,25603),
-    '3y': y3(23573,25411,25603),
-    '1y': [27769,30750,25151,23335,23924,28342,25603,null,null,null,null,null,null],
-    '6m': [null,null,null,null,null,null]
-  },
-  'Bawang Putih': {
-    '5y': y5(16931,18737,20543,22349,24155,23187),
-    '3y': y3(22349,24155,23187),
-    '1y': [23445,23032,22564,22279,22097,22694,23187,null,null,null,null,null,null],
-    '6m': [null,null,null,null,null,null]
-  },
-  'Cabai Rawit': {
-    '5y': y5(34966,35657,33410,31888,36320,32399),
-    '3y': y3(31888,36320,32399),
-    '1y': [38611,29417,28361,25904,25016,40600,32399,null,null,null,null,null,null],
-    '6m': [null,null,null,null,null,null]
-  },
-  'Cabai Merah': {
-    '5y': y5(23255,25246,27236,29227,31217,23790),
-    '3y': y3(29227,31217,23790),
-    '1y': [26824,25513,32926,33756,32276,34502,23790,null,null,null,null,null,null],
-    '6m': [null,null,null,null,null,null]
-  },
-  'Beras': {
-    '5y': y5(7029,7518,8007,8496,8984,8786),
-    '3y': y3(8496,8984,8786),
-    '1y': [9296,9330,9064,8985,8817,8801,8786,null,null,null,null,null,null],
-    '6m': [null,null,null,null,null,null]
-  },
-  'Gula Pasir': {
-    '5y': y5(12968,12968,12968,12968,12968,12843),
-    '3y': y3(12968,12968,12843),
-    '1y': [13019,12949,12877,12806,12764,12800,12843,null,null,null,null,null,null],
-    '6m': [null,null,null,null,null,null]
-  },
-  'Minyak Goreng': {
-    '5y': y5(12442,12442,12442,12442,12442,12595),
-    '3y': y3(12442,12442,12595),
-    '1y': [12506,12529,12553,12574,12563,12574,12595,null,null,null,null,null,null],
-    '6m': [null,null,null,null,null,null]
-  },
-  'Daging Ayam': {
-    '5y': y5(25607,25607,25607,25607,25607,27494),
-    '3y': y3(25607,25607,27494),
-    '1y': [24774,24783,26298,26626,26340,27867,27494,null,null,null,null,null,null],
-    '6m': [null,null,null,null,null,null]
-  },
-  'Telur Ayam': {
-    '5y': y5(20861,20861,20861,20861,20861,21652),
-    '3y': y3(20861,20861,21652),
-    '1y': [20628,20695,20845,21306,21368,21973,21652,null,null,null,null,null,null],
-    '6m': [null,null,null,null,null,null]
-  }
-};
-
-function renderCommodityChips() {
-  const container = document.getElementById('commodityChips');
-  container.innerHTML = commodities.map(c => {
-    const active = selectedCommodities.includes(c.name) ? 'active' : '';
-    return `<button class="chip ${active}" data-name="${c.name}" style="--chip-color:${c.color}" title="Klik: toggle | Double-click: solo">
-      <span class="chip-dot" style="background:${c.color}"></span>${c.name}
-    </button>`;
-  }).join('');
-  container.querySelectorAll('.chip').forEach(btn => {
-    btn.addEventListener('click', () => toggleCommodity(btn.dataset.name));
-    btn.addEventListener('dblclick', (e) => {
-      e.preventDefault();
-      soloCommodity(btn.dataset.name);
-    });
+function renderChart(prices) {
+  const dates = Object.keys(prices).sort();
+  const values = dates.map(d => prices[d]);
+  const labels = dates.map(d => {
+    const dt = new Date(d + 'T00:00:00');
+    return dt.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
   });
-}
 
-function toggleCommodity(name) {
-  const idx = selectedCommodities.indexOf(name);
-  if (idx > -1) {
-    if (selectedCommodities.length === 1) return;
-    selectedCommodities.splice(idx, 1);
-  } else {
-    selectedCommodities.push(name);
-  }
-  renderCommodityChips();
-  updateCharts();
-  renderTable();
-}
+  const ctx = document.getElementById('priceChart').getContext('2d');
+  const gradient = ctx.createLinearGradient(0, 0, 0, 300);
+  gradient.addColorStop(0, 'rgba(251,146,60,0.25)');
+  gradient.addColorStop(1, 'rgba(251,146,60,0)');
 
-function soloCommodity(name) {
-  selectedCommodities = [name];
-  renderCommodityChips();
-  updateCharts();
-  renderTable();
-}
-
-function clearAllFilters() {
-  currentPeriod = '6m';
-  currentRegion = 'Nasional';
-  currentPriceType = 'konsumen';
-  selectedCommodities = commodities.map(c => c.name);
-
-  document.querySelectorAll('#periodTabs .tab').forEach(t => t.classList.remove('active'));
-  document.querySelector('#periodTabs .tab[data-period="6m"]').classList.add('active');
-  document.getElementById('regionSelect').value = 'Nasional';
-  document.getElementById('priceToggle').classList.remove('active');
-  document.getElementById('labelKonsumen').classList.add('active');
-  document.getElementById('labelProdusen').classList.remove('active');
-  document.getElementById('produsenDisclaimer').style.display = 'none';
-
-  renderCommodityChips();
-  updateChartSubtitles();
-  updateCharts();
-  renderStats();
-  renderTable();
-  updateRegionLabel();
-}
-
-function getLabels() { return allLabels[currentPeriod]; }
-
-function getData(commodity) {
-  const src = currentPriceType === 'produsen' ? priceDataProdusen : priceData;
-  const baseData = src[commodity][currentPeriod];
-  if (currentRegion === 'Nasional') return baseData;
-  const factor = regionFactors[currentRegion];
-  return baseData.map(v => v !== null ? Math.round(v * factor) : null);
-}
-
-function getDataRaw(commodity) {
-  const src = currentPriceType === 'produsen' ? priceDataProdusen : priceData;
-  return src[commodity][currentPeriod];
-}
-
-function createGradient(ctx, color) {
-  const g = ctx.createLinearGradient(0, 0, 0, 300);
-  g.addColorStop(0, color + '40');
-  g.addColorStop(1, color + '00');
-  return g;
-}
-
-const chartDefaults = {
-  responsive: true,
-  maintainAspectRatio: true,
-  interaction: { mode: 'index', intersect: false },
-  plugins: {
-    legend: {
-      display: true,
-      position: 'bottom',
-      labels: {
-        color: '#94a3b8',
-        font: { family: 'Inter', size: window.innerWidth < 640 ? 9 : 11 },
-        usePointStyle: true,
-        padding: window.innerWidth < 640 ? 8 : 16,
-        boxWidth: window.innerWidth < 640 ? 8 : 12,
-        boxHeight: window.innerWidth < 640 ? 8 : 12
-      }
-    },
-    tooltip: {
-      backgroundColor: '#1e293b',
-      titleColor: '#f1f5f9',
-      bodyColor: '#94a3b8',
-      borderColor: '#334155',
-      borderWidth: 1,
-      padding: window.innerWidth < 640 ? 8 : 12,
-      titleFont: { family: 'Inter', weight: '600', size: window.innerWidth < 640 ? 11 : 13 },
-      bodyFont: { family: 'Inter', size: window.innerWidth < 640 ? 10 : 12 },
-      callbacks: { label: ctx => `${ctx.dataset.label}: Rp${ctx.parsed.y.toLocaleString('id-ID')}` },
-      displayColors: window.innerWidth >= 640,
-      boxPadding: 4
-    },
-    zoom: {
-      pan: {
-        enabled: true,
-        mode: 'x',
-        modifierKey: null
-      },
-      zoom: {
-        wheel: { enabled: true },
-        pinch: { enabled: true },
-        drag: { enabled: true, backgroundColor: 'rgba(56,189,248,0.1)', borderColor: 'rgba(56,189,248,0.5)', borderWidth: 1 },
-        mode: 'x'
-      },
-      limits: {
-        x: { minRange: 2 }
-      }
-    }
-  },
-  scales: {
-    x: {
-      grid: { color: 'rgba(51,65,85,0.3)' },
-      ticks: {
-        color: '#64748b',
-        font: { family: 'Inter', size: window.innerWidth < 640 ? 8 : 10 },
-        maxRotation: window.innerWidth < 640 ? 60 : 45,
-        autoSkip: true,
-        maxTicksLimit: window.innerWidth < 640 ? 4 : 8
-      }
-    },
-    y: {
-      grid: { color: 'rgba(51,65,85,0.3)' },
-      ticks: {
-        color: '#64748b',
-        font: { family: 'Inter', size: window.innerWidth < 640 ? 8 : 10 },
-        maxTicksLimit: window.innerWidth < 640 ? 5 : 7,
-        callback: v => v >= 1000000 ? (v/1000000).toFixed(1)+'jt' : v >= 1000 ? (v/1000).toFixed(0)+'rb' : v
-      }
-    }
-  }
-};
-
-function makeLineChart(canvasId, commodityName, color) {
-  const ctx = document.getElementById(canvasId).getContext('2d');
-  const data = getData(commodityName);
-  const isMobile = window.innerWidth < 640;
-  return new Chart(ctx, {
+  if (chart) chart.destroy();
+  chart = new Chart(ctx, {
     type: 'line',
     data: {
-      labels: getLabels(),
+      labels,
       datasets: [{
-        label: commodityName,
-        data: data,
-        borderColor: color,
-        backgroundColor: createGradient(ctx, color),
+        label: 'Bawang Merah (Rp/kg)',
+        data: values,
+        borderColor: '#fb923c',
+        backgroundColor: gradient,
         fill: true,
-        tension: 0.4,
-        pointRadius: isMobile ? 1.5 : 3,
-        pointHoverRadius: isMobile ? 4 : 6,
-        pointBackgroundColor: color,
-        borderWidth: isMobile ? 1.5 : 2.5
+        tension: 0.3,
+        pointRadius: 3,
+        pointHoverRadius: 6,
+        pointBackgroundColor: '#fb923c',
+        borderWidth: 2.5
       }]
     },
-    options: { ...chartDefaults, aspectRatio: isMobile ? 1.2 : 1.6 }
-  });
-}
-
-function initCharts() {
-  const isMobile = window.innerWidth < 640;
-  const filtered = commodities.filter(c => selectedCommodities.includes(c.name));
-
-  charts.main = new Chart(document.getElementById('mainChart').getContext('2d'), {
-    type: 'line',
-    data: {
-      labels: getLabels(),
-      datasets: filtered.map(c => ({
-        label: c.name,
-        data: getData(c.name),
-        borderColor: c.color,
-        backgroundColor: 'transparent',
-        tension: 0.4,
-        pointRadius: isMobile ? 0 : 2,
-        pointHoverRadius: isMobile ? 3 : 5,
-        borderWidth: isMobile ? 1.2 : 2
-      }))
-    },
-    options: { ...chartDefaults, aspectRatio: isMobile ? 1 : 2 }
-  });
-
-  charts.main.options.plugins.zoom.zoom.onZoomComplete = () => {
-    document.getElementById('resetZoomBtn').style.display = 'flex';
-  };
-  charts.main.options.plugins.zoom.pan.onPanComplete = () => {
-    document.getElementById('resetZoomBtn').style.display = 'flex';
-  };
-
-  charts.bawang = makeLineChart('bawangChart', 'Bawang Merah', '#fb923c');
-  charts.cabai = makeLineChart('cabaiChart', 'Cabai Rawit', '#f472b6');
-  charts.beras = makeLineChart('berasChart', 'Beras', '#38bdf8');
-  charts.gula = makeLineChart('gulaChart', 'Gula Pasir', '#a78bfa');
-
-  // Compare chart
-  const currentPrices = filtered.map(c => getData(c.name).slice(-1)[0]);
-  const avg5yPrices = filtered.map(c => {
-    const d = getData(c.name);
-    return Math.round(d.reduce((a,b)=>a+b,0)/d.length);
-  });
-
-  charts.compare = new Chart(document.getElementById('compareChart').getContext('2d'), {
-    type: 'bar',
-    data: {
-      labels: commodities.map(c => c.name),
-      datasets: [
-        {
-          label: 'Harga Saat Ini',
-          data: currentPrices,
-          backgroundColor: commodities.map(c => c.color + 'cc'),
-          borderColor: commodities.map(c => c.color),
-          borderWidth: 1,
-          borderRadius: isMobile ? 3 : 6
-        },
-        {
-          label: 'Rata-rata Periode',
-          data: avg5yPrices,
-          backgroundColor: 'rgba(148,163,184,0.25)',
-          borderColor: 'rgba(148,163,184,0.5)',
-          borderWidth: 1,
-          borderRadius: isMobile ? 3 : 6
-        }
-      ]
-    },
     options: {
-      ...chartDefaults,
-      aspectRatio: isMobile ? 0.9 : 2,
+      responsive: true,
+      maintainAspectRatio: true,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: '#1e293b',
+          titleColor: '#f1f5f9',
+          bodyColor: '#94a3b8',
+          borderColor: '#334155',
+          borderWidth: 1,
+          callbacks: { label: ctx => `Rp${ctx.parsed.y.toLocaleString('id-ID')}` }
+        }
+      },
       scales: {
-        ...chartDefaults.scales,
-        x: {
-          ...chartDefaults.scales.x,
-          ticks: {
-            ...chartDefaults.scales.x.ticks,
-            maxRotation: isMobile ? 70 : 45,
-            font: { family: 'Inter', size: isMobile ? 7 : 10 }
-          }
-        },
-        y: {
-          ...chartDefaults.scales.y,
-          ticks: {
-            ...chartDefaults.scales.y.ticks,
-            font: { family: 'Inter', size: isMobile ? 7 : 10 }
-          }
-        }
+        x: { grid: { color: 'rgba(51,65,85,0.3)' }, ticks: { color: '#64748b', font: { size: 10 }, maxRotation: 45 } },
+        y: { grid: { color: 'rgba(51,65,85,0.3)' }, ticks: { color: '#64748b', font: { size: 10 }, callback: v => (v/1000).toFixed(0)+'rb' } }
       }
     }
   });
 }
 
-function updateCharts() {
-  const labels = getLabels();
-  const filtered = commodities.filter(c => selectedCommodities.includes(c.name));
-
-  charts.main.resetZoom();
-  document.getElementById('resetZoomBtn').style.display = 'none';
-
-  charts.main.data.labels = labels;
-  charts.main.data.datasets = filtered.map(c => ({
-    label: c.name,
-    data: getData(c.name),
-    borderColor: c.color,
-    backgroundColor: 'transparent',
-    tension: 0.4,
-    pointRadius: window.innerWidth < 640 ? 0 : 2,
-    pointHoverRadius: window.innerWidth < 640 ? 3 : 5,
-    borderWidth: window.innerWidth < 640 ? 1.2 : 2
-  }));
-  charts.main.update();
-
-  ['bawang','cabai','beras','gula'].forEach(key => {
-    const c = charts[key];
-    c.data.labels = labels;
-    c.data.datasets[0].data = getData(c.data.datasets[0].label);
-    c.update();
-  });
-
-  // Update compare
-  const currentPrices = filtered.map(c => getData(c.name).slice(-1)[0]);
-  const avg5yPrices = filtered.map(c => {
-    const d = getData(c.name);
-    return Math.round(d.reduce((a,b)=>a+b,0)/d.length);
-  });
-  charts.compare.data.labels = filtered.map(c => c.name);
-  charts.compare.data.datasets[0].data = currentPrices;
-  charts.compare.data.datasets[0].backgroundColor = filtered.map(c => c.color + 'cc');
-  charts.compare.data.datasets[0].borderColor = filtered.map(c => c.color);
-  charts.compare.data.datasets[1].data = avg5yPrices;
-  charts.compare.update();
-}
-
-// Stats
-function renderStats() {
-  const grid = document.getElementById('statsGrid');
-  const topCommodities = ['Bawang Merah', 'Cabai Rawit', 'Beras', 'Gula Pasir'];
-  grid.innerHTML = topCommodities.map(name => {
-    const d = getData(name);
-    const validData = d.filter(v => v !== null);
-    const current = validData[validData.length - 1];
-    const prev = validData[validData.length - 2];
-    const color = commodities.find(c=>c.name===name).color;
-    if (current == null || prev == null) {
-      return `<div class="stat-card">
-        <div class="stat-label">${name}</div>
-        <div class="stat-value" style="color:${color}">-</div>
-        <div class="stat-change flat">Data tidak tersedia</div>
-      </div>`;
-    }
-    const diff = current - prev;
-    const pct = ((diff / prev) * 100).toFixed(1);
-    const cls = diff > 0 ? 'up' : diff < 0 ? 'down' : 'flat';
-    const sign = diff > 0 ? '+' : diff < 0 ? '-' : '';
-    return `<div class="stat-card">
-      <div class="stat-label">${name}</div>
-      <div class="stat-value" style="color:${color}">${R(current)}</div>
-      <div class="stat-change ${cls}">${sign}${Math.abs(diff).toLocaleString('id-ID')} (${Math.abs(pct)}%)</div>
-    </div>`;
-  }).join('');
-}
-
-// Table
-function renderTable() {
+function renderTable(prices) {
+  const dates = Object.keys(prices).sort();
   const tbody = document.getElementById('priceTable');
-  const filtered = commodities.filter(c => selectedCommodities.includes(c.name));
-  tbody.innerHTML = filtered.map(c => {
-    const d6m = getData(c.name);
-    const validData = d6m.filter(v => v !== null);
-    const current = validData[validData.length - 1];
-    const prev = validData[validData.length - 2];
-    if (current == null || prev == null) {
-      return `<tr>
-        <td><div class="commodity-cell"><span class="commodity-dot" style="background:${c.color}"></span>${c.name}</div></td>
-        <td class="price-cell">${current != null ? R(current) : '-'}</td>
-        <td class="price-cell">-</td>
-        <td><span class="change-badge">-</span></td>
-        <td class="price-cell">-</td>
-        <td class="price-cell">-</td>
-      </tr>`;
-    }
-    const diff = current - prev;
-    const pct = ((diff / prev) * 100).toFixed(1);
-    const hi = Math.max(...validData);
-    const lo = Math.min(...validData);
-    const cls = diff > 0 ? 'up' : 'down';
-    const sign = diff > 0 ? '+' : '-';
-    return `<tr>
-      <td><div class="commodity-cell"><span class="commodity-dot" style="background:${c.color}"></span>${c.name}</div></td>
-      <td class="price-cell">${R(current)}</td>
-      <td class="price-cell">${R(prev)}</td>
-      <td><span class="change-badge ${cls}">${sign}${Math.abs(pct)}%</span></td>
-      <td class="price-cell">${R(hi)}</td>
-      <td class="price-cell">${R(lo)}</td>
-    </tr>`;
-  }).join('');
-}
+  let html = '';
+  for (let i = dates.length - 1; i >= 0; i--) {
+    const d = dates[i];
+    const price = prices[d];
+    const prev = i > 0 ? prices[dates[i - 1]] : null;
+    const dt = new Date(d + 'T00:00:00');
+    const label = dt.toLocaleDateString('id-ID', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
 
-// Tabs
-document.getElementById('periodTabs').addEventListener('click', e => {
-  if (!e.target.classList.contains('tab')) return;
-  document.querySelectorAll('#periodTabs .tab').forEach(t => t.classList.remove('active'));
-  e.target.classList.add('active');
-  currentPeriod = e.target.dataset.period;
-  updateCharts();
-});
-
-// Region select
-document.getElementById('regionSelect').addEventListener('change', async (e) => {
-  currentRegion = e.target.value;
-  document.getElementById('loadingBar').classList.add('active');
-  await loadExternalData();
-  document.getElementById('loadingBar').classList.remove('active');
-  updateCharts();
-  renderStats();
-  renderTable();
-  updateRegionLabel();
-});
-
-function togglePriceType() {
-  currentPriceType = currentPriceType === 'konsumen' ? 'produsen' : 'konsumen';
-  const track = document.getElementById('priceToggle');
-  const lblK = document.getElementById('labelKonsumen');
-  const lblP = document.getElementById('labelProdusen');
-  const disc = document.getElementById('produsenDisclaimer');
-  track.classList.toggle('active', currentPriceType === 'produsen');
-  lblK.classList.toggle('active', currentPriceType === 'konsumen');
-  lblP.classList.toggle('active', currentPriceType === 'produsen');
-  disc.style.display = currentPriceType === 'produsen' ? 'flex' : 'none';
-  updateChartSubtitles();
-  updateCharts();
-  renderStats();
-  renderTable();
-  updateRegionLabel();
-}
-
-function updateChartSubtitles() {
-  const priceLabel = currentPriceType === 'produsen' ? 'Produsen' : 'Konsumen';
-  document.querySelectorAll('.chart-card .chart-subtitle').forEach(el => {
-    if (el.textContent.includes('per kg')) {
-      el.textContent = `Harga ${priceLabel} per kg`;
-    }
-  });
-}
-
-function updateRegionLabel() {
-  const mainTitle = document.querySelector('.chart-card.full-width .chart-title');
-  const mainSubtitle = document.querySelector('.chart-card.full-width .chart-subtitle');
-  const tableSubtitle = document.getElementById('tableSubtitle');
-  const regionBadge = document.getElementById('regionBadge');
-  const priceTypeBadge = document.getElementById('priceTypeBadge');
-  const priceLabel = currentPriceType === 'produsen' ? 'Harga Produsen' : 'Harga Konsumen';
-  priceTypeBadge.textContent = priceLabel;
-  
-  const now = new Date();
-  const months = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
-  const todayStr = `${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
-  
-  if (currentRegion === 'Nasional') {
-    mainTitle.textContent = `Tren ${priceLabel} Bahan Pangan Nasional`;
-    mainSubtitle.textContent = `Harga rata-rata nasional per kg (Rp) — ${priceLabel}`;
-    tableSubtitle.textContent = `Per ${todayStr} — ${priceLabel} — Sumber: Badan Pangan, SISKAPERBAPO, PIHPS`;
-    regionBadge.textContent = `Wilayah: Nasional`;
-  } else {
-    mainTitle.textContent = `Tren ${priceLabel} Bahan Pangan — ${currentRegion}`;
-    mainSubtitle.textContent = `Harga rata-rata ${currentRegion} per kg (Rp) — ${priceLabel}`;
-    tableSubtitle.textContent = `Per ${todayStr} — Wilayah: ${currentRegion} — ${priceLabel} — Sumber: Badan Pangan, SISKAPERBAPO, PIHPS`;
-    regionBadge.textContent = `Wilayah: ${currentRegion}`;
-  }
-}
-
-async function loadExternalData() {
-  const region = document.getElementById('regionSelect').value;
-  
-  const sources = [];
-  
-  // Sumber 1: SISKAPERBAPO untuk Jawa Timur
-  if (region === 'Jawa Timur') {
-    sources.push({
-      name: 'SISKAPERBAPO Jatim',
-      url: 'https://corsproxy.io/?' + encodeURIComponent('https://siskaperbapo.jatimprov.go.id/'),
-      parse: (html) => {
-        try {
-          const priceMap = {
-            'Bawang Merah': 'Bawang Merah / kg',
-            'Bawang Putih': 'Bawang Putih / kg',
-            'Cabai Rawit': 'Cabe Rawit Merah / kg',
-            'Cabai Merah': 'Cabe Merah Besar / kg',
-            'Beras': 'Beras Medium / kg',
-            'Gula Pasir': 'Gula Kristal Putih / kg',
-            'Minyak Goreng': 'Minyak Goreng Curah / kg',
-            'Daging Ayam': 'Daging Ayam Ras / kg',
-            'Telur Ayam': 'Telur Ayam Ras / kg'
-          };
-          
-          const prices = {};
-          for (const [ourName, siteName] of Object.entries(priceMap)) {
-            const escaped = siteName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-            const regex = new RegExp(escaped + '</td>[\\s\\S]*?<td[^>]*>([\\d.,]+)\\s*<span', 'i');
-            const match = html.match(regex);
-            if (match) {
-              const price = parseInt(match[1].replace(/\./g, ''));
-              if (price > 1000 && price < 500000) {
-                prices[ourName] = price;
-              }
-            }
-          }
-          
-          if (Object.keys(prices).length >= 5) {
-            return { prices, date: new Date().toISOString() };
-          }
-        } catch(e) {}
-        return null;
-      }
-    });
-  }
-  
-  // Sumber 2: PIHPS Bank Indonesia (Nasional)
-  if (region === 'nasional') {
-    sources.push({
-      name: 'PIHPS Bank Indonesia',
-      url: 'https://api.allorigins.win/raw?url=' + encodeURIComponent('https://www.bi.go.id/hargapangan/api/TablePriceData/GetTablePriceData?komoditas=Bawang+Merah&jenis=Pasar+Tradisional&bulan=' + new Date().getMonth() + '&tahun=' + new Date().getFullYear()),
-      parse: (data) => {
-        try {
-          const json = typeof data === 'string' ? JSON.parse(data) : data;
-          if (json && json.data && json.data.length > 0) {
-            return { prices: json.data[0], date: json.tanggal || new Date().toISOString() };
-          }
-        } catch(e) {}
-        return null;
-      }
-    });
-  }
-  
-  // Sumber 3: Local cache (output dari scrape-siskaperbapo.js)
-  sources.push({
-    name: 'Local cache (SISKAPERBAPO)',
-    url: 'data/siskaperbapo.json',
-    parse: (data) => {
-      try { return JSON.parse(data); } catch { return null; }
-    }
-  });
-
-  // Sumber 4: Historical data (1 file gabungan)
-  let historyData = { daily: {}, monthly: {} };
-  try {
-    const histResp = await fetch('data/history.json', { signal: AbortSignal.timeout(5000) });
-    if (histResp.ok) {
-      const histFile = await histResp.json();
-      historyData.daily = histFile.data || {};
-      console.log(`📊 Loaded ${histFile.days} days from history.json`);
-    }
-  } catch(e) {
-    console.log('⚠ History load gagal:', e.message);
-  }
-  
-  // Convert daily data to monthly averages for chart display
-  for (const [dateStr, prices] of Object.entries(historyData.daily)) {
-    const mk = dateStr.slice(0, 7);
-    if (!historyData.monthly[mk]) historyData.monthly[mk] = {};
-    for (const [commodity, price] of Object.entries(prices)) {
-      if (!historyData.monthly[mk][commodity]) historyData.monthly[mk][commodity] = [];
-      historyData.monthly[mk][commodity].push(price);
+    if (prev !== null) {
+      const diff = price - prev;
+      const pct = ((diff / prev) * 100).toFixed(1);
+      const cls = diff > 0 ? 'up' : diff < 0 ? 'down' : '';
+      const sign = diff > 0 ? '+' : '';
+      html += `<tr><td>${label}</td><td class="price-cell">${R(price)}</td><td><span class="change-badge ${cls}">${sign}${diff.toLocaleString('id-ID')} (${Math.abs(pct)}%)</span></td></tr>`;
+    } else {
+      html += `<tr><td>${label}</td><td class="price-cell">${R(price)}</td><td>-</td></tr>`;
     }
   }
-  // Calculate averages
-  for (const mk of Object.keys(historyData.monthly)) {
-    for (const [commodity, prices] of Object.entries(historyData.monthly[mk])) {
-      if (prices.length > 0) {
-        historyData.monthly[mk][commodity] = Math.round(prices.reduce((a,b) => a+b, 0) / prices.length);
-      }
-    }
-  }
-  
-  console.log(`📊 Loaded ${Object.keys(historyData.daily).length} days, ${Object.keys(historyData.monthly).length} months`);
-
-  for (const source of sources) {
-    try {
-      console.log(`⏳ Fetching from: ${source.name}...`);
-      const resp = await fetch(source.url, { 
-        signal: AbortSignal.timeout(15000) 
-      });
-      if (!resp.ok) {
-        console.log(`✗ ${source.name} HTTP ${resp.status}`);
-        continue;
-      }
-      
-      const raw = await resp.text();
-      console.log(`  Data diterima (${(raw.length/1024).toFixed(1)} KB)`);
-      const result = source.parse(raw);
-      
-      if (result && result.prices) {
-        console.log(`✓ Data loaded from: ${source.name}`);
-        console.log('  Harga yang berhasil di-scrape:');
-        for (const [name, price] of Object.entries(result.prices)) {
-          console.log(`  - ${name}: Rp${price.toLocaleString('id-ID')}/kg`);
-        }
-        
-        const count = Object.keys(result.prices).length;
-        showToast(`${count} komoditas dimuat dari ${source.name}`, 'success');
-        
-        if (result.date) {
-          const d = new Date(result.date);
-          const months = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
-          const dateStr = `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
-          document.getElementById('regionBadge').textContent = `Data Live: ${dateStr} | Sumber: ${source.name}`;
-        }
-        
-        if (result.prices) {
-          updateLivePrices(result.prices, result.producerPrices);
-        }
-        
-        // Apply history data — isi 6m array dengan rata-rata bulanan aktual
-        if (historyData && Object.keys(historyData.monthly).length > 0) {
-          applyHistoryData(historyData);
-        }
-        
-        return;
-      } else {
-        console.log(`✗ ${source.name} parse gagal - tidak ada data`);
-      }
-    } catch (e) {
-      console.log(`✗ ${source.name} gagal:`, e.message);
-      continue;
-    }
-  }
-  
-  console.log('ℹ Menggunakan data hardcode');
-  showToast('Menggunakan data hardcode', 'info');
-}
-
-function updateLivePrices(prices, producerPrices) {
-  const factor = regionFactors[currentRegion] || 1.0;
-  
-  for (const commodity of commodities) {
-    const newPrice = prices[commodity.name];
-    if (newPrice && priceData[commodity.name]) {
-      const basePrice = factor !== 1.0 ? Math.round(newPrice / factor) : newPrice;
-      
-      // Interpolate: find last known price (Badan Pangan Jan 2026) and interpolate to live price
-      const arr1y = priceData[commodity.name]['1y'];
-      if (arr1y) {
-        // Find last non-null value (Jan 2026 = index 6)
-        let lastKnownIdx = -1;
-        let lastKnownVal = null;
-        for (let i = arr1y.length - 1; i >= 0; i--) {
-          if (arr1y[i] !== null) { lastKnownIdx = i; lastKnownVal = arr1y[i]; break; }
-        }
-        // Fill nulls with linear interpolation from lastKnown to basePrice
-        const nullCount = arr1y.filter(v => v === null).length;
-        if (lastKnownVal !== null && nullCount > 0) {
-          const totalGap = nullCount + 1; // +1 because live price is the next point after last null
-          for (let i = 0; i < arr1y.length; i++) {
-            if (arr1y[i] === null) {
-              const stepsFromLast = i - lastKnownIdx;
-              arr1y[i] = Math.round(lastKnownVal + (basePrice - lastKnownVal) * stepsFromLast / totalGap);
-            }
-          }
-        }
-      }
-      
-      // For 6m: interpolate from Jan 2026 price to live price
-      const arr6m = priceData[commodity.name]['6m'];
-      if (arr6m) {
-        // Use Jan 2026 price as starting point for 6m interpolation
-        const janPrice = arr1y ? arr1y[6] : null; // Jan 2026 is index 6 in 1y
-        const startPrice = janPrice || basePrice;
-        for (let i = 0; i < arr6m.length; i++) {
-          if (arr6m[i] === null) {
-            // Feb=0, Mar=1, ..., Jul=5 → total 6 months from Jan to Jul
-            arr6m[i] = Math.round(startPrice + (basePrice - startPrice) * (i + 1) / 6);
-          }
-        }
-      }
-    }
-    
-    // Update producer prices dengan interpolasi yang sama
-    if (producerPrices && producerPrices[commodity.name] && priceDataProdusen[commodity.name]) {
-      const prodPrice = producerPrices[commodity.name];
-      const baseProdPrice = factor !== 1.0 ? Math.round(prodPrice / factor) : prodPrice;
-      
-      const arr1yP = priceDataProdusen[commodity.name]['1y'];
-      if (arr1yP) {
-        let lastKnownIdx = -1;
-        let lastKnownVal = null;
-        for (let i = arr1yP.length - 1; i >= 0; i--) {
-          if (arr1yP[i] !== null) { lastKnownIdx = i; lastKnownVal = arr1yP[i]; break; }
-        }
-        const nullCount = arr1yP.filter(v => v === null).length;
-        if (lastKnownVal !== null && nullCount > 0) {
-          const totalGap = nullCount + 1;
-          for (let i = 0; i < arr1yP.length; i++) {
-            if (arr1yP[i] === null) {
-              const stepsFromLast = i - lastKnownIdx;
-              arr1yP[i] = Math.round(lastKnownVal + (baseProdPrice - lastKnownVal) * stepsFromLast / totalGap);
-            }
-          }
-        }
-      }
-      
-      const arr6mP = priceDataProdusen[commodity.name]['6m'];
-      if (arr6mP) {
-        const janPriceP = arr1yP ? arr1yP[6] : null;
-        const startPriceP = janPriceP || baseProdPrice;
-        for (let i = 0; i < arr6mP.length; i++) {
-          if (arr6mP[i] === null) {
-            arr6mP[i] = Math.round(startPriceP + (baseProdPrice - startPriceP) * (i + 1) / 6);
-          }
-        }
-      }
-    }
-  }
-}
-
-// Apply historical daily data — isi array dengan rata-rata bulanan aktual
-function applyHistoryData(history) {
-  if (!history || !history.monthly) return;
-  
-  // Build month keys from chart labels
-  // 6m: ['Feb 2026','Mar 2026',...] → ['2026-02','2026-03',...]
-  const m6 = months6m.map(l => {
-    const [bulan, tahun] = l.split(' ');
-    const m = {'Jan':'01','Feb':'02','Mar':'03','Apr':'04','Mei':'05','Jun':'06',
-               'Jul':'07','Ags':'08','Sep':'09','Okt':'10','Nov':'11','Des':'12'}[bulan];
-    return `${tahun}-${m}`;
-  });
-  
-  // 1y: ['Jul 2025',...,'Jul 2026'] → ['2025-07',...,'2026-07']
-  const m1 = months1y.map(l => {
-    const [bulan, tahun] = l.split(' ');
-    const m = {'Jan':'01','Feb':'02','Mar':'03','Apr':'04','Mei':'05','Jun':'06',
-               'Jul':'07','Ags':'08','Sep':'09','Okt':'10','Nov':'11','Des':'12'}[bulan];
-    return `${tahun}-${m}`;
-  });
-  
-  for (const commodity of commodities) {
-    // Apply ke 6m array
-    const arr6m = priceData[commodity.name]?.['6m'];
-    if (arr6m) {
-      for (let i = 0; i < m6.length; i++) {
-        if (history.monthly[m6[i]] && history.monthly[m6[i]][commodity.name] != null) {
-          arr6m[i] = history.monthly[m6[i]][commodity.name];
-        }
-      }
-    }
-    
-    // Apply ke 1y array
-    const arr1y = priceData[commodity.name]?.['1y'];
-    if (arr1y) {
-      for (let i = 0; i < m1.length; i++) {
-        if (history.monthly[m1[i]] && history.monthly[m1[i]][commodity.name] != null) {
-          arr1y[i] = history.monthly[m1[i]][commodity.name];
-        }
-      }
-    }
-    
-    // Apply ke 3y array (monthly: Jan 2024 - Jul 2026)
-    const arr3y = priceData[commodity.name]?.['3y'];
-    if (arr3y) {
-      for (let i = 0; i < months3y.length; i++) {
-        if (history.monthly[months3y[i]] && history.monthly[months3y[i]][commodity.name] != null) {
-          arr3y[i] = history.monthly[months3y[i]][commodity.name];
-        }
-      }
-    }
-    
-    // Apply ke 5y array (monthly: Jan 2021 - Jul 2026)
-    const arr5y = priceData[commodity.name]?.['5y'];
-    if (arr5y) {
-      for (let i = 0; i < months5y.length; i++) {
-        if (history.monthly[months5y[i]] && history.monthly[months5y[i]][commodity.name] != null) {
-          arr5y[i] = history.monthly[months5y[i]][commodity.name];
-        }
-      }
-    }
-  }
-  
-  // Apply ke produsen juga
-  for (const commodity of commodities) {
-    const arr6mP = priceDataProdusen[commodity.name]?.['6m'];
-    if (arr6mP) {
-      for (let i = 0; i < m6.length; i++) {
-        const histKey = m6[i];
-        if (history.monthly[histKey] && history.monthly[histKey][commodity.name] != null) {
-          arr6mP[i] = history.monthly[histKey][commodity.name];
-        }
-      }
-    }
-    const arr1yP = priceDataProdusen[commodity.name]?.['1y'];
-    if (arr1yP) {
-      for (let i = 0; i < m1.length; i++) {
-        if (history.monthly[m1[i]] && history.monthly[m1[i]][commodity.name] != null) {
-          arr1yP[i] = history.monthly[m1[i]][commodity.name];
-        }
-      }
-    }
-  }
-}
-
-// Init
-function showToast(msg, type = 'info', duration = 4000) {
-  const container = document.getElementById('toastContainer');
-  const icons = { success: '✓', error: '✗', info: 'ℹ' };
-  const toast = document.createElement('div');
-  toast.className = `toast ${type}`;
-  toast.innerHTML = `<span>${icons[type] || ''}</span> ${msg}`;
-  container.appendChild(toast);
-  setTimeout(() => {
-    toast.classList.add('hide');
-    setTimeout(() => toast.remove(), 300);
-  }, duration);
+  tbody.innerHTML = html;
+  document.getElementById('tableSubtitle').textContent = `${dates.length} hari (${dates[0]} s/d ${dates[dates.length - 1]})`;
 }
 
 async function init() {
-  // Set tanggal otomatis
-  const now = new Date();
-  const months = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
-  const dateStr = `${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
-  document.getElementById('updateBadge').textContent = `Update: ${dateStr}`;
-  
-  document.getElementById('loadingBar').classList.add('active');
-  await loadExternalData();
-  document.getElementById('loadingBar').classList.remove('active');
-  renderCommodityChips();
-  initCharts();
-  renderStats();
-  renderTable();
-  updateRegionLabel();
+  try {
+    const resp = await fetch('data/bawang-merah.json');
+    if (!resp.ok) throw new Error('File tidak ditemukan');
+    const data = await resp.json();
+
+    priceData = data.prices;
+    const dates = Object.keys(priceData).sort();
+
+    const now = new Date();
+    document.getElementById('updateBadge').textContent = `Update: ${now.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}`;
+    document.getElementById('daysBadge').textContent = `${dates.length} hari data`;
+
+    renderStats(priceData);
+    renderChart(priceData);
+    renderTable(priceData);
+    showToast(`${dates.length} hari data Bawang Merah dimuat`, 'success');
+  } catch (e) {
+    showToast('Gagal memuat data: ' + e.message, 'error');
+    document.getElementById('statsGrid').innerHTML = '<div class="stat-card"><div class="stat-label">Error</div><div class="stat-value">-</div><div class="stat-change">Jalankan scrape dulu: npm run scrape</div></div>';
+  }
 }
+
 init();
 
-document.getElementById('downloadMainChart').addEventListener('click', () => {
-  const canvas = document.getElementById('mainChart');
+document.getElementById('downloadChart').addEventListener('click', () => {
   const link = document.createElement('a');
-  link.download = `harga-pangan-${currentRegion.toLowerCase().replace(/\s/g,'-')}-${currentPriceType}-${currentPeriod}.png`;
-  link.href = canvas.toDataURL('image/png', 1.0);
+  link.download = 'harga-bawang-merah.png';
+  link.href = document.getElementById('priceChart').toDataURL('image/png');
   link.click();
-  showToast('Chart berhasil diunduh', 'success');
-});
-
-document.getElementById('resetZoomBtn').addEventListener('click', () => {
-  if (charts.main) charts.main.resetZoom();
-});
-
-// Resize handler - re-init charts on significant viewport changes
-let lastWidth = window.innerWidth;
-let resizeTimeout;
-window.addEventListener('resize', () => {
-  clearTimeout(resizeTimeout);
-  resizeTimeout = setTimeout(() => {
-    const newWidth = window.innerWidth;
-    const crossedBreakpoint = (lastWidth < 640 && newWidth >= 640) || (lastWidth >= 640 && newWidth < 640);
-    if (crossedBreakpoint) {
-      Object.values(charts).forEach(c => c.destroy());
-      initCharts();
-    }
-    lastWidth = newWidth;
-  }, 250);
 });
 </script>
 </body>
