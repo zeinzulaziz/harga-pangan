@@ -64,6 +64,11 @@
     footer a { color: var(--accent); }
     .download-btn { background: var(--card); border: 1px solid var(--border); color: var(--text-dim); width: 28px; height: 28px; border-radius: 6px; cursor: pointer; font-size: 0.8rem; display: flex; align-items: center; justify-content: center; }
     .download-btn:hover { background: var(--accent); color: #0f172a; }
+    .area-select { padding: 0.35rem 0.6rem; border-radius: 8px; border: 1px solid var(--border); background: var(--card); color: var(--text); font-family: inherit; font-size: 0.8rem; cursor: pointer; outline: none; }
+    .area-select:hover { border-color: var(--accent); }
+    .area-row { cursor: pointer; }
+    .area-row td:first-child { font-weight: 600; color: var(--accent); }
+    .pasar-row td:first-child { padding-left: 2rem; color: var(--text-dim); font-size: 0.8rem; }
     @media (max-width: 640px) {
       .hero { padding: 1.5rem 1rem; }
       .stats-grid { grid-template-columns: repeat(2, 1fr); }
@@ -115,6 +120,22 @@
     </div>
   </div>
 
+  <div class="table-card">
+    <div class="chart-header">
+      <div>
+        <div class="chart-title">Harga Per Wilayah</div>
+        <div class="chart-subtitle">Harga per kabupaten/kota dan pasar</div>
+      </div>
+      <select id="areaDateSelect" class="area-select"></select>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Kabupaten/Kota</th><th>Pasar</th><th>Harga/kg (Rp)</th></tr></thead>
+        <tbody id="areaTable"></tbody>
+      </table>
+    </div>
+  </div>
+
   <div class="sources">
     <strong>Sumber Data:</strong> <a href="https://siskaperbapo.jatimprov.go.id/harga-komoditas" target="_blank">SISKAPERBAPO Jawa Timur</a> — Harga rata-rata Provinsi Jawa Timur. Data di-scrape otomatis setiap hari via GitHub Actions.
   </div>
@@ -127,6 +148,7 @@
 <script>
 const R = n => 'Rp' + n.toLocaleString('id-ID');
 let priceData = {};
+let areasData = {};
 let chart = null;
 
 function showToast(msg, type = 'info') {
@@ -252,6 +274,47 @@ function renderTable(prices) {
   document.getElementById('tableSubtitle').textContent = `${dates.length} hari (${dates[0]} s/d ${dates[dates.length - 1]})`;
 }
 
+function renderAreaTable(date) {
+  const tbody = document.getElementById('areaTable');
+  if (!areasData || Object.keys(areasData).length === 0) {
+    tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;color:var(--text-dim)">Data wilayah tidak tersedia</td></tr>';
+    return;
+  }
+
+  let html = '';
+  for (const [area, pasars] of Object.entries(areasData)) {
+    const areaPasars = Object.entries(pasars);
+    let areaPrices = [];
+    for (const [, prices] of areaPasars) {
+      if (prices[date]) areaPrices.push(prices[date]);
+    }
+    if (areaPrices.length === 0) continue;
+
+    const areaAvg = Math.round(areaPrices.reduce((a, b) => a + b, 0) / areaPrices.length);
+    html += `<tr class="area-row"><td>${area}</td><td>${areaPasars.length} pasar</td><td class="price-cell">${R(areaAvg)}</td></tr>`;
+
+    for (const [pasar, prices] of areaPasars) {
+      const price = prices[date];
+      if (!price) continue;
+      html += `<tr class="pasar-row"><td></td><td>${pasar}</td><td class="price-cell">${R(price)}</td></tr>`;
+    }
+  }
+
+  tbody.innerHTML = html || '<tr><td colspan="3" style="text-align:center;color:var(--text-dim)">Tidak ada data untuk tanggal ini</td></tr>';
+}
+
+function initAreaSelect() {
+  const select = document.getElementById('areaDateSelect');
+  const dates = Object.keys(priceData).sort();
+  select.innerHTML = dates.map(d => {
+    const dt = new Date(d + 'T00:00:00');
+    return `<option value="${d}">${dt.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}</option>`;
+  }).reverse().join('');
+
+  select.addEventListener('change', () => renderAreaTable(select.value));
+  if (dates.length > 0) renderAreaTable(dates[dates.length - 1]);
+}
+
 async function init() {
   try {
     const resp = await fetch('data/bawang-merah.json');
@@ -259,6 +322,7 @@ async function init() {
     const data = await resp.json();
 
     priceData = data.prices;
+    areasData = data.areas || {};
     const dates = Object.keys(priceData).sort();
 
     const now = new Date();
@@ -268,6 +332,7 @@ async function init() {
     renderStats(priceData);
     renderChart(priceData);
     renderTable(priceData);
+    initAreaSelect();
     showToast(`${dates.length} hari data Bawang Merah dimuat`, 'success');
   } catch (e) {
     showToast('Gagal memuat data: ' + e.message, 'error');

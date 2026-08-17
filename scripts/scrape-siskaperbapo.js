@@ -37,38 +37,74 @@ function fetchPost(url, formData) {
   });
 }
 
-function parseProvinceRow(html) {
+function parseAllRows(html) {
   const dates = [];
   const dateRegex = /<th class="right">(\d{4}-\d{2}-\d{2})<\/th>/g;
   let m;
   while ((m = dateRegex.exec(html)) !== null) dates.push(m[1]);
 
-  const propinsiMatch = html.match(/Propinsi Jawa Timur<\/td>([\s\S]*?)<\/tr>/i);
-  if (!propinsiMatch) return {};
+  if (dates.length === 0) return { dates, province: {}, areas: {} };
 
-  const cellRegex = /<td class="right">([\d.]+)<\/td>/g;
-  const prices = {};
-  let idx = 0;
-  let cm;
-  while ((cm = cellRegex.exec(propinsiMatch[1])) !== null) {
-    if (dates[idx]) {
-      const price = parseInt(cm[1].replace(/\./g, ''));
-      if (price > 1000 && price < 500000) prices[dates[idx]] = price;
+  const province = {};
+  const areas = {};
+  let currentArea = null;
+
+  const rows = html.split(/<tr>/i);
+  for (const row of rows) {
+    if (!row.includes('<td')) continue;
+
+    const cells = [];
+    const cellRegex = /<td[^>]*>([\s\S]*?)<\/td>/gi;
+    let cm;
+    while ((cm = cellRegex.exec(row)) !== null) {
+      cells.push(cm[1].replace(/<[^>]+>/g, '').trim());
     }
-    idx++;
+
+    if (cells.length < 2) continue;
+    const name = cells[1];
+    if (!name || name === '' || name === '#') continue;
+
+    const isBold = row.includes('font-weight: bold');
+    const priceCells = [];
+    const priceRegex = /<td class="right">([\d.]+)<\/td>/g;
+    let pm;
+    while ((pm = priceRegex.exec(row)) !== null) {
+      priceCells.push(pm[1]);
+    }
+
+    if (name === 'Propinsi Jawa Timur') {
+      for (let i = 0; i < priceCells.length; i++) {
+        const price = parseInt(priceCells[i].replace(/\./g, ''));
+        if (price > 1000 && price < 500000 && dates[i]) {
+          province[dates[i]] = price;
+        }
+      }
+      continue;
+    }
+
+    if (isBold && !name.startsWith('Pasar')) {
+      currentArea = name;
+      if (!areas[currentArea]) areas[currentArea] = {};
+      continue;
+    }
+
+    if (currentArea && priceCells.length > 0) {
+      if (!areas[currentArea][name]) areas[currentArea][name] = {};
+      for (let i = 0; i < priceCells.length; i++) {
+        if (priceCells[i] === '-') continue;
+        const price = parseInt(priceCells[i].replace(/\./g, ''));
+        if (price > 1000 && price < 500000 && dates[i]) {
+          areas[currentArea][name][dates[i]] = price;
+        }
+      }
+    }
   }
-  return prices;
+
+  return { dates, province, areas };
 }
 
-function formatDate(d) {
-  return d.toISOString().slice(0, 10);
-}
-
-function addDays(d, n) {
-  const r = new Date(d);
-  r.setDate(r.getDate() + n);
-  return r;
-}
+function formatDate(d) { return d.toISOString().slice(0, 10); }
+function addDays(d, n) { const r = new Date(d); r.setDate(r.getDate() + n); return r; }
 
 async function main() {
   console.log('\n' + '═'.repeat(50));
@@ -77,7 +113,8 @@ async function main() {
   console.log('═'.repeat(50));
 
   const now = new Date();
-  const allPrices = {};
+  const allProvince = {};
+  const allAreas = {};
 
   for (let i = 0; i < 5; i++) {
     const endDate = addDays(now, -i * 7);
@@ -90,16 +127,24 @@ async function main() {
         komoditas: KOMODITAS_ID
       });
 
-      const prices = parseProvinceRow(html);
-      const count = Object.keys(prices).length;
-      console.log(`   ✓ ${count} hari ditemukan`);
-      Object.assign(allPrices, prices);
+      const { dates, province, areas } = parseAllRows(html);
+      const areaCount = Object.keys(areas).length;
+      console.log(`   ✓ ${dates.length} hari, ${areaCount} kabupaten/kota`);
+      Object.assign(allProvince, province);
+
+      for (const [area, pasars] of Object.entries(areas)) {
+        if (!allAreas[area]) allAreas[area] = {};
+        for (const [pasar, prices] of Object.entries(pasars)) {
+          if (!allAreas[area][pasar]) allAreas[area][pasar] = {};
+          Object.assign(allAreas[area][pasar], prices);
+        }
+      }
     } catch (err) {
       console.log(`   ✗ Gagal: ${err.message}`);
     }
   }
 
-  const sortedDates = Object.keys(allPrices).sort();
+  const sortedDates = Object.keys(allProvince).sort();
   if (sortedDates.length === 0) {
     console.log('\n❌ Tidak ada data tersedia');
     process.exit(1);
@@ -109,7 +154,12 @@ async function main() {
   console.log(`📊 HARGA BAWANG MERAH JAWA TIMUR (${sortedDates.length} hari):`);
   console.log('─'.repeat(50));
   for (const d of sortedDates) {
-    console.log(`  ${d}: Rp${allPrices[d].toLocaleString('id-ID')}/kg`);
+    console.log(`  ${d}: Rp${allProvince[d].toLocaleString('id-ID')}/kg`);
+  }
+  console.log(`\n📍 ${Object.keys(allAreas).length} kabupaten/kota:`);
+  for (const [area, pasars] of Object.entries(allAreas)) {
+    const pasarCount = Object.keys(pasars).length;
+    console.log(`  ${area}: ${pasarCount} pasar`);
   }
 
   const outDir = path.join(__dirname, '..', 'data');
@@ -122,11 +172,12 @@ async function main() {
     lastUpdate: now.toISOString(),
     days: sortedDates.length,
     dateRange: { from: sortedDates[0], to: sortedDates[sortedDates.length - 1] },
-    prices: allPrices
+    prices: allProvince,
+    areas: allAreas
   };
 
   fs.writeFileSync(path.join(outDir, 'bawang-merah.json'), JSON.stringify(output, null, 2));
-  console.log(`\n✅ Tersimpan di data/bawang-merah.json (${sortedDates.length} hari)`);
+  console.log(`\n✅ Tersimpan di data/bawang-merah.json (${sortedDates.length} hari, ${Object.keys(allAreas).length} wilayah)`);
 
   const historyDir = path.join(outDir, 'history');
   if (!fs.existsSync(historyDir)) fs.mkdirSync(historyDir, { recursive: true });
@@ -139,7 +190,7 @@ async function main() {
   const dayPath = path.join(yearDir, `${todayStr}.json`);
   fs.writeFileSync(dayPath, JSON.stringify({
     date: todayStr,
-    prices: { [KOMODITAS_NAME]: allPrices[todayStr] || null },
+    prices: { [KOMODITAS_NAME]: allProvince[todayStr] || null },
     lastUpdate: now.toISOString()
   }, null, 2));
   console.log(`✅ History ${todayStr}: tersimpan`);
