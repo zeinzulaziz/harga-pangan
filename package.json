@@ -1,8 +1,9 @@
 {
-  "name": "harga-bawang-merah",
-  "version": "2.0.0",
-  "description": "Dashboard Harga Bawang Merah — SISKAPERBAPO Jawa Timur",
+  "name": "harga-pangan-jatim",
+  "version": "3.0.0",
+  "description": "Dashboard Harga Produsen Pangan — SISKAPERBAPO Jawa Timur",
   "scripts": {
-    "scrape": "node scripts/scrape-siskaperbapo.js"
+    "scrape": "node scripts/scrape-produsen.js",
+    "scrape-konsumen": "node scripts/scrape-siskaperbapo.js"
   }
 }
