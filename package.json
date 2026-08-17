@@ -4,6 +4,7 @@
   "description": "Dashboard Harga Produsen Pangan — SISKAPERBAPO Jawa Timur",
   "scripts": {
     "scrape": "node scripts/scrape-produsen.js",
-    "scrape:full": "node scripts/scrape-produsen.js --full"
+    "scrape:full": "node scripts/scrape-produsen.js --full",
+    "analisa": "node scripts/analisa-tren.js"
   }
 }
