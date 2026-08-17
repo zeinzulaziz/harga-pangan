@@ -225,4 +225,33 @@ function printAnalysis(analysis) {
 
 const data = load();
 const analysis = analyze(data);
-printAnalysis(analysis);
+
+// Output JSON untuk dashboard
+const outDir = path.join(__dirname, '..', 'data');
+const outPath = path.join(outDir, 'analisa.json');
+
+const output = {
+  generatedAt: new Date().toISOString(),
+  summary: {},
+  commodities: analysis
+};
+
+for (const [commodity, info] of Object.entries(analysis)) {
+  const bestMonth = info.bulanNaik.length > 0 ? info.bulanNaik[0].bulan : null;
+  const worstMonth = info.bulanTurun.length > 0 ? info.bulanTurun[info.bulanTurun.length - 1].bulan : null;
+  output.summary[commodity] = {
+    bestMonth,
+    worstMonth,
+    terendah: info.terendah,
+    tertinggi: info.tertinggi
+  };
+}
+
+fs.writeFileSync(outPath, JSON.stringify(output, null, 2));
+console.log(`✅ Analisa tersimpan di data/analisa.json`);
+console.log(`\nRingkasan:`);
+for (const [commodity, info] of Object.entries(analysis)) {
+  const best = info.bulanNaik.length > 0 ? BULAN_FULL[info.bulanNaik[0].bulan - 1] : '-';
+  const worst = info.bulanTurun.length > 0 ? BULAN_FULL[info.bulanTurun[info.bulanTurun.length - 1].bulan - 1] : '-';
+  console.log(`  ${commodity.padEnd(15)} → Jual: ${best.padEnd(10)} | Hindari: ${worst}`);
+}

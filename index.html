@@ -15,7 +15,7 @@
       --accent: #38bdf8; --accent2: #818cf8; --accent3: #f472b6;
       --accent4: #34d399; --accent5: #fb923c; --accent6: #a78bfa;
       --text: #f1f5f9; --text-dim: #94a3b8; --border: #334155;
-      --green: #22c55e; --red: #ef4444;
+      --green: #22c55e; --red: #ef4444; --yellow: #eab308;
     }
     body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
     .hero { background: linear-gradient(135deg, #0f172a 0%, #1a2e1a 50%, #0f172a 100%); padding: 2rem 1.5rem; text-align: center; border-bottom: 1px solid var(--border); }
@@ -24,6 +24,10 @@
     .badge-row { display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap; margin-top: 0.75rem; }
     .badge { background: rgba(52,211,153,0.1); border: 1px solid rgba(52,211,153,0.2); color: var(--accent4); padding: 0.2rem 0.7rem; border-radius: 999px; font-size: 0.75rem; }
     .container { max-width: 1200px; margin: 0 auto; padding: 1.5rem 1rem; }
+    .view-toggle { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; justify-content: center; }
+    .view-btn { padding: 0.6rem 1.5rem; border-radius: 10px; border: 1px solid var(--border); background: var(--card); color: var(--text-dim); font-family: inherit; font-size: 0.9rem; font-weight: 500; cursor: pointer; transition: all 0.2s; }
+    .view-btn:hover { border-color: var(--accent); color: var(--text); }
+    .view-btn.active { background: var(--accent4); color: #0f172a; border-color: var(--accent4); font-weight: 600; }
     .tabs { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
     .tab { padding: 0.5rem 1rem; border-radius: 8px; border: 1px solid var(--border); background: var(--card); color: var(--text-dim); font-family: inherit; font-size: 0.85rem; font-weight: 500; cursor: pointer; transition: all 0.2s; }
     .tab:hover { border-color: var(--accent4); color: var(--text); }
@@ -64,6 +68,43 @@
     .select-actions { display: flex; gap: 0.4rem; margin-bottom: 0.75rem; }
     .select-action { padding: 0.3rem 0.7rem; border-radius: 6px; border: 1px solid var(--border); background: transparent; color: var(--text-dim); font-family: inherit; font-size: 0.72rem; cursor: pointer; transition: all 0.2s; }
     .select-action:hover { border-color: var(--accent); color: var(--text); }
+    /* Analisa */
+    .analisa-section { display: none; }
+    .analisa-section.active { display: block; }
+    .grafik-section { display: none; }
+    .grafik-section.active { display: block; }
+    .analisa-header { text-align: center; margin-bottom: 2rem; }
+    .analisa-header h2 { font-size: 1.3rem; font-weight: 700; color: var(--accent4); margin-bottom: 0.3rem; }
+    .analisa-header p { color: var(--text-dim); font-size: 0.85rem; }
+    .analisa-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+    .analisa-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 1.25rem; transition: all 0.2s; }
+    .analisa-card:hover { border-color: rgba(52,211,153,0.3); }
+    .analisa-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+    .analisa-commodity { font-size: 1rem; font-weight: 700; }
+    .analisa-columns { font-size: 0.7rem; color: var(--text-dim); }
+    .recommendation-box { background: rgba(52,211,153,0.08); border: 1px solid rgba(52,211,153,0.2); border-radius: 10px; padding: 0.75rem; margin-bottom: 1rem; }
+    .recommendation-title { font-size: 0.75rem; font-weight: 600; color: var(--accent4); margin-bottom: 0.4rem; display: flex; align-items: center; gap: 0.3rem; }
+    .recommendation-row { display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 0.2rem; }
+    .recommendation-label { color: var(--text-dim); }
+    .recommendation-value { font-weight: 600; }
+    .recommendation-value.good { color: var(--green); }
+    .recommendation-value.bad { color: var(--red); }
+    .heatmap-row { display: flex; gap: 2px; margin-bottom: 0.5rem; }
+    .heatmap-cell { flex: 1; height: 32px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 0.6rem; font-weight: 600; position: relative; }
+    .heatmap-label { font-size: 0.65rem; color: var(--text-dim); width: 28px; display: flex; align-items: center; }
+    .heatmap-legend { display: flex; align-items: center; gap: 0.5rem; margin-top: 0.5rem; font-size: 0.7rem; color: var(--text-dim); }
+    .heatmap-legend-bar { height: 8px; width: 80px; border-radius: 4px; background: linear-gradient(90deg, #22c55e, #eab308, #ef4444); }
+    .stats-mini { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.75rem; }
+    .stat-mini { background: rgba(51,65,85,0.4); border-radius: 6px; padding: 0.35rem 0.6rem; font-size: 0.72rem; }
+    .stat-mini-label { color: var(--text-dim); font-size: 0.65rem; }
+    .stat-mini-value { font-weight: 600; }
+    .summary-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; margin-top: 1rem; }
+    .summary-table th { padding: 0.75rem 1rem; text-align: left; font-weight: 600; color: var(--text-dim); font-size: 0.75rem; text-transform: uppercase; background: rgba(51,65,85,0.5); }
+    .summary-table td { padding: 0.7rem 1rem; border-top: 1px solid var(--border); }
+    .summary-table tr:hover td { background: rgba(51,65,85,0.3); }
+    .month-badge { display: inline-block; padding: 0.15rem 0.5rem; border-radius: 4px; font-size: 0.75rem; font-weight: 600; }
+    .month-badge.good { background: rgba(34,197,94,0.15); color: var(--green); }
+    .month-badge.bad { background: rgba(239,68,68,0.15); color: var(--red); }
     .toast-container { position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 9999; display: flex; flex-direction: column; gap: 0.5rem; }
     .toast { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 0.75rem 1rem; font-size: 0.8rem; color: var(--text); box-shadow: 0 8px 24px rgba(0,0,0,0.3); }
     .toast.success { border-left: 3px solid var(--green); } .toast.error { border-left: 3px solid var(--red); }
@@ -76,6 +117,8 @@
       .chart-card { padding: 0.75rem; }
       .filter-btn { padding: 0.3rem 0.6rem; font-size: 0.72rem; }
       .pasar-grid { grid-template-columns: 1fr; }
+      .analisa-grid { grid-template-columns: 1fr; }
+      .view-btn { padding: 0.5rem 1rem; font-size: 0.8rem; }
     }
   </style>
 </head>
@@ -94,37 +137,70 @@
 </header>
 
 <main class="container">
-  <div class="tabs" id="commodityTabs"></div>
+  <div class="view-toggle">
+    <button class="view-btn active" data-view="grafik">📈 Grafik</button>
+    <button class="view-btn" data-view="analisa">💡 Analisa & Rekomendasi</button>
+  </div>
 
-  <div class="pasar-section">
-    <div class="pasar-section-title">Pilih Pasar <span id="pasarCount"></span></div>
-    <div class="select-actions">
-      <button class="select-action" id="selectAllBtn">Pilih Semua</button>
-      <button class="select-action" id="deselectAllBtn">Hapus Semua</button>
+  <!-- GRAFIK VIEW -->
+  <div class="grafik-section active" id="grafikView">
+    <div class="tabs" id="commodityTabs"></div>
+
+    <div class="pasar-section">
+      <div class="pasar-section-title">Pilih Pasar <span id="pasarCount"></span></div>
+      <div class="select-actions">
+        <button class="select-action" id="selectAllBtn">Pilih Semua</button>
+        <button class="select-action" id="deselectAllBtn">Hapus Semua</button>
+      </div>
+      <div class="pasar-grid" id="pasarGrid"></div>
     </div>
-    <div class="pasar-grid" id="pasarGrid"></div>
+
+    <div class="filter-bar">
+      <label>Periode:</label>
+      <button class="filter-btn" data-period="1w">1 Minggu</button>
+      <button class="filter-btn" data-period="1m">1 Bulan</button>
+      <button class="filter-btn" data-period="3m">3 Bulan</button>
+      <button class="filter-btn" data-period="6m">6 Bulan</button>
+      <button class="filter-btn" data-period="1y">1 Tahun</button>
+      <button class="filter-btn active" data-period="all">Semua</button>
+      <button class="zoom-btn" id="resetZoomBtn" title="Reset zoom">↺ Reset Zoom</button>
+    </div>
+
+    <div class="chart-card">
+      <div class="chart-header">
+        <div>
+          <div class="chart-title" id="chartTitle">Tren Harga</div>
+          <div class="chart-subtitle" id="chartSubtitle">Harga produsen per kg (Rp)</div>
+        </div>
+      </div>
+      <div class="chart-wrap"><canvas id="priceChart"></canvas></div>
+      <div class="zoom-hint">Scroll untuk zoom | Drag untuk geser | Double-click untuk reset</div>
+    </div>
   </div>
 
-  <div class="filter-bar">
-    <label>Periode:</label>
-    <button class="filter-btn" data-period="1w">1 Minggu</button>
-    <button class="filter-btn" data-period="1m">1 Bulan</button>
-    <button class="filter-btn" data-period="3m">3 Bulan</button>
-    <button class="filter-btn" data-period="6m">6 Bulan</button>
-    <button class="filter-btn" data-period="1y">1 Tahun</button>
-    <button class="filter-btn active" data-period="all">Semua</button>
-    <button class="zoom-btn" id="resetZoomBtn" title="Reset zoom">↺ Reset Zoom</button>
-  </div>
+  <!-- ANALISA VIEW -->
+  <div class="analisa-section" id="analisaView">
+    <div class="analisa-header">
+      <h2>Analisa Tren Harga & Rekomendasi</h2>
+      <p>Berdasarkan data historis — membantu petani menentukan waktu jual terbaik</p>
+    </div>
 
-  <div class="chart-card">
-    <div class="chart-header">
-      <div>
-        <div class="chart-title" id="chartTitle">Tren Harga</div>
-        <div class="chart-subtitle" id="chartSubtitle">Harga produsen per kg (Rp)</div>
+    <div class="chart-card">
+      <div class="chart-header">
+        <div>
+          <div class="chart-title">Ringkasan Rekomendasi</div>
+          <div class="chart-subtitle">Bulan terbaik & terburuk untuk menjual setiap komoditas</div>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table class="summary-table" id="summaryTable">
+          <thead><tr><th>Komoditas</th><th>🕐 Jual Terbaik</th><th>⚠️ Hindari</th><th>Harga Terendah</th><th>Harga Tertinggi</th><th>Selisih</th></tr></thead>
+          <tbody id="summaryBody"></tbody>
+        </table>
       </div>
     </div>
-    <div class="chart-wrap"><canvas id="priceChart"></canvas></div>
-    <div class="zoom-hint">Scroll untuk zoom | Drag untuk geser | Double-click untuk reset</div>
+
+    <div class="analisa-grid" id="analisaGrid"></div>
   </div>
 </main>
 
@@ -135,7 +211,10 @@
 <script>
 const R = n => n ? 'Rp' + n.toLocaleString('id-ID') : '-';
 const COLORS = ['#38bdf8','#818cf8','#f472b6','#34d399','#fb923c','#a78bfa','#eab308','#ef4444'];
+const BULAN = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Ags','Sep','Okt','Nov','Des'];
+const BULAN_FULL = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
 let data = null;
+let analisaData = null;
 let currentCommodity = null;
 let currentPeriod = 'all';
 let selectedPasars = new Set();
@@ -150,6 +229,17 @@ function showToast(msg, type = 'info') {
   setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 300); }, 4000);
 }
 
+// View toggle
+document.querySelectorAll('.view-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const view = btn.dataset.view;
+    document.getElementById('grafikView').classList.toggle('active', view === 'grafik');
+    document.getElementById('analisaView').classList.toggle('active', view === 'analisa');
+  });
+});
+
 function getFilteredDates(allDates) {
   if (currentPeriod === 'all') return allDates;
   const now = new Date();
@@ -162,8 +252,7 @@ function getFilteredDates(allDates) {
     case '1y': cutoff = new Date(now - 365 * 86400000); break;
     default: return allDates;
   }
-  const cutoffStr = cutoff.toISOString().slice(0, 10);
-  return allDates.filter(d => d >= cutoffStr);
+  return allDates.filter(d => d >= cutoff.toISOString().slice(0, 10));
 }
 
 function renderTabs() {
@@ -186,8 +275,7 @@ function renderTabs() {
 function initPasarSelection() {
   const commodity = data.commodities[currentCommodity];
   if (!commodity) return;
-  const cols = commodity.columns || [];
-  selectedPasars = new Set(cols.map((_, i) => i));
+  selectedPasars = new Set((commodity.columns || []).map((_, i) => i));
 }
 
 function renderPasarGrid() {
@@ -197,34 +285,23 @@ function renderPasarGrid() {
   const dates = Object.keys(commodity.prices).sort();
   const latestDate = dates[dates.length - 1];
   const latestPrices = commodity.prices[latestDate] || [];
-
   const grid = document.getElementById('pasarGrid');
-  const countEl = document.getElementById('pasarCount');
-  countEl.textContent = `(${selectedPasars.size}/${cols.length} aktif)`;
+  document.getElementById('pasarCount').textContent = `(${selectedPasars.size}/${cols.length} aktif)`;
 
-  if (cols.length === 0) {
-    grid.innerHTML = '<div style="color:var(--text-dim);font-size:0.8rem;">Tidak ada data pasar</div>';
-    return;
-  }
+  if (cols.length === 0) { grid.innerHTML = '<div style="color:var(--text-dim);font-size:0.8rem;">Tidak ada data pasar</div>'; return; }
 
   grid.innerHTML = cols.map((col, i) => {
     const isActive = selectedPasars.has(i);
     const color = COLORS[i % COLORS.length];
     const price = latestPrices[i];
     const parts = col.split(' ');
-    const name = parts[0] === 'Pasar' || parts[0] === 'UD' || parts[0] === 'UD.' || parts[0] === 'PS' || parts[0] === 'RPH' || parts[0] === 'Peternak' || parts[0] === 'Distributor' || parts[0] === 'Kawasan' || parts[0] === 'Kec.' ? parts.slice(0, 2).join(' ') : parts[0];
-    const location = parts.slice(parts[0] === 'Pasar' || parts[0] === 'UD' || parts[0] === 'UD.' || parts[0] === 'PS' || parts[0] === 'RPH' || parts[0] === 'Peternak' || parts[0] === 'Distributor' || parts[0] === 'Kawasan' || parts[0] === 'Kec.' ? 2 : 1).join(' ');
-
+    const isMultiWord = ['Pasar','UD','UD.','PS','RPH','Peternak','Distributor','Kawasan','Kec.'].includes(parts[0]);
+    const name = isMultiWord ? parts.slice(0, 2).join(' ') : parts[0];
+    const location = parts.slice(isMultiWord ? 2 : 1).join(' ');
     return `<div class="pasar-card ${isActive ? 'active' : 'inactive'}" data-index="${i}" style="--pasar-color:${color}">
       <div class="pasar-dot" style="background:${isActive ? color : 'var(--border)'}"></div>
-      <div class="pasar-info">
-        <div class="pasar-name">${name}</div>
-        <div class="pasar-location">${location}</div>
-      </div>
-      <div class="pasar-price">
-        <div class="pasar-price-value" style="color:${isActive ? color : 'var(--text-dim)'}">${price != null ? R(price) : '-'}</div>
-        <div class="pasar-price-label">Harga</div>
-      </div>
+      <div class="pasar-info"><div class="pasar-name">${name}</div><div class="pasar-location">${location}</div></div>
+      <div class="pasar-price"><div class="pasar-price-value" style="color:${isActive ? color : 'var(--text-dim)'}">${price != null ? R(price) : '-'}</div><div class="pasar-price-label">Harga</div></div>
       <div class="pasar-toggle">${isActive ? '✓' : ''}</div>
     </div>`;
   }).join('');
@@ -232,11 +309,8 @@ function renderPasarGrid() {
   grid.querySelectorAll('.pasar-card').forEach(card => {
     card.addEventListener('click', () => {
       const idx = parseInt(card.dataset.index);
-      if (selectedPasars.has(idx)) {
-        if (selectedPasars.size > 1) selectedPasars.delete(idx);
-      } else {
-        selectedPasars.add(idx);
-      }
+      if (selectedPasars.has(idx)) { if (selectedPasars.size > 1) selectedPasars.delete(idx); }
+      else selectedPasars.add(idx);
       renderPasarGrid();
       renderChart();
     });
@@ -247,16 +321,11 @@ document.getElementById('selectAllBtn').addEventListener('click', () => {
   const commodity = data.commodities[currentCommodity];
   if (!commodity) return;
   selectedPasars = new Set(commodity.columns.map((_, i) => i));
-  renderPasarGrid();
-  renderChart();
+  renderPasarGrid(); renderChart();
 });
-
 document.getElementById('deselectAllBtn').addEventListener('click', () => {
-  const commodity = data.commodities[currentCommodity];
-  if (!commodity) return;
   selectedPasars = new Set([0]);
-  renderPasarGrid();
-  renderChart();
+  renderPasarGrid(); renderChart();
 });
 
 function renderChart() {
@@ -264,78 +333,44 @@ function renderChart() {
   if (!commodity) return;
   const allDates = Object.keys(commodity.prices).sort();
   const dates = getFilteredDates(allDates);
-  const labels = dates.map(d => {
-    const dt = new Date(d + 'T00:00:00');
-    return dt.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: '2-digit' });
-  });
-
+  const labels = dates.map(d => new Date(d + 'T00:00:00').toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: '2-digit' }));
   const numCols = commodity.columns ? commodity.columns.length : 0;
   const datasets = [];
 
   if (numCols > 0) {
     for (let i = 0; i < numCols; i++) {
       if (!selectedPasars.has(i)) continue;
-      const values = dates.map(d => {
-        const arr = commodity.prices[d];
-        return arr && arr[i] != null ? arr[i] : null;
-      });
-      const colName = commodity.columns[i] || `Kolom ${i + 1}`;
       datasets.push({
-        label: colName,
-        data: values,
-        borderColor: COLORS[i % COLORS.length],
-        backgroundColor: 'transparent',
-        tension: 0.3,
-        pointRadius: dates.length < 100 ? 2 : 0,
-        pointHoverRadius: 5,
-        borderWidth: 2
+        label: commodity.columns[i] || `Kolom ${i + 1}`,
+        data: dates.map(d => { const arr = commodity.prices[d]; return arr && arr[i] != null ? arr[i] : null; }),
+        borderColor: COLORS[i % COLORS.length], backgroundColor: 'transparent', tension: 0.3,
+        pointRadius: dates.length < 100 ? 2 : 0, pointHoverRadius: 5, borderWidth: 2
       });
     }
   } else {
-    const values = dates.map(d => {
-      const arr = commodity.prices[d];
-      return arr && arr[0] != null ? arr[0] : null;
-    });
     datasets.push({
       label: currentCommodity,
-      data: values,
-      borderColor: COLORS[0],
-      backgroundColor: 'transparent',
-      tension: 0.3,
-      pointRadius: dates.length < 100 ? 2 : 0,
-      pointHoverRadius: 5,
-      borderWidth: 2
+      data: dates.map(d => { const arr = commodity.prices[d]; return arr && arr[0] != null ? arr[0] : null; }),
+      borderColor: COLORS[0], backgroundColor: 'transparent', tension: 0.3,
+      pointRadius: dates.length < 100 ? 2 : 0, pointHoverRadius: 5, borderWidth: 2
     });
   }
 
   const ctx = document.getElementById('priceChart').getContext('2d');
   if (chart) chart.destroy();
-
   chart = new Chart(ctx, {
-    type: 'line',
-    data: { labels, datasets },
+    type: 'line', data: { labels, datasets },
     options: {
-      responsive: true,
-      maintainAspectRatio: true,
-      interaction: { mode: 'index', intersect: false },
+      responsive: true, maintainAspectRatio: true, interaction: { mode: 'index', intersect: false },
       plugins: {
         legend: { display: datasets.length > 1, position: 'bottom', labels: { color: '#94a3b8', font: { size: 10 } } },
-        tooltip: {
-          backgroundColor: '#1e293b', titleColor: '#f1f5f9', bodyColor: '#94a3b8',
-          borderColor: '#334155', borderWidth: 1,
-          callbacks: { label: ctx => `${ctx.dataset.label}: ${R(ctx.parsed.y)}` }
-        },
+        tooltip: { backgroundColor: '#1e293b', titleColor: '#f1f5f9', bodyColor: '#94a3b8', borderColor: '#334155', borderWidth: 1, callbacks: { label: ctx => `${ctx.dataset.label}: ${R(ctx.parsed.y)}` } },
         zoom: {
-          pan: { enabled: true, mode: 'x', modifierKey: null },
-          zoom: {
-            wheel: { enabled: true },
-            pinch: { enabled: true },
-            drag: { enabled: true, backgroundColor: 'rgba(56,189,248,0.1)', borderColor: 'rgba(56,189,248,0.5)', borderWidth: 1 },
-            mode: 'x',
+          pan: { enabled: true, mode: 'x' },
+          zoom: { wheel: { enabled: true }, pinch: { enabled: true }, drag: { enabled: true, backgroundColor: 'rgba(56,189,248,0.1)', borderColor: 'rgba(56,189,248,0.5)', borderWidth: 1 }, mode: 'x',
             onZoomComplete: () => { document.getElementById('resetZoomBtn').style.opacity = '1'; },
             onPanComplete: () => { document.getElementById('resetZoomBtn').style.opacity = '1'; }
-          },
-          limits: { x: { minRange: 3 } }
+          }, limits: { x: { minRange: 3 } }
         }
       },
       scales: {
@@ -344,7 +379,6 @@ function renderChart() {
       }
     }
   });
-
   document.getElementById('chartTitle').textContent = `Tren Harga ${currentCommodity}`;
   document.getElementById('chartSubtitle').textContent = `${dates.length} hari · ${selectedPasars.size} pasar aktif`;
 }
@@ -352,24 +386,115 @@ function renderChart() {
 document.querySelectorAll('.filter-btn').forEach(btn => {
   btn.addEventListener('click', () => {
     document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    currentPeriod = btn.dataset.period;
-    renderChart();
+    btn.classList.add('active'); currentPeriod = btn.dataset.period; renderChart();
   });
 });
-
 document.getElementById('resetZoomBtn').addEventListener('click', () => {
-  if (chart) {
-    chart.resetZoom();
-    document.getElementById('resetZoomBtn').style.opacity = '0.5';
-  }
+  if (chart) { chart.resetZoom(); document.getElementById('resetZoomBtn').style.opacity = '0.5'; }
 });
+
+// ANALISA
+function getHeatColor(pct) {
+  if (pct == null) return 'rgba(51,65,85,0.4)';
+  const v = Math.max(-30, Math.min(30, pct));
+  if (v > 0) return `rgba(239,68,68,${0.15 + v / 30 * 0.5})`;
+  if (v < 0) return `rgba(34,197,94,${0.15 + Math.abs(v) / 30 * 0.5})`;
+  return 'rgba(51,65,85,0.4)';
+}
+
+function renderAnalisa() {
+  if (!analisaData) return;
+
+  // Summary table
+  const summaryBody = document.getElementById('summaryBody');
+  summaryBody.innerHTML = Object.entries(analisaData.summary).map(([commodity, info]) => {
+    const selisih = info.tertinggi.harga - info.terendah.harga;
+    const selisihPct = ((selisih / info.terendah.harga) * 100).toFixed(1);
+    return `<tr>
+      <td><strong>${commodity}</strong></td>
+      <td><span class="month-badge good">${BULAN_FULL[info.bestMonth - 1]}</span></td>
+      <td><span class="month-badge bad">${BULAN_FULL[info.worstMonth - 1]}</span></td>
+      <td>${BULAN_FULL[info.terendah.bulan - 1]} — ${R(info.terendah.harga)}</td>
+      <td>${BULAN_FULL[info.tertinggi.bulan - 1]} — ${R(info.tertinggi.harga)}</td>
+      <td><strong>${selisihPct}%</strong></td>
+    </tr>`;
+  }).join('');
+
+  // Detail cards
+  const grid = document.getElementById('analisaGrid');
+  grid.innerHTML = Object.entries(analisaData.commodities).map(([commodity, info], ci) => {
+    const color = COLORS[ci % COLORS.length];
+
+    // Heatmap bars
+    const heatmapBars = BULAN.map((b, i) => {
+      const pct = info.perubahan[i + 1];
+      return `<div class="heatmap-cell" style="background:${getHeatColor(pct ? parseFloat(pct) : null)}" title="${b}: ${pct ? (parseFloat(pct) > 0 ? '+' : '') + pct + '%' : '-'}">${pct ? (parseFloat(pct) > 0 ? '+' : '') + parseFloat(pct).toFixed(0) + '%' : '-'}</div>`;
+    }).join('');
+
+    const hargaBars = BULAN.map((b, i) => {
+      const h = info.rataRata[i + 1];
+      return `<div class="heatmap-cell" style="background:rgba(56,189,248,${h ? 0.1 + (h / info.tertinggi.harga) * 0.5 : 0.1})" title="${b}: ${h ? R(h) : '-'}">${h ? (h / 1000).toFixed(1) + 'k' : '-'}</div>`;
+    }).join('');
+
+    const best = info.bulanNaik.length > 0 ? info.bulanNaik[0] : null;
+    const worst = info.bulanTurun.length > 0 ? info.bulanTurun[info.bulanTurun.length - 1] : null;
+    const selisih = info.tertinggi.harga - info.terendah.harga;
+    const selisihPct = ((selisih / info.terendah.harga) * 100).toFixed(1);
+
+    return `<div class="analisa-card">
+      <div class="analisa-card-header">
+        <div class="analisa-commodity" style="color:${color}">${commodity}</div>
+      </div>
+      <div class="analisa-columns">${info.columns.join(' vs ')}</div>
+
+      <div class="recommendation-box">
+        <div class="recommendation-title">💡 Rekomendasi Petani</div>
+        <div class="recommendation-row">
+          <span class="recommendation-label">Jual terbaik:</span>
+          <span class="recommendation-value good">${best ? BULAN_FULL[best.bulan - 1] + ' (+' + best.pct + '%)' : '-'}</span>
+        </div>
+        <div class="recommendation-row">
+          <span class="recommendation-label">Hindari jual:</span>
+          <span class="recommendation-value bad">${worst ? BULAN_FULL[worst.bulan - 1] + ' (' + worst.pct + '%)' : '-'}</span>
+        </div>
+        <div class="recommendation-row">
+          <span class="recommendation-label">Selisih harga:</span>
+          <span class="recommendation-value">Rp${selisih.toLocaleString('id-ID')} (${selisihPct}%)</span>
+        </div>
+      </div>
+
+      <div style="margin-bottom:0.5rem;">
+        <div style="font-size:0.72rem;color:var(--text-dim);margin-bottom:0.3rem;">Tren Perubahan (%)</div>
+        <div class="heatmap-row"><div class="heatmap-label"></div>${heatmapBars}</div>
+        <div class="heatmap-row"><div class="heatmap-label" style="font-size:0.6rem">${BULAN.map(b => `<div style="flex:1;text-align:center;font-size:0.55rem">${b}</div>`).join('')}</div></div>
+        <div class="heatmap-legend"><span>Turun</span><div class="heatmap-legend-bar"></div><span>Naik</span></div>
+      </div>
+
+      <div style="margin-bottom:0.5rem;">
+        <div style="font-size:0.72rem;color:var(--text-dim);margin-bottom:0.3rem;">Rata-rata Harga (Ribu Rp)</div>
+        <div class="heatmap-row"><div class="heatmap-label"></div>${hargaBars}</div>
+      </div>
+
+      <div class="stats-mini">
+        <div class="stat-mini"><div class="stat-mini-label">Terendah</div><div class="stat-mini-value" style="color:var(--green)">${BULAN[info.terendah.bulan - 1]} ${R(info.terendah.harga)}</div></div>
+        <div class="stat-mini"><div class="stat-mini-label">Tertinggi</div><div class="stat-mini-value" style="color:var(--red)">${BULAN[info.tertinggi.bulan - 1]} ${R(info.tertinggi.harga)}</div></div>
+        <div class="stat-mini"><div class="stat-mini-label">Data</div><div class="stat-mini-value">${info.dataDays} hari</div></div>
+      </div>
+    </div>`;
+  }).join('');
+}
 
 async function init() {
   try {
-    const resp = await fetch('data/produsen.json');
-    if (!resp.ok) throw new Error('File tidak ditemukan');
-    data = await resp.json();
+    const [prodResp, analisaResp] = await Promise.all([
+      fetch('data/produsen.json'),
+      fetch('data/analisa.json')
+    ]);
+
+    if (!prodResp.ok) throw new Error('File produsen.json tidak ditemukan');
+    data = await prodResp.json();
+
+    if (analisaResp.ok) analisaData = await analisaResp.json();
 
     const commodities = Object.keys(data.commodities);
     currentCommodity = commodities[0];
@@ -382,6 +507,7 @@ async function init() {
     renderTabs();
     renderPasarGrid();
     renderChart();
+    renderAnalisa();
     showToast(`${commodities.length} komoditas dimuat`, 'success');
   } catch (e) {
     showToast('Gagal memuat data: ' + e.message, 'error');
