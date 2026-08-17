@@ -36,16 +36,9 @@
     .stat { background: rgba(51,65,85,0.4); border-radius: 8px; padding: 0.5rem 0.75rem; font-size: 0.8rem; }
     .stat-label { color: var(--text-dim); font-size: 0.7rem; text-transform: uppercase; }
     .stat-value { font-weight: 700; color: var(--accent4); font-size: 1rem; }
-    .table-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; margin-bottom: 1.5rem; }
-    .table-card .chart-header { padding: 1.25rem 1.25rem 0; }
-    .table-wrap { overflow-x: auto; }
-    table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
-    thead { background: rgba(51,65,85,0.5); }
-    th { padding: 0.75rem 1rem; text-align: left; font-weight: 600; color: var(--text-dim); font-size: 0.75rem; text-transform: uppercase; white-space: nowrap; }
-    td { padding: 0.7rem 1rem; border-top: 1px solid var(--border); }
-    tr:hover td { background: rgba(51,65,85,0.3); }
-    .price-cell { font-weight: 600; font-variant-numeric: tabular-nums; }
-    .up { color: var(--green); } .down { color: var(--red); }
+    .legend-box { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 1rem; }
+    .legend-item { display: flex; align-items: center; gap: 0.4rem; font-size: 0.8rem; color: var(--text-dim); }
+    .legend-dot { width: 10px; height: 10px; border-radius: 50%; }
     .toast-container { position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 9999; display: flex; flex-direction: column; gap: 0.5rem; }
     .toast { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 0.75rem 1rem; font-size: 0.8rem; color: var(--text); box-shadow: 0 8px 24px rgba(0,0,0,0.3); }
     .toast.success { border-left: 3px solid var(--green); } .toast.error { border-left: 3px solid var(--red); }
@@ -56,7 +49,6 @@
       .tabs { gap: 0.35rem; }
       .tab { padding: 0.4rem 0.7rem; font-size: 0.75rem; }
       .chart-card { padding: 0.75rem; }
-      th, td { padding: 0.5rem 0.75rem; font-size: 0.75rem; }
     }
   </style>
 </head>
@@ -79,6 +71,8 @@
 
   <div id="statsRow" class="stats-row"></div>
 
+  <div id="legendBox" class="legend-box"></div>
+
   <div class="chart-card">
     <div class="chart-header">
       <div>
@@ -87,31 +81,6 @@
       </div>
     </div>
     <div class="chart-wrap"><canvas id="priceChart"></canvas></div>
-  </div>
-
-  <div class="table-card">
-    <div class="chart-header">
-      <div>
-        <div class="chart-title">Data Harian</div>
-        <div class="chart-subtitle" id="tableSubtitle">Memuat data...</div>
-      </div>
-    </div>
-    <div class="table-wrap">
-      <table>
-        <thead><tr><th>Tanggal</th><th>Harga 1 (Rp)</th><th>Harga 2 (Rp)</th></tr></thead>
-        <tbody id="priceTable"></tbody>
-      </table>
-    </div>
-  </div>
-
-  <div class="chart-card">
-    <div class="chart-header">
-      <div>
-        <div class="chart-title">Perbandingan Komoditas</div>
-        <div class="chart-subtitle">Harga terakhir semua komoditas (Rp/kg)</div>
-      </div>
-    </div>
-    <div class="chart-wrap"><canvas id="compareChart"></canvas></div>
   </div>
 </main>
 
@@ -125,7 +94,6 @@ const COLORS = ['#38bdf8','#818cf8','#f472b6','#34d399','#fb923c','#a78bfa','#ea
 let data = null;
 let currentCommodity = null;
 let chart = null;
-let compareChart = null;
 
 function showToast(msg, type = 'info') {
   const c = document.getElementById('toastContainer');
@@ -148,7 +116,6 @@ function renderTabs() {
       renderTabs();
       renderStats();
       renderChart();
-      renderTable();
     });
   });
 }
@@ -157,55 +124,103 @@ function renderStats() {
   const commodity = data.commodities[currentCommodity];
   if (!commodity) return;
   const dates = Object.keys(commodity.prices).sort();
-  const p1Values = dates.map(d => commodity.prices[d].p1).filter(v => v != null);
-  const p2Values = dates.map(d => commodity.prices[d].p2).filter(v => v != null);
+  const allValues = [];
+  for (const d of dates) {
+    for (const v of commodity.prices[d]) {
+      if (v != null && v > 0) allValues.push(v);
+    }
+  }
 
-  const latest1 = p1Values[p1Values.length - 1];
-  const latest2 = p2Values[p2Values.length - 1];
-  const avg1 = p1Values.length > 0 ? Math.round(p1Values.reduce((a, b) => a + b, 0) / p1Values.length) : null;
-  const hi1 = p1Values.length > 0 ? Math.max(...p1Values) : null;
-  const lo1 = p1Values.length > 0 ? Math.min(...p1Values) : null;
+  const latest = dates[dates.length - 1];
+  const latestPrices = commodity.prices[latest] || [];
+  const avg = allValues.length > 0 ? Math.round(allValues.reduce((a, b) => a + b, 0) / allValues.length) : null;
+  const hi = allValues.length > 0 ? Math.max(...allValues) : null;
+  const lo = allValues.length > 0 ? Math.min(...allValues) : null;
 
-  document.getElementById('statsRow').innerHTML = `
-    <div class="stat"><div class="stat-label">Harga Terakhir (P1)</div><div class="stat-value">${R(latest1)}</div></div>
-    <div class="stat"><div class="stat-label">Harga Terakhir (P2)</div><div class="stat-value">${R(latest2)}</div></div>
-    <div class="stat"><div class="stat-label">Rata-rata P1</div><div class="stat-value">${R(avg1)}</div></div>
-    <div class="stat"><div class="stat-label">Tertinggi P1</div><div class="stat-value">${R(hi1)}</div></div>
-    <div class="stat"><div class="stat-label">Terendah P1</div><div class="stat-value">${R(lo1)}</div></div>
-    <div class="stat"><div class="stat-label">Total Hari</div><div class="stat-value">${dates.length}</div></div>`;
+  let latestHtml = '';
+  if (commodity.columns && commodity.columns.length > 0) {
+    latestHtml = latestPrices.map((p, i) => {
+      if (p == null) return '';
+      const colName = commodity.columns[i] || `Kolom ${i + 1}`;
+      return `<div class="stat"><div class="stat-label">${colName}</div><div class="stat-value">${R(p)}</div></div>`;
+    }).join('');
+  } else {
+    latestHtml = latestPrices.map((p, i) =>
+      p != null ? `<div class="stat"><div class="stat-label">Data ${i + 1}</div><div class="stat-value">${R(p)}</div></div>` : ''
+    ).join('');
+  }
+
+  document.getElementById('statsRow').innerHTML =
+    latestHtml +
+    `<div class="stat"><div class="stat-label">Rata-rata</div><div class="stat-value">${R(avg)}</div></div>` +
+    `<div class="stat"><div class="stat-label">Tertinggi</div><div class="stat-value">${R(hi)}</div></div>` +
+    `<div class="stat"><div class="stat-label">Terendah</div><div class="stat-value">${R(lo)}</div></div>` +
+    `<div class="stat"><div class="stat-label">Total Hari</div><div class="stat-value">${dates.length}</div></div>`;
 }
 
 function renderChart() {
   const commodity = data.commodities[currentCommodity];
   if (!commodity) return;
   const dates = Object.keys(commodity.prices).sort();
-  const p1 = dates.map(d => commodity.prices[d].p1);
-  const p2 = dates.map(d => commodity.prices[d].p2);
   const labels = dates.map(d => {
     const dt = new Date(d + 'T00:00:00');
     return dt.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
   });
 
+  const numCols = commodity.columns ? commodity.columns.length : 0;
+  const datasets = [];
+  const legendBox = document.getElementById('legendBox');
+
+  if (numCols > 0) {
+    for (let i = 0; i < numCols; i++) {
+      const values = dates.map(d => {
+        const arr = commodity.prices[d];
+        return arr && arr[i] != null ? arr[i] : null;
+      });
+      const colName = commodity.columns[i] || `Kolom ${i + 1}`;
+      datasets.push({
+        label: colName,
+        data: values,
+        borderColor: COLORS[i % COLORS.length],
+        backgroundColor: 'transparent',
+        tension: 0.3,
+        pointRadius: 0,
+        pointHoverRadius: 4,
+        borderWidth: 2
+      });
+    }
+    legendBox.innerHTML = commodity.columns.map((col, i) =>
+      `<div class="legend-item"><span class="legend-dot" style="background:${COLORS[i % COLORS.length]}"></span>${col}</div>`
+    ).join('');
+  } else {
+    const values = dates.map(d => {
+      const arr = commodity.prices[d];
+      return arr && arr[0] != null ? arr[0] : null;
+    });
+    datasets.push({
+      label: currentCommodity,
+      data: values,
+      borderColor: COLORS[0],
+      backgroundColor: 'transparent',
+      tension: 0.3,
+      pointRadius: 0,
+      pointHoverRadius: 4,
+      borderWidth: 2
+    });
+    legendBox.innerHTML = '';
+  }
+
   const ctx = document.getElementById('priceChart').getContext('2d');
   if (chart) chart.destroy();
 
-  const ci = Object.keys(data.commodities).indexOf(currentCommodity);
-  const color = COLORS[ci % COLORS.length];
-
   chart = new Chart(ctx, {
     type: 'line',
-    data: {
-      labels,
-      datasets: [
-        { label: 'Harga 1', data: p1, borderColor: color, backgroundColor: 'transparent', tension: 0.3, pointRadius: 0, pointHoverRadius: 4, borderWidth: 2 },
-        { label: 'Harga 2', data: p2, borderColor: '#94a3b8', backgroundColor: 'transparent', tension: 0.3, pointRadius: 0, pointHoverRadius: 4, borderWidth: 1.5, borderDash: [5, 3] }
-      ]
-    },
+    data: { labels, datasets },
     options: {
       responsive: true, maintainAspectRatio: true,
       interaction: { mode: 'index', intersect: false },
       plugins: {
-        legend: { display: true, position: 'bottom', labels: { color: '#94a3b8', font: { size: 11 } } },
+        legend: { display: datasets.length > 1, position: 'bottom', labels: { color: '#94a3b8', font: { size: 10 } } },
         tooltip: { backgroundColor: '#1e293b', titleColor: '#f1f5f9', bodyColor: '#94a3b8', borderColor: '#334155', borderWidth: 1,
           callbacks: { label: ctx => `${ctx.dataset.label}: ${R(ctx.parsed.y)}` }
         }
@@ -219,59 +234,6 @@ function renderChart() {
 
   document.getElementById('chartTitle').textContent = `Tren Harga ${currentCommodity}`;
   document.getElementById('chartSubtitle').textContent = `${dates.length} hari data produsen`;
-}
-
-function renderTable() {
-  const commodity = data.commodities[currentCommodity];
-  if (!commodity) return;
-  const dates = Object.keys(commodity.prices).sort().reverse();
-  const tbody = document.getElementById('priceTable');
-  tbody.innerHTML = dates.map(d => {
-    const dt = new Date(d + 'T00:00:00');
-    const label = dt.toLocaleDateString('id-ID', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
-    const p1 = commodity.prices[d].p1;
-    const p2 = commodity.prices[d].p2;
-    return `<tr><td>${label}</td><td class="price-cell">${R(p1)}</td><td class="price-cell">${R(p2)}</td></tr>`;
-  }).join('');
-  document.getElementById('tableSubtitle').textContent = `${currentCommodity} — ${dates.length} hari`;
-}
-
-function renderCompareChart() {
-  const commodities = Object.keys(data.commodities);
-  const lastPrices = commodities.map(c => {
-    const dates = Object.keys(data.commodities[c].prices).sort();
-    const last = dates[dates.length - 1];
-    return last ? data.commodities[c].prices[last].p1 : null;
-  });
-
-  const ctx = document.getElementById('compareChart').getContext('2d');
-  if (compareChart) compareChart.destroy();
-
-  compareChart = new Chart(ctx, {
-    type: 'bar',
-    data: {
-      labels: commodities,
-      datasets: [{
-        label: 'Harga Terakhir',
-        data: lastPrices,
-        backgroundColor: COLORS.map(c => c + 'cc'),
-        borderColor: COLORS,
-        borderWidth: 1,
-        borderRadius: 6
-      }]
-    },
-    options: {
-      responsive: true, maintainAspectRatio: true,
-      plugins: {
-        legend: { display: false },
-        tooltip: { callbacks: { label: ctx => R(ctx.parsed.y) } }
-      },
-      scales: {
-        x: { grid: { display: false }, ticks: { color: '#94a3b8', font: { size: 10 } } },
-        y: { grid: { color: 'rgba(51,65,85,0.3)' }, ticks: { color: '#64748b', font: { size: 10 }, callback: v => (v/1000).toFixed(0)+'rb' } }
-      }
-    }
-  });
 }
 
 async function init() {
@@ -289,8 +251,6 @@ async function init() {
     renderTabs();
     renderStats();
     renderChart();
-    renderTable();
-    renderCompareChart();
     showToast(`${commodities.length} komoditas dimuat`, 'success');
   } catch (e) {
     showToast('Gagal memuat data: ' + e.message, 'error');
