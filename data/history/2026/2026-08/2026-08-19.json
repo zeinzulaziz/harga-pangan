@@ -34,5 +34,40 @@
   "Kentang": {
     "Distributor Kabupaten Malang": 12500,
     "Kawasan Bromo Kabupaten Probolinggo": 11000
+  },
+  "imputed": {
+    "Bawang Merah": {
+      "Pasar Dlinggu Kabupaten Probolinggo": true,
+      "Pasar Sukomoro Kabupaten Nganjuk": true
+    },
+    "Beras": {
+      "UD Hasil Tani Kabupaten Probolinggo": true,
+      "PS Bendul Mrisi Kota Surabaya": true
+    },
+    "Cabe Rawit": {
+      "Pasar Tanjung Kabupaten Jember": true,
+      "Pasar Tulung Rejo Kabupaten Kediri": true
+    },
+    "Cabe Besar": {
+      "Pasar Pare Kabupaten Kediri": true,
+      "Kec. Gending Kabupaten Probolinggo": true
+    },
+    "Telur": {
+      "UD. Telur Intan Kabupaten Blitar": true,
+      "Peternak Kec. Srengat Kabupaten Kediri": true
+    },
+    "Ayam Potong": {
+      "Peternak Desa Kambingan Kabupaten Blitar": true,
+      "Pasar Gringging Kabupaten Kediri": true
+    },
+    "Daging Sapi": {
+      "RPH Pegirikan  Kota Surabaya": true,
+      "UD RPH Kota Malang": true,
+      "RPH Krian Kabupaten Sidoarjo": true
+    },
+    "Kentang": {
+      "Distributor Kabupaten Malang": true,
+      "Kawasan Bromo Kabupaten Probolinggo": true
+    }
   }
 }

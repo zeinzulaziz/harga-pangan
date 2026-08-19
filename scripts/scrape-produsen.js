@@ -130,7 +130,7 @@ function loadExistingData(outDir) {
   }
 }
 
-function mergeRows(targetColumns, targetRows, sourceColumns, sourceRows) {
+function mergeRows(targetColumns, targetRows, sourceColumns, sourceRows, imputedRows = {}) {
   const sourceIndexes = new Map(sourceColumns.map((column, index) => [column, index]));
 
   for (const column of sourceColumns) {
@@ -139,41 +139,59 @@ function mergeRows(targetColumns, targetRows, sourceColumns, sourceRows) {
 
   for (const [date, sourceValues] of Object.entries(sourceRows)) {
     const previousValues = Array.isArray(targetRows[date]) ? targetRows[date] : [];
+    const flags = Array.isArray(imputedRows[date]) ? imputedRows[date] : [];
     targetRows[date] = targetColumns.map((column, targetIndex) => {
       const sourceIndex = sourceIndexes.get(column);
       const sourceValue = sourceIndex === undefined ? null : sourceValues[sourceIndex];
-      if (isValidPrice(sourceValue)) return sourceValue;
+      if (isValidPrice(sourceValue)) {
+        flags[targetIndex] = false;
+        return sourceValue;
+      }
 
       const previousValue = previousValues[targetIndex];
+      if (sourceIndex !== undefined && isValidPrice(previousValue)) flags[targetIndex] = true;
       return isValidPrice(previousValue) ? previousValue : null;
     });
+    if (flags.some(Boolean)) imputedRows[date] = flags;
+    else delete imputedRows[date];
   }
 }
 
-function fillMissingPrices(rows, columns) {
+function fillMissingPrices(rows, columns, imputedRows = {}) {
   const previous = Array(columns.length).fill(null);
 
   for (const date of Object.keys(rows).sort()) {
     const current = Array.isArray(rows[date]) ? rows[date] : [];
+    const flags = Array.isArray(imputedRows[date]) ? imputedRows[date] : [];
     const normalized = columns.map((column, index) => {
       if (isValidPrice(current[index])) return current[index];
+      if (isValidPrice(previous[index])) flags[index] = true;
       return isValidPrice(previous[index]) ? previous[index] : null;
     });
 
     rows[date] = normalized;
+    if (flags.some(Boolean)) imputedRows[date] = flags;
+    else delete imputedRows[date];
     normalized.forEach((value, index) => {
       if (isValidPrice(value)) previous[index] = value;
     });
   }
 }
 
-function updateCommodity(target, sourceColumns, sourceRows) {
+function updateCommodity(target, sourceColumns, sourceRows, sourceImputed = {}) {
   const commodity = target || { columns: [], prices: {} };
   if (!Array.isArray(commodity.columns)) commodity.columns = [];
   if (!commodity.prices || typeof commodity.prices !== 'object') commodity.prices = {};
+  if (!commodity.imputed || typeof commodity.imputed !== 'object') commodity.imputed = {};
 
-  mergeRows(commodity.columns, commodity.prices, sourceColumns, sourceRows);
-  fillMissingPrices(commodity.prices, commodity.columns);
+  mergeRows(commodity.columns, commodity.prices, sourceColumns, sourceRows, commodity.imputed);
+  for (const [date, flags] of Object.entries(sourceImputed)) {
+    if (!commodity.imputed[date]) commodity.imputed[date] = [];
+    flags.forEach((flag, index) => {
+      if (flag) commodity.imputed[date][index] = true;
+    });
+  }
+  fillMissingPrices(commodity.prices, commodity.columns, commodity.imputed);
 
   const dates = Object.keys(commodity.prices).sort();
   commodity.days = dates.length;
@@ -183,7 +201,7 @@ function updateCommodity(target, sourceColumns, sourceRows) {
   return commodity;
 }
 
-function saveHistoryFiles(outDir, commodity, columns, rows) {
+function saveHistoryFiles(outDir, commodity, columns, rows, imputedRows = {}) {
   const historyDir = path.join(outDir, 'history');
   let saved = 0;
 
@@ -213,6 +231,17 @@ function saveHistoryFiles(outDir, commodity, columns, rows) {
     });
 
     if (Object.keys(dayData[commodity]).length === 0) continue;
+    const imputedColumns = {};
+    (imputedRows[date] || []).forEach((flag, index) => {
+      if (flag && columns[index]) imputedColumns[columns[index]] = true;
+    });
+    if (Object.keys(imputedColumns).length > 0) {
+      dayData.imputed = dayData.imputed || {};
+      dayData.imputed[commodity] = imputedColumns;
+    } else if (dayData.imputed) {
+      delete dayData.imputed[commodity];
+      if (Object.keys(dayData.imputed).length === 0) delete dayData.imputed;
+    }
     fs.writeFileSync(filePath, JSON.stringify(dayData, null, 2));
     saved++;
   }
@@ -250,13 +279,14 @@ async function runFull(outDir, now, existing) {
     console.log(`\n🧅 ${commodity}:`);
     const sourceColumns = [];
     const sourceRows = {};
+    const sourceImputed = {};
 
     for (let i = 0; i < BACKFILL_REQUESTS; i++) {
       const date = formatDate(addDays(now, -i * 28));
       process.stdout.write(`  ${date}...`);
       try {
         const parsed = await scrapeCommodity(commodity, date, requests);
-        mergeRows(sourceColumns, sourceRows, parsed.columns, parsed.rows);
+        mergeRows(sourceColumns, sourceRows, parsed.columns, parsed.rows, sourceImputed);
         console.log(` ${Object.keys(parsed.rows).length} hari`);
         if (parsed.columns.length > 0 || Object.keys(parsed.rows).length > 0) successful++;
       } catch (error) {
@@ -265,9 +295,10 @@ async function runFull(outDir, now, existing) {
       await sleep(REQUEST_DELAY_MS);
     }
 
-    const target = updateCommodity(output.commodities[commodity], sourceColumns, sourceRows);
+    fillMissingPrices(sourceRows, sourceColumns, sourceImputed);
+    const target = updateCommodity(output.commodities[commodity], sourceColumns, sourceRows, sourceImputed);
     output.commodities[commodity] = target;
-    saveHistoryFiles(outDir, commodity, target.columns, target.prices);
+    saveHistoryFiles(outDir, commodity, target.columns, target.prices, target.imputed);
     console.log(`  ✓ Total: ${target.days} hari`);
   }
 
@@ -310,11 +341,13 @@ async function runDaily(outDir, now, existing) {
       existing.commodities[commodity] = target;
 
       const historyRows = {};
+      const historyImputed = {};
       for (const date of sourceDates) {
         if (target.prices[date]) historyRows[date] = target.prices[date];
+        if (target.imputed[date]) historyImputed[date] = target.imputed[date];
         if (!existingDates.has(date) && target.prices[date]?.some(isValidPrice)) totalNew++;
       }
-      saveHistoryFiles(outDir, commodity, target.columns, historyRows);
+      saveHistoryFiles(outDir, commodity, target.columns, historyRows, historyImputed);
       console.log(`${sourceDates.length} hari diproses, ${target.days} total`);
     } catch (error) {
       console.log(`gagal: ${error.message}`);

@@ -249,7 +249,7 @@
         <p>Berdasarkan data historis — bantu petani menentukan waktu jual terbaik</p>
       </div>
       <table class="summary-table" id="summaryTable">
-        <thead><tr><th>Komoditas</th><th>Jual Terbaik</th><th>Hindari</th><th>Terendah</th><th>Tertinggi</th><th>Selisih</th></tr></thead>
+        <thead><tr><th>Komoditas</th><th>Jual: Harga Tertinggi</th><th>Harga Terendah</th><th>Momentum Naik</th><th>Konsistensi</th><th>Data Aktual</th></tr></thead>
         <tbody id="summaryBody"></tbody>
       </table>
       <div class="analisa-grid" id="analisaGrid"></div>
@@ -453,11 +453,11 @@ function renderAnalisa() {
     if (!info.tertinggi || !info.terendah) {
       return `<tr><td><strong>${c}</strong></td><td colspan="5" style="color:var(--text-dim)">Data belum cukup untuk dianalisa</td></tr>`;
     }
-    const sel = info.tertinggi.harga - info.terendah.harga;
-    const pct = ((sel / info.terendah.harga) * 100).toFixed(1);
     const bestMonth = info.bestMonth ? BULAN_FULL[info.bestMonth - 1] : '-';
     const worstMonth = info.worstMonth ? BULAN_FULL[info.worstMonth - 1] : '-';
-    return `<tr><td><strong>${c}</strong></td><td><span class="month-badge good">${bestMonth}</span></td><td><span class="month-badge bad">${worstMonth}</span></td><td>${BULAN_FULL[info.terendah.bulan-1]} ${R(info.terendah.harga)}</td><td>${BULAN_FULL[info.tertinggi.bulan-1]} ${R(info.tertinggi.harga)}</td><td><strong>${pct}%</strong></td></tr>`;
+    const momentum = info.momentumUpMonth ? BULAN_FULL[info.momentumUpMonth - 1] : '-';
+    const actual = info.dataDays ? `${info.observedDays}/${info.dataDays} hari` : '-';
+    return `<tr><td><strong>${c}</strong></td><td><span class="month-badge good">${bestMonth} · ${R(info.tertinggi.harga)}</span></td><td><span class="month-badge bad">${worstMonth} · ${R(info.terendah.harga)}</span></td><td>${momentum}</td><td>${info.confidence}%</td><td>${actual}</td></tr>`;
   }).join('');
 
   document.getElementById('analisaGrid').innerHTML = Object.entries(analisaData.commodities).map(([c, info], ci) => {
@@ -466,16 +466,19 @@ function renderAnalisa() {
       return `<div class="analisa-card"><div class="analisa-card-title" style="color:${color}">${c}</div><div style="color:var(--text-dim);font-size:0.75rem;">Data belum cukup untuk dianalisa.</div></div>`;
     }
     const hm = BULAN.map((b, i) => { const p = info.perubahan[i+1]; return `<div class="heatmap-cell" style="background:${getHeatColor(p ? parseFloat(p) : null)}">${p ? (parseFloat(p) > 0 ? '+' : '') + parseFloat(p).toFixed(0) + '%' : '-'}</div>`; }).join('');
-    const hp = BULAN.map((b, i) => { const h = info.rataRata[i+1]; return `<div class="heatmap-cell" style="background:rgba(56,189,248,${h ? 0.1 + h/info.tertinggi.harga*0.5 : 0.1})">${h ? (h/1000).toFixed(1)+'k' : '-'}</div>`; }).join('');
-    const best = info.bulanNaik[0], worst = info.bulanTurun[info.bulanTurun.length - 1];
+    const baseline = info.medianByMonth || info.rataRata || {};
+    const hp = BULAN.map((b, i) => { const h = baseline[i+1]; return `<div class="heatmap-cell" style="background:rgba(56,189,248,${h ? 0.1 + h/info.tertinggi.harga*0.5 : 0.1})">${h ? (h/1000).toFixed(1)+'k' : '-'}</div>`; }).join('');
+    const best = info.recommendation?.momentumUp, worst = info.recommendation?.momentumDown;
     const sel = info.tertinggi.harga - info.terendah.harga;
     return `<div class="analisa-card">
       <div class="analisa-card-title" style="color:${color}">${c}</div>
       <div class="analisa-card-cols">${info.columns.join(' vs ')}</div>
       <div class="rec-box">
         <div class="rec-title">💡 Rekomendasi</div>
-        <div class="rec-row"><span class="rec-label">Jual terbaik:</span><span class="rec-val good">${best ? BULAN_FULL[best.bulan-1] + ' (+' + best.pct + '%)' : '-'}</span></div>
-        <div class="rec-row"><span class="rec-label">Hindari:</span><span class="rec-val bad">${worst ? BULAN_FULL[worst.bulan-1] + ' (' + worst.pct + '%)' : '-'}</span></div>
+        <div class="rec-row"><span class="rec-label">Jual harga tertinggi:</span><span class="rec-val good">${BULAN_FULL[info.tertinggi.bulan-1]} (${R(info.tertinggi.harga)})</span></div>
+        <div class="rec-row"><span class="rec-label">Harga terendah:</span><span class="rec-val bad">${BULAN_FULL[info.terendah.bulan-1]} (${R(info.terendah.harga)})</span></div>
+        <div class="rec-row"><span class="rec-label">Momentum naik:</span><span class="rec-val good">${best ? BULAN_FULL[best.bulan-1] + ' (+' + best.pct + '%)' : '-'}</span></div>
+        <div class="rec-row"><span class="rec-label">Konsistensi data:</span><span class="rec-val">${info.recommendation?.coverage || 0}%</span></div>
         <div class="rec-row"><span class="rec-label">Selisih:</span><span class="rec-val">${R(sel)} (${((sel/info.terendah.harga)*100).toFixed(1)}%)</span></div>
       </div>
       <div style="font-size:0.65rem;color:var(--text-dim);margin-bottom:0.2rem;">Tren Perubahan Bulanan</div>

@@ -34,5 +34,27 @@
   "Kentang": {
     "Distributor Kabupaten Malang": 12500,
     "Kawasan Bromo Kabupaten Probolinggo": 11000
+  },
+  "imputed": {
+    "Beras": {
+      "PS Bendul Mrisi Kota Surabaya": true
+    },
+    "Cabe Rawit": {
+      "Pasar Tanjung Kabupaten Jember": true
+    },
+    "Telur": {
+      "Peternak Kec. Srengat Kabupaten Kediri": true
+    },
+    "Ayam Potong": {
+      "Pasar Gringging Kabupaten Kediri": true
+    },
+    "Daging Sapi": {
+      "RPH Pegirikan  Kota Surabaya": true,
+      "UD RPH Kota Malang": true
+    },
+    "Kentang": {
+      "Distributor Kabupaten Malang": true,
+      "Kawasan Bromo Kabupaten Probolinggo": true
+    }
   }
 }

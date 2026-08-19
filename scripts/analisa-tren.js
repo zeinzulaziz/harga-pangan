@@ -3,269 +3,229 @@
 const fs = require('fs');
 const path = require('path');
 
-const BULAN = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Ags','Sep','Okt','Nov','Des'];
-const BULAN_FULL = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Ags', 'Sep', 'Okt', 'Nov', 'Des'];
+const MONTHS_FULL = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
 
-function load() {
-  const p = path.join(__dirname, '..', 'data', 'produsen.json');
-  if (!fs.existsSync(p)) { console.log('❌ data/produsen.json tidak ada'); process.exit(1); }
-  return JSON.parse(fs.readFileSync(p, 'utf-8'));
+function loadData() {
+  const filePath = path.join(__dirname, '..', 'data', 'produsen.json');
+  if (!fs.existsSync(filePath)) throw new Error('data/produsen.json tidak ditemukan');
+  return JSON.parse(fs.readFileSync(filePath, 'utf-8'));
 }
 
-function avg(arr) {
-  const v = arr.filter(x => x != null && x > 0);
-  return v.length > 0 ? Math.round(v.reduce((a, b) => a + b, 0) / v.length) : null;
+function valid(value) {
+  return Number.isFinite(value) && value > 0;
 }
 
-function analyze(data) {
-  const result = {};
+function average(values) {
+  const filtered = values.filter(valid);
+  return filtered.length ? filtered.reduce((sum, value) => sum + value, 0) / filtered.length : null;
+}
 
-  for (const [commodity, info] of Object.entries(data.commodities)) {
-    const prices = info.prices;
-    const dates = Object.keys(prices).sort();
+function median(values) {
+  const filtered = values.filter(valid).sort((a, b) => a - b);
+  if (!filtered.length) return null;
+  const middle = Math.floor(filtered.length / 2);
+  return filtered.length % 2 ? filtered[middle] : (filtered[middle - 1] + filtered[middle]) / 2;
+}
 
-    // Kelompokkan per tahun-bulan
-    const monthly = {};
-    for (const d of dates) {
-      const ym = d.slice(0, 7);
-      if (!monthly[ym]) monthly[ym] = [];
-      const vals = prices[d].filter(v => v != null && v > 0);
-      if (vals.length > 0) monthly[ym].push(avg(vals));
+function medianNumber(values) {
+  const filtered = values.filter(Number.isFinite).sort((a, b) => a - b);
+  if (!filtered.length) return null;
+  const middle = Math.floor(filtered.length / 2);
+  return filtered.length % 2 ? filtered[middle] : (filtered[middle - 1] + filtered[middle]) / 2;
+}
+
+function percentChange(current, previous) {
+  return previous ? Number(((current - previous) / previous * 100).toFixed(1)) : null;
+}
+
+function monthName(month) {
+  return month ? MONTHS_FULL[month - 1] : '-';
+}
+
+function analyzeCommodity(commodity, info) {
+  const prices = info.prices || {};
+  const imputed = info.imputed || {};
+  const dates = Object.keys(prices).sort();
+  const monthlyDays = {};
+  const monthlyValues = {};
+  const years = new Set();
+  let observedDays = 0;
+  let imputedDays = 0;
+
+  for (const date of dates) {
+    const flags = imputed[date] || [];
+    const values = (Array.isArray(prices[date]) ? prices[date] : [])
+      .filter((value, index) => valid(value) && !flags[index]);
+    const hasImputed = flags.some(Boolean);
+    if (hasImputed) imputedDays++;
+    if (!values.length) continue;
+
+    observedDays++;
+    const yearMonth = date.slice(0, 7);
+    const year = yearMonth.slice(0, 4);
+    years.add(year);
+    if (!monthlyDays[yearMonth]) monthlyDays[yearMonth] = [];
+    monthlyDays[yearMonth].push(Math.round(average(values)));
+  }
+
+  for (const [yearMonth, values] of Object.entries(monthlyDays)) {
+    monthlyValues[yearMonth] = Math.round(average(values));
+  }
+
+  const averageByMonth = {};
+  const medianByMonth = {};
+  const samplesByMonth = {};
+  for (let month = 1; month <= 12; month++) {
+    const values = Object.entries(monthlyValues)
+      .filter(([yearMonth]) => Number(yearMonth.slice(5, 7)) === month)
+      .map(([, value]) => value);
+    averageByMonth[month] = values.length ? Math.round(average(values)) : null;
+    medianByMonth[month] = values.length ? Math.round(median(values)) : null;
+    samplesByMonth[month] = values.length;
+  }
+
+  const changes = {};
+  for (let month = 1; month <= 12; month++) {
+    const previousMonth = month === 1 ? 12 : month - 1;
+    if (medianByMonth[month] != null && medianByMonth[previousMonth] != null) {
+      changes[month] = percentChange(medianByMonth[month], medianByMonth[previousMonth]);
     }
+  }
 
-    // Hitung rata-rata per bulan (1-12) across semua tahun
-    const bulanAvg = {};
-    const bulanCount = {};
-    for (let b = 1; b <= 12; b++) {
-      bulanAvg[b] = [];
-      bulanCount[b] = 0;
-    }
+  const yearlyChanges = {};
+  for (const [yearMonth, current] of Object.entries(monthlyValues)) {
+    const year = Number(yearMonth.slice(0, 4));
+    const month = Number(yearMonth.slice(5, 7));
+    const previousKey = month === 1
+      ? `${year - 1}-12`
+      : `${year}-${String(month - 1).padStart(2, '0')}`;
+    const previous = monthlyValues[previousKey];
+    if (previous == null) continue;
+    if (!yearlyChanges[month]) yearlyChanges[month] = [];
+    yearlyChanges[month].push(percentChange(current, previous));
+  }
 
-    for (const [ym, vals] of Object.entries(monthly)) {
-      const b = parseInt(ym.slice(5, 7));
-      const a = avg(vals);
-      if (a != null) {
-        bulanAvg[b].push(a);
-        bulanCount[b]++;
-      }
-    }
-
-    const rataRata = {};
-    for (let b = 1; b <= 12; b++) {
-      rataRata[b] = bulanAvg[b].length > 0 ? Math.round(avg(bulanAvg[b])) : null;
-    }
-
-    // Hitung perubahan bulan-ke-bulan (%)
-    const perubahan = {};
-    for (let b = 1; b <= 12; b++) {
-      const prev = b === 1 ? 12 : b - 1;
-      if (rataRata[b] != null && rataRata[prev] != null) {
-        perubahan[b] = ((rataRata[b] - rataRata[prev]) / rataRata[prev] * 100).toFixed(1);
-      }
-    }
-
-    // Identifikasi tren naik dan turun
-    const bulanNaik = [];
-    const bulanTurun = [];
-    for (let b = 1; b <= 12; b++) {
-      if (perubahan[b] != null) {
-        if (parseFloat(perubahan[b]) > 2) bulanNaik.push({ bulan: b, pct: parseFloat(perubahan[b]) });
-        if (parseFloat(perubahan[b]) < -2) bulanTurun.push({ bulan: b, pct: parseFloat(perubahan[b]) });
-      }
-    }
-
-    bulanNaik.sort((a, b) => b.pct - a.pct);
-    bulanTurun.sort((a, b) => a.pct - b.pct);
-
-    // Harga terendah dan tertinggi (bulan)
-    const semuaHarga = Object.entries(rataRata).filter(([, v]) => v != null);
-    if (semuaHarga.length === 0) {
-      result[commodity] = {
-        columns: info.columns || [],
-        dataDays: dates.length,
-        rataRata,
-        perubahan,
-        bulanNaik: [],
-        bulanTurun: [],
-        terendah: null,
-        tertinggi: null,
-        yoy: {}
-      };
-      continue;
-    }
-    const terendah = semuaHarga.reduce((a, b) => b[1] < a[1] ? b : a);
-    const tertinggi = semuaHarga.reduce((a, b) => b[1] > a[1] ? b : a);
-
-    // Data tahun berjalan vs tahun lalu
-    const tahunSekarang = {};
-    const tahunLalu = {};
-    for (const [ym, vals] of Object.entries(monthly)) {
-      const y = parseInt(ym.slice(0, 4));
-      const b = parseInt(ym.slice(5, 7));
-      const a = avg(vals);
-      if (a == null) continue;
-      const maxY = Math.max(...Object.keys(monthly).map(k => parseInt(k.slice(0, 4))));
-      if (y === maxY) tahunSekarang[b] = a;
-      if (y === maxY - 1) tahunLalu[b] = a;
-    }
-
-    // YoY per bulan
-    const yoy = {};
-    for (let b = 1; b <= 12; b++) {
-      if (tahunSekarang[b] && tahunLalu[b]) {
-        yoy[b] = ((tahunSekarang[b] - tahunLalu[b]) / tahunLalu[b] * 100).toFixed(1);
-      }
-    }
-
-    result[commodity] = {
-      columns: info.columns || [],
-      dataDays: dates.length,
-      rataRata,
-      perubahan,
-      bulanNaik,
-      bulanTurun,
-      terendah: { bulan: parseInt(terendah[0]), harga: terendah[1] },
-      tertinggi: { bulan: parseInt(tertinggi[0]), harga: tertinggi[1] },
-      yoy
+  const consistency = {};
+  for (let month = 1; month <= 12; month++) {
+    const changesForMonth = (yearlyChanges[month] || []).filter(value => value != null);
+    const rising = changesForMonth.filter(value => value > 0).length;
+    const falling = changesForMonth.filter(value => value < 0).length;
+    consistency[month] = {
+      samples: changesForMonth.length,
+      rising,
+      falling,
+      risingRate: changesForMonth.length ? Number((rising / changesForMonth.length * 100).toFixed(1)) : null,
+      medianChange: changesForMonth.length ? Number(medianNumber(changesForMonth).toFixed(1)) : null
     };
   }
 
-  return result;
-}
-
-function printAnalysis(analysis) {
-  console.log('\n' + '═'.repeat(60));
-  console.log('  📊 ANALISA TREN HARGA PRODUSEN — SISKAPERBAPO JATIM');
-  console.log('  📅 ' + new Date().toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' }));
-  console.log('═'.repeat(60));
-
-  for (const [commodity, info] of Object.entries(analysis)) {
-    console.log('\n' + '─'.repeat(60));
-    console.log(`  🧅 ${commodity.toUpperCase()}`);
-    console.log(`  📍 ${info.columns.join(' vs ')}`);
-    console.log(`  📈 ${info.dataDays} hari data`);
-    console.log('─'.repeat(60));
-
-    // Tabel rata-rata bulanan
-    console.log('\n  📋 Rata-rata Harga per Bulan (Rp/kg):');
-    console.log('  ┌──────┬──────────┬──────────┬──────────┬──────────┬──────────┬──────────┬──────────┬──────────┬──────────┬──────────┬──────────┬──────────┐');
-    console.log('  │      │    Jan   │    Feb   │    Mar   │    Apr   │    Mei   │    Jun   │    Jul   │    Ags   │    Sep   │    Okt   │    Nov   │    Des   │');
-    console.log('  ├──────┼──────────┼──────────┼──────────┼──────────┼──────────┼──────────┼──────────┼──────────┼──────────┼──────────┼──────────┼──────────┤');
-
-    let hargaRow = '  │ Harga│';
-    for (let b = 1; b <= 12; b++) {
-      const v = info.rataRata[b];
-      hargaRow += v != null ? ` ${v.toLocaleString('id-ID').padStart(8)} │` : '        - │';
-    }
-    console.log(hargaRow);
-
-    let pctRow = '  │  (%) │';
-    for (let b = 1; b <= 12; b++) {
-      const v = info.perubahan[b];
-      if (v != null) {
-        const sign = parseFloat(v) > 0 ? '+' : '';
-        const color = parseFloat(v) > 0 ? '🔴' : parseFloat(v) < 0 ? '🟢' : '⚪';
-        pctRow += `${color}${sign}${v}`.padStart(8) + ' │';
-      } else {
-        pctRow += '        - │';
-      }
-    }
-    console.log(pctRow);
-
-    console.log('  └──────┴──────────┴──────────┴──────────┴──────────┴──────────┴──────────┴──────────┴──────────┴──────────┴──────────┴──────────┴──────────┘');
-
-    // Tren kenaikan
-    if (info.bulanNaik.length > 0) {
-      console.log('\n  📈 BULAN DENGAN TREN KENAIKAN:');
-      for (const { bulan, pct } of info.bulanNaik) {
-        console.log(`    🔴 ${BULAN_FULL[bulan - 1]}: +${pct}% (dari bulan sebelumnya)`);
-      }
-    }
-
-    // Tren penurunan
-    if (info.bulanTurun.length > 0) {
-      console.log('\n  📉 BULAN DENGAN TREN PENURUNAN:');
-      for (const { bulan, pct } of info.bulanTurun) {
-        console.log(`    🟢 ${BULAN_FULL[bulan - 1]}: ${pct}% (dari bulan sebelumnya)`);
-      }
-    }
-
-    // Rekomendasi
-    console.log('\n  💡 REKOMENDASI UNTUK PETANI:');
-    if (info.bulanNaik.length > 0) {
-      const best = info.bulanNaik[0];
-      console.log(`    ✅ Waktu TERBAIK jual: ${BULAN_FULL[best.bulan - 1]} (harga naik +${best.pct}%)`);
-    }
-    if (info.bulanTurun.length > 0) {
-      const worst = info.bulanTurun[info.bulanTurun.length - 1];
-      console.log(`    ⚠️  Waktu HINDARI jual: ${BULAN_FULL[worst.bulan - 1]} (harga turun ${worst.pct}%)`);
-    }
-    console.log(`    📊 Harga TERENDAH biasanya: ${BULAN_FULL[info.terendah.bulan - 1]} (Rp${info.terendah.harga.toLocaleString('id-ID')})`);
-    console.log(`    📊 Harga TERTINGGI biasanya: ${BULAN_FULL[info.tertinggi.bulan - 1]} (Rp${info.tertinggi.harga.toLocaleString('id-ID')})`);
-
-    const selisih = info.tertinggi.harga - info.terendah.harga;
-    const selisihPct = ((selisih / info.terendah.harga) * 100).toFixed(1);
-    console.log(`    💰 Selisih harga: Rp${selisih.toLocaleString('id-ID')} (${selisihPct}%)`);
-
-    // YoY
-    const yoyEntries = Object.entries(info.yoy);
-    if (yoyEntries.length > 0) {
-      console.log('\n  📊 PERBANDINGAN TAHUN INI vs TAHUN LALU:');
-      for (const [b, pct] of yoyEntries) {
-        const sign = parseFloat(pct) > 0 ? '+' : '';
-        const icon = parseFloat(pct) > 5 ? '🔴' : parseFloat(pct) < -5 ? '🟢' : '⚪';
-        console.log(`    ${icon} ${BULAN_FULL[parseInt(b) - 1]}: ${sign}${pct}%`);
-      }
-    }
+  const availableMonths = Object.entries(medianByMonth).filter(([, value]) => value != null);
+  if (!availableMonths.length) {
+    return {
+      columns: info.columns || [], dataDays: dates.length, observedDays, imputedDays,
+      averageByMonth, medianByMonth, samplesByMonth, perubahan: changes,
+      consistency, bulanNaik: [], bulanTurun: [], terendah: null, tertinggi: null,
+      recommendation: null, recent: null, yoy: {}
+    };
   }
 
-  // Ringkasan keseluruhan
-  console.log('\n' + '═'.repeat(60));
-  console.log('  📝 RINGKASAN ANALISA');
-  console.log('═'.repeat(60));
+  const lowest = availableMonths.reduce((best, item) => item[1] < best[1] ? item : best);
+  const highest = availableMonths.reduce((best, item) => item[1] > best[1] ? item : best);
+  const risingMonths = Object.entries(changes)
+    .filter(([, value]) => value > 2)
+    .map(([month, pct]) => ({ bulan: Number(month), pct }))
+    .sort((a, b) => b.pct - a.pct);
+  const fallingMonths = Object.entries(changes)
+    .filter(([, value]) => value < -2)
+    .map(([month, pct]) => ({ bulan: Number(month), pct }))
+    .sort((a, b) => a.pct - b.pct);
 
-  for (const [commodity, info] of Object.entries(analysis)) {
-    const bestMonth = info.bulanNaik.length > 0 ? BULAN_FULL[info.bulanNaik[0].bulan - 1] : '-';
-    const worstMonth = info.bulanTurun.length > 0 ? BULAN_FULL[info.bulanTurun[info.bulanTurun.length - 1].bulan - 1] : '-';
-    console.log(`  ${commodity.padEnd(15)} → Jual terbaik: ${bestMonth.padEnd(10)} | Hindari: ${worstMonth}`);
+  const recentKeys = Object.keys(monthlyValues).sort().slice(-12);
+  const recent = recentKeys.length >= 2
+    ? {
+        from: recentKeys[0],
+        to: recentKeys[recentKeys.length - 1],
+        change: percentChange(monthlyValues[recentKeys[recentKeys.length - 1]], monthlyValues[recentKeys[0]])
+      }
+    : null;
+
+  const latestYear = Math.max(...Object.keys(monthlyValues).map(key => Number(key.slice(0, 4))));
+  const yoy = {};
+  for (let month = 1; month <= 12; month++) {
+    const current = monthlyValues[`${latestYear}-${String(month).padStart(2, '0')}`];
+    const previous = monthlyValues[`${latestYear - 1}-${String(month).padStart(2, '0')}`];
+    if (current != null && previous != null) yoy[month] = percentChange(current, previous);
   }
 
-  console.log('\n  ℹ️  Catatan:');
-  console.log('  - Data berdasarkan rata-rata historis dari SISKAPERBAPO');
-  console.log('  - Tren bisa berubah tergantung kondisi pasar, cuaca, dll');
-  console.log('  - Gunakan sebagai referensi, bukan patokan mutlak');
-  console.log('');
-}
+  const highestMonth = Number(highest[0]);
+  const lowestMonth = Number(lowest[0]);
+  const momentumUp = risingMonths[0] || null;
+  const momentumDown = fallingMonths[0] || null;
+  const coverage = years.size ? Number((samplesByMonth[highestMonth] / years.size * 100).toFixed(1)) : 0;
 
-const data = load();
-const analysis = analyze(data);
-
-// Output JSON untuk dashboard
-const outDir = path.join(__dirname, '..', 'data');
-const outPath = path.join(outDir, 'analisa.json');
-
-const output = {
-  generatedAt: new Date().toISOString(),
-  summary: {},
-  commodities: analysis
-};
-
-for (const [commodity, info] of Object.entries(analysis)) {
-  const bestMonth = info.bulanNaik.length > 0 ? info.bulanNaik[0].bulan : null;
-  const worstMonth = info.bulanTurun.length > 0 ? info.bulanTurun[info.bulanTurun.length - 1].bulan : null;
-  output.summary[commodity] = {
-    bestMonth,
-    worstMonth,
-    terendah: info.terendah,
-    tertinggi: info.tertinggi
+  return {
+    columns: info.columns || [],
+    dataDays: dates.length,
+    observedDays,
+    imputedDays,
+    averageByMonth,
+    medianByMonth,
+    samplesByMonth,
+    rataRata: averageByMonth,
+    perubahan: changes,
+    consistency,
+    bulanNaik: risingMonths,
+    bulanTurun: fallingMonths,
+    terendah: { bulan: lowestMonth, harga: lowest[1] },
+    tertinggi: { bulan: highestMonth, harga: highest[1] },
+    recommendation: {
+      sellMonth: highestMonth,
+      lowMonth: lowestMonth,
+      momentumUp,
+      momentumDown,
+      coverage
+    },
+    recent,
+    yoy
   };
 }
 
-fs.writeFileSync(outPath, JSON.stringify(output, null, 2));
-console.log(`✅ Analisa tersimpan di data/analisa.json`);
-console.log(`\nRingkasan:`);
-for (const [commodity, info] of Object.entries(analysis)) {
-  const best = info.bulanNaik.length > 0 ? BULAN_FULL[info.bulanNaik[0].bulan - 1] : '-';
-  const worst = info.bulanTurun.length > 0 ? BULAN_FULL[info.bulanTurun[info.bulanTurun.length - 1].bulan - 1] : '-';
-  console.log(`  ${commodity.padEnd(15)} → Jual: ${best.padEnd(10)} | Hindari: ${worst}`);
+function buildAnalysis(data) {
+  const commodities = {};
+  for (const [commodity, info] of Object.entries(data.commodities || {})) {
+    commodities[commodity] = analyzeCommodity(commodity, info);
+  }
+  return commodities;
+}
+
+function writeOutput(analysis) {
+  const output = { generatedAt: new Date().toISOString(), summary: {}, commodities: analysis };
+  for (const [commodity, info] of Object.entries(analysis)) {
+    output.summary[commodity] = {
+      bestMonth: info.recommendation?.sellMonth || null,
+      worstMonth: info.recommendation?.lowMonth || null,
+      momentumUpMonth: info.recommendation?.momentumUp?.bulan || null,
+      momentumDownMonth: info.recommendation?.momentumDown?.bulan || null,
+      confidence: info.recommendation?.coverage || 0,
+      dataDays: info.dataDays,
+      observedDays: info.observedDays,
+      imputedDays: info.imputedDays,
+      terendah: info.terendah,
+      tertinggi: info.tertinggi
+    };
+  }
+
+  const outputPath = path.join(__dirname, '..', 'data', 'analisa.json');
+  fs.writeFileSync(outputPath, JSON.stringify(output, null, 2));
+  return output;
+}
+
+const data = loadData();
+const analysis = buildAnalysis(data);
+const output = writeOutput(analysis);
+
+console.log('✅ Analisa tersimpan di data/analisa.json');
+for (const [commodity, info] of Object.entries(output.summary)) {
+  console.log(`  ${commodity}: jual ${monthName(info.bestMonth)}, harga rendah ${monthName(info.worstMonth)}, momentum naik ${monthName(info.momentumUpMonth)}`);
 }
