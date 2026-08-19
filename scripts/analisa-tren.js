@@ -79,6 +79,20 @@ function analyze(data) {
 
     // Harga terendah dan tertinggi (bulan)
     const semuaHarga = Object.entries(rataRata).filter(([, v]) => v != null);
+    if (semuaHarga.length === 0) {
+      result[commodity] = {
+        columns: info.columns || [],
+        dataDays: dates.length,
+        rataRata,
+        perubahan,
+        bulanNaik: [],
+        bulanTurun: [],
+        terendah: null,
+        tertinggi: null,
+        yoy: {}
+      };
+      continue;
+    }
     const terendah = semuaHarga.reduce((a, b) => b[1] < a[1] ? b : a);
     const tertinggi = semuaHarga.reduce((a, b) => b[1] > a[1] ? b : a);
 
@@ -104,7 +118,7 @@ function analyze(data) {
     }
 
     result[commodity] = {
-      columns: info.columns,
+      columns: info.columns || [],
       dataDays: dates.length,
       rataRata,
       perubahan,
