@@ -224,16 +224,25 @@ async function main() {
       }
 
       let added = 0;
-      for (const date of newDates) {
+      const sortedNewDates = newDates.sort();
+      for (let j = 0; j < sortedNewDates.length; j++) {
+        const date = sortedNewDates[j];
         const prices = rows[date];
         const hasValidPrice = prices.some(p => p != null && p > 0);
-        if (!hasValidPrice) continue;
 
-        if (!existingData.prices[date]) {
+        if (hasValidPrice) {
           existingData.prices[date] = prices;
-          added++;
+          if (!existingData.prices[date] || existingData.prices[date] !== prices) added++;
         } else {
-          existingData.prices[date] = prices;
+          // Cari harga terakhir yang valid
+          const prevDate = sortedNewDates[j - 1] || Object.keys(existingData.prices).sort().pop();
+          if (prevDate && existingData.prices[prevDate]) {
+            const lastValid = existingData.prices[prevDate];
+            if (lastValid.some(p => p != null && p > 0)) {
+              existingData.prices[date] = lastValid;
+              added++;
+            }
+          }
         }
       }
 
