@@ -225,11 +225,15 @@ async function main() {
 
       let added = 0;
       for (const date of newDates) {
+        const prices = rows[date];
+        const hasValidPrice = prices.some(p => p != null && p > 0);
+        if (!hasValidPrice) continue;
+
         if (!existingData.prices[date]) {
-          existingData.prices[date] = rows[date];
+          existingData.prices[date] = prices;
           added++;
         } else {
-          existingData.prices[date] = rows[date];
+          existingData.prices[date] = prices;
         }
       }
 
