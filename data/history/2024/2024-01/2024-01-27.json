@@ -19,7 +19,8 @@
     "Kec. Gending Kabupaten Probolinggo": 50000
   },
   "Telur": {
-    "UD. Telur Intan Kabupaten Blitar": 22800
+    "UD. Telur Intan Kabupaten Blitar": 22800,
+    "Peternak Kec. Srengat Kabupaten Kediri": 22700
   },
   "Ayam Potong": {
     "Peternak Desa Kambingan Kabupaten Blitar": 17500,
@@ -30,5 +31,17 @@
     "UD RPH Kota Malang": 110000,
     "RPH Krian Kabupaten Sidoarjo": 63000
   },
-  "Kentang": {}
+  "Kentang": {
+    "Distributor Kabupaten Malang": 12500,
+    "Kawasan Bromo Kabupaten Probolinggo": 11000
+  },
+  "imputed": {
+    "Telur": {
+      "Peternak Kec. Srengat Kabupaten Kediri": true
+    },
+    "Kentang": {
+      "Distributor Kabupaten Malang": true,
+      "Kawasan Bromo Kabupaten Probolinggo": true
+    }
+  }
 }

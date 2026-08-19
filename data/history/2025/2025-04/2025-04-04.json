@@ -26,6 +26,24 @@
     "Peternak Desa Kambingan Kabupaten Blitar": 19000,
     "Pasar Gringging Kabupaten Kediri": 20000
   },
-  "Daging Sapi": {},
-  "Kentang": {}
+  "Daging Sapi": {
+    "RPH Pegirikan  Kota Surabaya": 95000,
+    "UD RPH Kota Malang": 105000,
+    "RPH Krian Kabupaten Sidoarjo": 70000
+  },
+  "Kentang": {
+    "Distributor Kabupaten Malang": 12500,
+    "Kawasan Bromo Kabupaten Probolinggo": 11000
+  },
+  "imputed": {
+    "Daging Sapi": {
+      "RPH Pegirikan  Kota Surabaya": true,
+      "UD RPH Kota Malang": true,
+      "RPH Krian Kabupaten Sidoarjo": true
+    },
+    "Kentang": {
+      "Distributor Kabupaten Malang": true,
+      "Kawasan Bromo Kabupaten Probolinggo": true
+    }
+  }
 }

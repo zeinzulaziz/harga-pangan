@@ -1,0 +1,73 @@
+{
+  "date": "2017-03-03",
+  "source": "SISKAPERBAPO Jatim",
+  "type": "produsen",
+  "Bawang Merah": {
+    "Pasar Dlinggu Kabupaten Probolinggo": 290000,
+    "Pasar Sukomoro Kabupaten Nganjuk": 29000
+  },
+  "imputed": {
+    "Bawang Merah": {
+      "Pasar Dlinggu Kabupaten Probolinggo": true,
+      "Pasar Sukomoro Kabupaten Nganjuk": true
+    },
+    "Beras": {
+      "UD Hasil Tani Kabupaten Probolinggo": true,
+      "PS Bendul Mrisi Kota Surabaya": true
+    },
+    "Cabe Rawit": {
+      "Pasar Tanjung Kabupaten Jember": true,
+      "Pasar Tulung Rejo Kabupaten Kediri": true
+    },
+    "Cabe Besar": {
+      "Pasar Pare Kabupaten Kediri": true,
+      "Kec. Gending Kabupaten Probolinggo": true
+    },
+    "Telur": {
+      "UD. Telur Intan Kabupaten Blitar": true,
+      "Peternak Kec. Srengat Kabupaten Kediri": true
+    },
+    "Ayam Potong": {
+      "Peternak Desa Kambingan Kabupaten Blitar": true,
+      "Pasar Gringging Kabupaten Kediri": true
+    },
+    "Daging Sapi": {
+      "RPH Pegirikan  Kota Surabaya": true,
+      "UD RPH Kota Malang": true,
+      "RPH Krian Kabupaten Sidoarjo": true
+    },
+    "Kentang": {
+      "Distributor Kabupaten Malang": true,
+      "Kawasan Bromo Kabupaten Probolinggo": true
+    }
+  },
+  "Beras": {
+    "UD Hasil Tani Kabupaten Probolinggo": 9350,
+    "PS Bendul Mrisi Kota Surabaya": 10000
+  },
+  "Cabe Rawit": {
+    "Pasar Tanjung Kabupaten Jember": 116000,
+    "Pasar Tulung Rejo Kabupaten Kediri": 115000
+  },
+  "Cabe Besar": {
+    "Pasar Pare Kabupaten Kediri": 17000,
+    "Kec. Gending Kabupaten Probolinggo": 16000
+  },
+  "Telur": {
+    "UD. Telur Intan Kabupaten Blitar": 13700,
+    "Peternak Kec. Srengat Kabupaten Kediri": 13500
+  },
+  "Ayam Potong": {
+    "Peternak Desa Kambingan Kabupaten Blitar": 12500,
+    "Pasar Gringging Kabupaten Kediri": 13000
+  },
+  "Daging Sapi": {
+    "RPH Pegirikan  Kota Surabaya": 95000,
+    "UD RPH Kota Malang": 94500,
+    "RPH Krian Kabupaten Sidoarjo": 93500
+  },
+  "Kentang": {
+    "Distributor Kabupaten Malang": 9000,
+    "Kawasan Bromo Kabupaten Probolinggo": 9000
+  }
+}

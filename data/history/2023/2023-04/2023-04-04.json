@@ -23,6 +23,7 @@
     "Peternak Kec. Srengat Kabupaten Kediri": 23500
   },
   "Ayam Potong": {
+    "Peternak Desa Kambingan Kabupaten Blitar": 16500,
     "Pasar Gringging Kabupaten Kediri": 17500
   },
   "Daging Sapi": {
@@ -30,5 +31,17 @@
     "UD RPH Kota Malang": 110000,
     "RPH Krian Kabupaten Sidoarjo": 60000
   },
-  "Kentang": {}
+  "Kentang": {
+    "Distributor Kabupaten Malang": 12500,
+    "Kawasan Bromo Kabupaten Probolinggo": 11000
+  },
+  "imputed": {
+    "Ayam Potong": {
+      "Peternak Desa Kambingan Kabupaten Blitar": true
+    },
+    "Kentang": {
+      "Distributor Kabupaten Malang": true,
+      "Kawasan Bromo Kabupaten Probolinggo": true
+    }
+  }
 }

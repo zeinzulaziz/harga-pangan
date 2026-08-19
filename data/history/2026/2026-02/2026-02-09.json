@@ -7,9 +7,11 @@
     "Pasar Sukomoro Kabupaten Nganjuk": 26500
   },
   "Beras": {
-    "UD Hasil Tani Kabupaten Probolinggo": 13400
+    "UD Hasil Tani Kabupaten Probolinggo": 13400,
+    "PS Bendul Mrisi Kota Surabaya": 14500
   },
   "Cabe Rawit": {
+    "Pasar Tanjung Kabupaten Jember": 34000,
     "Pasar Tulung Rejo Kabupaten Kediri": 78000
   },
   "Cabe Besar": {
@@ -17,13 +19,42 @@
     "Kec. Gending Kabupaten Probolinggo": 17000
   },
   "Telur": {
-    "UD. Telur Intan Kabupaten Blitar": 26300
+    "UD. Telur Intan Kabupaten Blitar": 26300,
+    "Peternak Kec. Srengat Kabupaten Kediri": 25500
   },
   "Ayam Potong": {
-    "Peternak Desa Kambingan Kabupaten Blitar": 25000
+    "Peternak Desa Kambingan Kabupaten Blitar": 25000,
+    "Pasar Gringging Kabupaten Kediri": 21000
   },
   "Daging Sapi": {
+    "RPH Pegirikan  Kota Surabaya": 115000,
+    "UD RPH Kota Malang": 105000,
     "RPH Krian Kabupaten Sidoarjo": 117000
   },
-  "Kentang": {}
+  "Kentang": {
+    "Distributor Kabupaten Malang": 12500,
+    "Kawasan Bromo Kabupaten Probolinggo": 11000
+  },
+  "imputed": {
+    "Beras": {
+      "PS Bendul Mrisi Kota Surabaya": true
+    },
+    "Cabe Rawit": {
+      "Pasar Tanjung Kabupaten Jember": true
+    },
+    "Telur": {
+      "Peternak Kec. Srengat Kabupaten Kediri": true
+    },
+    "Ayam Potong": {
+      "Pasar Gringging Kabupaten Kediri": true
+    },
+    "Daging Sapi": {
+      "RPH Pegirikan  Kota Surabaya": true,
+      "UD RPH Kota Malang": true
+    },
+    "Kentang": {
+      "Distributor Kabupaten Malang": true,
+      "Kawasan Bromo Kabupaten Probolinggo": true
+    }
+  }
 }

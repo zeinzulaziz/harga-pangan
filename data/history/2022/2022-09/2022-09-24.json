@@ -15,7 +15,8 @@
     "Pasar Tulung Rejo Kabupaten Kediri": 41000
   },
   "Cabe Besar": {
-    "Pasar Pare Kabupaten Kediri": 24000
+    "Pasar Pare Kabupaten Kediri": 24000,
+    "Kec. Gending Kabupaten Probolinggo": 22000
   },
   "Telur": {
     "UD. Telur Intan Kabupaten Blitar": 19000,
@@ -33,5 +34,10 @@
   "Kentang": {
     "Distributor Kabupaten Malang": 9500,
     "Kawasan Bromo Kabupaten Probolinggo": 10000
+  },
+  "imputed": {
+    "Cabe Besar": {
+      "Kec. Gending Kabupaten Probolinggo": true
+    }
   }
 }
