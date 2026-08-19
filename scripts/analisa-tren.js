@@ -184,7 +184,8 @@ function analyzeCommodity(commodity, info) {
       lowMonth: lowestMonth,
       momentumUp,
       momentumDown,
-      coverage
+      coverage,
+      consistency: consistency[highestMonth]
     },
     recent,
     yoy
@@ -208,6 +209,7 @@ function writeOutput(analysis) {
       momentumUpMonth: info.recommendation?.momentumUp?.bulan || null,
       momentumDownMonth: info.recommendation?.momentumDown?.bulan || null,
       confidence: info.recommendation?.coverage || 0,
+      patternConsistency: info.recommendation?.consistency?.risingRate || null,
       dataDays: info.dataDays,
       observedDays: info.observedDays,
       imputedDays: info.imputedDays,

@@ -104,6 +104,7 @@
     .pasar-name { font-size: 0.75rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .pasar-loc { font-size: 0.62rem; color: var(--text-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .pasar-val { font-size: 0.78rem; font-weight: 700; font-variant-numeric: tabular-nums; flex-shrink: 0; }
+    .pasar-status { display: block; font-size: 0.55rem; font-weight: 500; color: var(--text-dim); text-transform: uppercase; }
     .select-row { display: flex; gap: 0.3rem; margin-bottom: 0.4rem; }
     .select-sm { padding: 0.2rem 0.5rem; border-radius: 4px; border: 1px solid var(--border); background: transparent; color: var(--text-dim); font-family: inherit; font-size: 0.65rem; cursor: pointer; transition: all 0.2s; }
     .select-sm:hover { border-color: var(--accent); color: var(--text); }
@@ -138,6 +139,7 @@
     .heatmap-labels span { flex: 1; text-align: center; font-size: 0.5rem; color: var(--text-dim); }
     .heatmap-legend { display: flex; align-items: center; gap: 0.4rem; font-size: 0.6rem; color: var(--text-dim); margin-bottom: 0.75rem; }
     .heatmap-legend-bar { height: 6px; width: 60px; border-radius: 3px; background: linear-gradient(90deg, #22c55e, #eab308, #ef4444); }
+    .chart-note { font-size: 0.65rem; color: var(--text-dim); margin-top: 0.35rem; }
     .stats-mini { display: flex; gap: 0.4rem; flex-wrap: wrap; }
     .stat-mini { background: rgba(51,65,85,0.4); border-radius: 5px; padding: 0.3rem 0.5rem; font-size: 0.68rem; }
     .stat-mini-label { color: var(--text-dim); font-size: 0.58rem; }
@@ -230,6 +232,8 @@
         <div id="infoBadges" style="display:flex;flex-direction:column;gap:0.3rem;">
           <div class="badge" id="updateBadge" style="text-align:left;width:fit-content;">Memuat...</div>
           <div class="badge" id="commodityBadge" style="text-align:left;width:fit-content;"></div>
+          <div class="badge" id="rangeBadge" style="text-align:left;width:fit-content;"></div>
+          <div class="badge" id="qualityBadge" style="text-align:left;width:fit-content;"></div>
           <div class="badge" style="text-align:left;width:fit-content;">siskaperbapo.jatimprov.go.id</div>
         </div>
       </div>
@@ -264,6 +268,7 @@
         </div>
       </div>
       <canvas id="priceChart"></canvas>
+      <div class="chart-note">Garis putus-putus dan label "Estimasi" berarti harga diisi dari hari sebelumnya karena sumber belum menyediakan nilai aktual.</div>
     </div>
 
     <!-- Analisa View -->
@@ -273,7 +278,7 @@
         <p>Berdasarkan data historis — bantu petani menentukan waktu jual terbaik</p>
       </div>
       <table class="summary-table" id="summaryTable">
-        <thead><tr><th>Komoditas</th><th>Jual: Harga Tertinggi</th><th>Harga Terendah</th><th>Momentum Naik</th><th>Konsistensi</th><th>Data Aktual</th></tr></thead>
+        <thead><tr><th>Komoditas</th><th>Jual: Harga Tertinggi</th><th>Harga Terendah</th><th>Momentum Naik</th><th>Konsistensi Pola</th><th>Data Aktual</th></tr></thead>
         <tbody id="summaryBody"></tbody>
       </table>
       <div class="analisa-grid" id="analisaGrid"></div>
@@ -402,7 +407,7 @@ function renderCommodities() {
       currentPeriod = 'all';
       initRangePicker();
       document.querySelectorAll('.period-btn').forEach(button => button.classList.toggle('active', button.dataset.period === 'all'));
-      renderCommodities(); renderPasarList(); renderChart();
+      renderCommodities(); renderPasarList(); renderQuality(); renderChart();
     });
   });
 }
@@ -423,8 +428,9 @@ function renderPasarList() {
 
   document.getElementById('pasarList').innerHTML = cols.map((col, i) => {
     const active = selectedPasars.has(i);
-    const color = COLORS[i % COLORS.length];
-    const price = latest[i];
+      const color = COLORS[i % COLORS.length];
+      const price = latest[i];
+      const estimated = Boolean(c.imputed?.[latest]?.[i]);
     const parts = col.split(' ');
     const mw = ['Pasar','UD','UD.','PS','RPH','Peternak','Distributor','Kawasan','Kec.'].includes(parts[0]);
     const name = mw ? parts.slice(0, 2).join(' ') : parts[0];
@@ -433,7 +439,7 @@ function renderPasarList() {
       <div class="pasar-check">${active ? '✓' : ''}</div>
       <div class="pasar-dot" style="background:${active ? color : 'var(--border)'}"></div>
       <div class="pasar-info"><div class="pasar-name">${name}</div><div class="pasar-loc">${loc}</div></div>
-      <div class="pasar-val" style="color:${active ? color : 'var(--text-dim)'}">${price != null ? R(price) : '-'}</div>
+      <div class="pasar-val" style="color:${active ? color : 'var(--text-dim)'}">${price != null ? R(price) : '-'}<span class="pasar-status">${estimated ? 'estimasi' : 'aktual'}</span></div>
     </div>`;
   }).join('');
 
@@ -490,10 +496,12 @@ function renderChart() {
   if (numCols > 0) {
     for (let i = 0; i < numCols; i++) {
       if (!selectedPasars.has(i)) continue;
+      const imputedFlags = dates.map(date => Boolean(c.imputed?.[date]?.[i]));
       datasets.push({
         label: c.columns[i], data: dates.map(d => { const a = c.prices[d]; return a && a[i] != null ? a[i] : null; }),
         borderColor: COLORS[i % COLORS.length], backgroundColor: 'transparent', tension: 0.3,
-        pointRadius: dates.length < 100 ? 2 : 0, pointHoverRadius: 5, borderWidth: 2
+        pointRadius: dates.length < 100 ? 2 : 0, pointHoverRadius: 5, borderWidth: 2, marketIndex: i,
+        segment: { borderDash: context => imputedFlags[context.p0DataIndex] || imputedFlags[context.p1DataIndex] ? [5, 4] : undefined }
       });
     }
   } else {
@@ -516,7 +524,7 @@ function renderChart() {
           backgroundColor: '#1e293b', titleColor: '#f1f5f9', bodyColor: '#94a3b8', borderColor: '#334155', borderWidth: 1,
           callbacks: {
             title: items => items.length ? `Tanggal: ${displayDate(dates[items[0].dataIndex])}` : '',
-            label: ctx => `${ctx.dataset.label}: ${R(ctx.parsed.y)}`
+            label: ctx => `${c.imputed?.[dates[ctx.dataIndex]]?.[ctx.dataset.marketIndex] ? 'Estimasi' : 'Aktual'} · ${ctx.dataset.label}: ${R(ctx.parsed.y)}`
           }
         },
         zoom: {
@@ -535,6 +543,15 @@ function renderChart() {
   });
   document.getElementById('chartTitle').textContent = currentCommodity;
   document.getElementById('chartSub').textContent = `${dates.length} hari · ${selectedPasars.size} pasar · ${displayDate(dates[0])} - ${displayDate(dates[dates.length - 1])}`;
+}
+
+function renderQuality() {
+  const c = data.commodities[currentCommodity];
+  const dates = Object.keys(c.prices).sort();
+  const imputedDates = dates.filter(date => (c.imputed?.[date] || []).some(Boolean)).length;
+  const actualDates = dates.length - imputedDates;
+  document.getElementById('rangeBadge').textContent = `${displayDate(dates[0])} - ${displayDate(dates[dates.length - 1])}`;
+  document.getElementById('qualityBadge').textContent = `Aktual ${actualDates} · Estimasi ${imputedDates}`;
 }
 
 document.getElementById('resetZoomBtn').addEventListener('click', () => {
@@ -559,7 +576,7 @@ function renderAnalisa() {
     const worstMonth = info.worstMonth ? BULAN_FULL[info.worstMonth - 1] : '-';
     const momentum = info.momentumUpMonth ? BULAN_FULL[info.momentumUpMonth - 1] : '-';
     const actual = info.dataDays ? `${info.observedDays}/${info.dataDays} hari` : '-';
-    return `<tr><td><strong>${c}</strong></td><td><span class="month-badge good">${bestMonth} · ${R(info.tertinggi.harga)}</span></td><td><span class="month-badge bad">${worstMonth} · ${R(info.terendah.harga)}</span></td><td>${momentum}</td><td>${info.confidence}%</td><td>${actual}</td></tr>`;
+    return `<tr><td><strong>${c}</strong></td><td><span class="month-badge good">${bestMonth} · ${R(info.tertinggi.harga)}</span></td><td><span class="month-badge bad">${worstMonth} · ${R(info.terendah.harga)}</span></td><td>${momentum}</td><td>${info.patternConsistency == null ? '-' : info.patternConsistency + '% tahun naik'}</td><td>${actual}</td></tr>`;
   }).join('');
 
   document.getElementById('analisaGrid').innerHTML = Object.entries(analisaData.commodities).map(([c, info], ci) => {
@@ -580,7 +597,8 @@ function renderAnalisa() {
         <div class="rec-row"><span class="rec-label">Jual harga tertinggi:</span><span class="rec-val good">${BULAN_FULL[info.tertinggi.bulan-1]} (${R(info.tertinggi.harga)})</span></div>
         <div class="rec-row"><span class="rec-label">Harga terendah:</span><span class="rec-val bad">${BULAN_FULL[info.terendah.bulan-1]} (${R(info.terendah.harga)})</span></div>
         <div class="rec-row"><span class="rec-label">Momentum naik:</span><span class="rec-val good">${best ? BULAN_FULL[best.bulan-1] + ' (+' + best.pct + '%)' : '-'}</span></div>
-        <div class="rec-row"><span class="rec-label">Konsistensi data:</span><span class="rec-val">${info.recommendation?.coverage || 0}%</span></div>
+        <div class="rec-row"><span class="rec-label">Konsistensi pola:</span><span class="rec-val">${info.recommendation?.consistency?.risingRate == null ? '-' : info.recommendation.consistency.risingRate + '% tahun naik'}</span></div>
+        <div class="rec-row"><span class="rec-label">Coverage data:</span><span class="rec-val">${info.recommendation?.coverage || 0}%</span></div>
         <div class="rec-row"><span class="rec-label">Selisih:</span><span class="rec-val">${R(sel)} (${((sel/info.terendah.harga)*100).toFixed(1)}%)</span></div>
       </div>
       <div style="font-size:0.65rem;color:var(--text-dim);margin-bottom:0.2rem;">Tren Perubahan Bulanan</div>
@@ -612,7 +630,7 @@ async function init() {
 
     initPasarSelection();
     initRangePicker();
-    renderCommodities(); renderPasarList(); renderChart(); renderAnalisa();
+    renderCommodities(); renderPasarList(); renderQuality(); renderChart(); renderAnalisa();
     showToast(`${commodities.length} komoditas dimuat`, 'success');
 
     // Start collapsed on mobile
