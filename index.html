@@ -76,6 +76,21 @@
     .period-btn { padding: 0.4rem; border-radius: 6px; border: 1px solid var(--border); background: transparent; color: var(--text-dim); font-family: inherit; font-size: 0.72rem; font-weight: 500; cursor: pointer; transition: all 0.2s; text-align: center; }
     .period-btn:hover { border-color: var(--accent); color: var(--text); }
     .period-btn.active { background: var(--accent); color: #0f172a; border-color: var(--accent); font-weight: 600; }
+    .range-picker { margin-top: 0.75rem; padding: 0.65rem; border: 1px solid var(--border); border-radius: 8px; background: rgba(15,23,42,0.35); }
+    .range-picker-head, .range-values { display: flex; justify-content: space-between; gap: 0.5rem; font-size: 0.62rem; color: var(--text-dim); }
+    .range-picker-head { margin-bottom: 0.45rem; color: var(--text); font-weight: 600; }
+    .range-values { margin-top: 0.35rem; font-variant-numeric: tabular-nums; }
+    .range-track { height: 18px; position: relative; margin: 0 0.2rem; }
+    .range-track::before, .range-fill { content: ''; position: absolute; top: 7px; height: 4px; border-radius: 4px; }
+    .range-track::before { left: 0; right: 0; background: var(--border); }
+    .range-fill { left: 0; right: 0; background: var(--accent4); }
+    .range-track input { position: absolute; inset: 0; width: 100%; height: 18px; margin: 0; appearance: none; background: transparent; pointer-events: none; }
+    .range-track input::-webkit-slider-runnable-track { height: 4px; background: transparent; }
+    .range-track input::-moz-range-track { height: 4px; background: transparent; }
+    .range-track input::-webkit-slider-thumb { width: 14px; height: 14px; margin-top: -5px; appearance: none; border: 2px solid var(--bg); border-radius: 50%; background: var(--accent4); cursor: grab; pointer-events: auto; }
+    .range-track input::-moz-range-thumb { width: 10px; height: 10px; border: 2px solid var(--bg); border-radius: 50%; background: var(--accent4); cursor: grab; pointer-events: auto; }
+    #rangeStart { z-index: 3; }
+    #rangeEnd { z-index: 2; }
     .pasar-list { display: flex; flex-direction: column; gap: 0.25rem; }
     .pasar-item { display: flex; align-items: center; gap: 0.5rem; padding: 0.4rem 0.6rem; border-radius: 6px; cursor: pointer; transition: all 0.2s; user-select: none; }
     .pasar-item:hover { background: var(--card-hover); }
@@ -198,6 +213,15 @@
           <button class="period-btn" data-period="1y">1 Tahun</button>
           <button class="period-btn active" data-period="all">Semua</button>
         </div>
+        <div class="range-picker">
+          <div class="range-picker-head"><span>Rentang bebas</span><span id="rangeSummary">Semua data</span></div>
+          <div class="range-track">
+            <div class="range-fill" id="rangeFill"></div>
+            <input id="rangeStart" type="range" min="0" max="1" value="0" aria-label="Tanggal mulai">
+            <input id="rangeEnd" type="range" min="0" max="1" value="1" aria-label="Tanggal akhir">
+          </div>
+          <div class="range-values"><span id="rangeStartLabel">-</span><span id="rangeEndLabel">-</span></div>
+        </div>
       </div>
 
       <!-- Info -->
@@ -263,6 +287,7 @@ const COLORS = ['#38bdf8','#818cf8','#f472b6','#34d399','#fb923c','#a78bfa','#ea
 const BULAN = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Ags','Sep','Okt','Nov','Des'];
 const BULAN_FULL = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
 let data = null, analisaData = null, currentCommodity = null, currentPeriod = 'all';
+let customRange = { start: null, end: null };
 let selectedPasars = new Set(), chart = null;
 
 function showToast(msg, type='info') {
@@ -302,9 +327,63 @@ document.querySelectorAll('.view-btn').forEach(btn => {
 
 function getFilteredDates(allDates) {
   if (currentPeriod === 'all') return allDates;
+  if (currentPeriod === 'custom') {
+    return allDates.filter(date => date >= customRange.start && date <= customRange.end);
+  }
   const now = new Date();
   const days = { '1w': 7, '1m': 30, '3m': 90, '6m': 180, '1y': 365 }[currentPeriod] || 9999;
   return allDates.filter(d => d >= new Date(now - days * 86400000).toISOString().slice(0, 10));
+}
+
+function updateRangeUI() {
+  const dates = Object.keys(data.commodities[currentCommodity].prices).sort();
+  const start = document.getElementById('rangeStart');
+  const end = document.getElementById('rangeEnd');
+  const startIndex = Number(start.value);
+  const endIndex = Number(end.value);
+  const max = Math.max(1, dates.length - 1);
+  const left = startIndex / max * 100;
+  const right = 100 - endIndex / max * 100;
+  document.getElementById('rangeFill').style.left = `${left}%`;
+  document.getElementById('rangeFill').style.right = `${right}%`;
+  document.getElementById('rangeStartLabel').textContent = displayDate(dates[startIndex]);
+  document.getElementById('rangeEndLabel').textContent = displayDate(dates[endIndex]);
+  document.getElementById('rangeSummary').textContent = `${endIndex - startIndex + 1} hari`;
+}
+
+function initRangePicker(period = 'all') {
+  const dates = Object.keys(data.commodities[currentCommodity].prices).sort();
+  const start = document.getElementById('rangeStart');
+  const end = document.getElementById('rangeEnd');
+  start.max = String(Math.max(1, dates.length - 1));
+  end.max = String(Math.max(1, dates.length - 1));
+
+  let startIndex = 0;
+  const endIndex = dates.length - 1;
+  if (period !== 'all' && period !== 'custom') {
+    const days = { '1w': 7, '1m': 30, '3m': 90, '6m': 180, '1y': 365 }[period] || 0;
+    const cutoff = new Date(Date.now() - days * 86400000).toISOString().slice(0, 10);
+    const found = dates.findIndex(date => date >= cutoff);
+    startIndex = found < 0 ? 0 : found;
+  }
+
+  start.value = String(startIndex);
+  end.value = String(endIndex);
+  customRange = { start: dates[startIndex], end: dates[endIndex] };
+  updateRangeUI();
+}
+
+function setPeriod(period) {
+  currentPeriod = period;
+  document.querySelectorAll('.period-btn').forEach(button => button.classList.toggle('active', button.dataset.period === period));
+  initRangePicker(period);
+  renderChart();
+}
+
+function displayDate(date, includeYear = true) {
+  return new Date(date + 'T00:00:00').toLocaleDateString('id-ID', includeYear
+    ? { day: 'numeric', month: 'short', year: 'numeric' }
+    : { day: 'numeric', month: 'short' });
 }
 
 // COMMODITIES
@@ -320,6 +399,9 @@ function renderCommodities() {
     btn.addEventListener('click', () => {
       currentCommodity = btn.dataset.commodity;
       initPasarSelection();
+      currentPeriod = 'all';
+      initRangePicker();
+      document.querySelectorAll('.period-btn').forEach(button => button.classList.toggle('active', button.dataset.period === 'all'));
       renderCommodities(); renderPasarList(); renderChart();
     });
   });
@@ -375,11 +457,25 @@ document.getElementById('deselectAllBtn').addEventListener('click', () => {
 
 // PERIOD
 document.querySelectorAll('.period-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.period-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active'); currentPeriod = btn.dataset.period; renderChart();
-  });
+  btn.addEventListener('click', () => setPeriod(btn.dataset.period));
 });
+
+for (const id of ['rangeStart', 'rangeEnd']) {
+  document.getElementById(id).addEventListener('input', event => {
+    const start = document.getElementById('rangeStart');
+    const end = document.getElementById('rangeEnd');
+    if (Number(start.value) >= Number(end.value)) {
+      if (event.target === start) start.value = String(Math.max(0, Number(end.value) - 1));
+      else end.value = String(Math.min(Number(end.max), Number(start.value) + 1));
+    }
+    currentPeriod = 'custom';
+    document.querySelectorAll('.period-btn').forEach(button => button.classList.remove('active'));
+    const dates = Object.keys(data.commodities[currentCommodity].prices).sort();
+    customRange = { start: dates[Number(start.value)], end: dates[Number(end.value)] };
+    updateRangeUI();
+  });
+  document.getElementById(id).addEventListener('change', renderChart);
+}
 
 // CHART
 function renderChart() {
@@ -387,7 +483,7 @@ function renderChart() {
   if (!c) return;
   const allDates = Object.keys(c.prices).sort();
   const dates = getFilteredDates(allDates);
-  const labels = dates.map(d => new Date(d + 'T00:00:00').toLocaleDateString('id-ID', { day: 'numeric', month: 'short' }));
+  const labels = dates.map(d => displayDate(d));
   const numCols = c.columns ? c.columns.length : 0;
   const datasets = [];
 
@@ -416,7 +512,13 @@ function renderChart() {
       responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false },
       plugins: {
         legend: { display: datasets.length > 1, position: 'bottom', labels: { color: '#94a3b8', font: { size: 10 } } },
-        tooltip: { backgroundColor: '#1e293b', titleColor: '#f1f5f9', bodyColor: '#94a3b8', borderColor: '#334155', borderWidth: 1, callbacks: { label: ctx => `${ctx.dataset.label}: ${R(ctx.parsed.y)}` } },
+        tooltip: {
+          backgroundColor: '#1e293b', titleColor: '#f1f5f9', bodyColor: '#94a3b8', borderColor: '#334155', borderWidth: 1,
+          callbacks: {
+            title: items => items.length ? `Tanggal: ${displayDate(dates[items[0].dataIndex])}` : '',
+            label: ctx => `${ctx.dataset.label}: ${R(ctx.parsed.y)}`
+          }
+        },
         zoom: {
           pan: { enabled: true, mode: 'x' },
           zoom: { wheel: { enabled: true }, pinch: { enabled: true }, drag: { enabled: true, backgroundColor: 'rgba(56,189,248,0.1)', borderColor: 'rgba(56,189,248,0.5)', borderWidth: 1 }, mode: 'x',
@@ -426,13 +528,13 @@ function renderChart() {
         }
       },
       scales: {
-        x: { grid: { color: 'rgba(51,65,85,0.3)' }, ticks: { color: '#64748b', font: { size: 10 }, maxRotation: 45, autoSkip: true, maxTicksLimit: 12 } },
+        x: { grid: { color: 'rgba(51,65,85,0.3)' }, ticks: { color: '#64748b', font: { size: 10 }, maxRotation: 45, autoSkip: true, maxTicksLimit: 12, callback: (_, index) => displayDate(dates[index], false) } },
         y: { grid: { color: 'rgba(51,65,85,0.3)' }, ticks: { color: '#64748b', font: { size: 10 }, callback: v => v >= 1000000 ? (v/1000000).toFixed(1)+'jt' : v >= 1000 ? (v/1000).toFixed(0)+'rb' : v } }
       }
     }
   });
   document.getElementById('chartTitle').textContent = currentCommodity;
-  document.getElementById('chartSub').textContent = `${dates.length} hari · ${selectedPasars.size} pasar`;
+  document.getElementById('chartSub').textContent = `${dates.length} hari · ${selectedPasars.size} pasar · ${displayDate(dates[0])} - ${displayDate(dates[dates.length - 1])}`;
 }
 
 document.getElementById('resetZoomBtn').addEventListener('click', () => {
@@ -509,6 +611,7 @@ async function init() {
     document.getElementById('headerBadge').textContent = `${commodities.length} komoditas`;
 
     initPasarSelection();
+    initRangePicker();
     renderCommodities(); renderPasarList(); renderChart(); renderAnalisa();
     showToast(`${commodities.length} komoditas dimuat`, 'success');
 
