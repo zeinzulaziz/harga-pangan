@@ -32,7 +32,12 @@
     "RPH Krian Kabupaten Sidoarjo": 98000
   },
   "Kentang": {
-    "Distributor Kabupaten Malang": 90000,
+    "Distributor Kabupaten Malang": 9500,
     "Kawasan Bromo Kabupaten Probolinggo": 10000
+  },
+  "imputed": {
+    "Kentang": {
+      "Distributor Kabupaten Malang": true
+    }
   }
 }

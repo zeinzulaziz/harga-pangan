@@ -22,6 +22,9 @@
       "RPH Pegirikan  Kota Surabaya": true,
       "UD RPH Kota Malang": true,
       "RPH Krian Kabupaten Sidoarjo": true
+    },
+    "Kentang": {
+      "Distributor Kabupaten Malang": true
     }
   },
   "Cabe Besar": {
@@ -42,7 +45,7 @@
     "RPH Krian Kabupaten Sidoarjo": 80000
   },
   "Kentang": {
-    "Distributor Kabupaten Malang": 92500,
+    "Distributor Kabupaten Malang": 9250,
     "Kawasan Bromo Kabupaten Probolinggo": 9000
   }
 }

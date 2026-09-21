@@ -8,7 +8,7 @@
   },
   "Beras": {
     "UD Hasil Tani Kabupaten Probolinggo": 9200,
-    "PS Bendul Mrisi Kota Surabaya": 99000
+    "PS Bendul Mrisi Kota Surabaya": 9900
   },
   "Cabe Rawit": {
     "Pasar Tanjung Kabupaten Jember": 44000,
@@ -34,5 +34,10 @@
   "Kentang": {
     "Distributor Kabupaten Malang": 9500,
     "Kawasan Bromo Kabupaten Probolinggo": 9800
+  },
+  "imputed": {
+    "Beras": {
+      "PS Bendul Mrisi Kota Surabaya": true
+    }
   }
 }

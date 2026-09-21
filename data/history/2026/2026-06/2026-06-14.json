@@ -12,7 +12,7 @@
   },
   "Cabe Rawit": {
     "Pasar Tanjung Kabupaten Jember": 34000,
-    "Pasar Tulung Rejo Kabupaten Kediri": 5000
+    "Pasar Tulung Rejo Kabupaten Kediri": 53000
   },
   "Cabe Besar": {
     "Pasar Pare Kabupaten Kediri": 28000,
@@ -40,7 +40,8 @@
       "PS Bendul Mrisi Kota Surabaya": true
     },
     "Cabe Rawit": {
-      "Pasar Tanjung Kabupaten Jember": true
+      "Pasar Tanjung Kabupaten Jember": true,
+      "Pasar Tulung Rejo Kabupaten Kediri": true
     },
     "Telur": {
       "Peternak Kec. Srengat Kabupaten Kediri": true

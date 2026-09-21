@@ -4,7 +4,7 @@
   "type": "produsen",
   "Bawang Merah": {
     "Pasar Dlinggu Kabupaten Probolinggo": 9500,
-    "Pasar Sukomoro Kabupaten Nganjuk": 75000
+    "Pasar Sukomoro Kabupaten Nganjuk": 7000
   },
   "Beras": {
     "UD Hasil Tani Kabupaten Probolinggo": 9100,
@@ -34,5 +34,10 @@
   "Kentang": {
     "Distributor Kabupaten Malang": 10500,
     "Kawasan Bromo Kabupaten Probolinggo": 11000
+  },
+  "imputed": {
+    "Bawang Merah": {
+      "Pasar Sukomoro Kabupaten Nganjuk": true
+    }
   }
 }

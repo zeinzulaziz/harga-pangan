@@ -3,7 +3,7 @@
   "source": "SISKAPERBAPO Jatim",
   "type": "produsen",
   "Bawang Merah": {
-    "Pasar Dlinggu Kabupaten Probolinggo": 3000,
+    "Pasar Dlinggu Kabupaten Probolinggo": 30000,
     "Pasar Sukomoro Kabupaten Nganjuk": 22500
   },
   "Beras": {
@@ -39,6 +39,9 @@
     "Kentang": {
       "Distributor Kabupaten Malang": true,
       "Kawasan Bromo Kabupaten Probolinggo": true
+    },
+    "Bawang Merah": {
+      "Pasar Dlinggu Kabupaten Probolinggo": true
     }
   }
 }

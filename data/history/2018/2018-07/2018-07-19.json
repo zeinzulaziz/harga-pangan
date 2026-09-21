@@ -29,10 +29,15 @@
   "Daging Sapi": {
     "RPH Pegirikan  Kota Surabaya": 98500,
     "UD RPH Kota Malang": 97500,
-    "RPH Krian Kabupaten Sidoarjo": 9700
+    "RPH Krian Kabupaten Sidoarjo": 97000
   },
   "Kentang": {
     "Distributor Kabupaten Malang": 7000,
     "Kawasan Bromo Kabupaten Probolinggo": 7500
+  },
+  "imputed": {
+    "Daging Sapi": {
+      "RPH Krian Kabupaten Sidoarjo": true
+    }
   }
 }

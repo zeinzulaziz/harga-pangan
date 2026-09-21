@@ -15,7 +15,7 @@
     "Pasar Tulung Rejo Kabupaten Kediri": 72000
   },
   "Cabe Besar": {
-    "Pasar Pare Kabupaten Kediri": 540000,
+    "Pasar Pare Kabupaten Kediri": 52000,
     "Kec. Gending Kabupaten Probolinggo": 55000
   },
   "Telur": {
@@ -39,6 +39,9 @@
     "Kentang": {
       "Distributor Kabupaten Malang": true,
       "Kawasan Bromo Kabupaten Probolinggo": true
+    },
+    "Cabe Besar": {
+      "Pasar Pare Kabupaten Kediri": true
     }
   }
 }

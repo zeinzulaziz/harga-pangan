@@ -33,6 +33,11 @@
   },
   "Kentang": {
     "Distributor Kabupaten Malang": 10500,
-    "Kawasan Bromo Kabupaten Probolinggo": 1000
+    "Kawasan Bromo Kabupaten Probolinggo": 10000
+  },
+  "imputed": {
+    "Kentang": {
+      "Kawasan Bromo Kabupaten Probolinggo": true
+    }
   }
 }

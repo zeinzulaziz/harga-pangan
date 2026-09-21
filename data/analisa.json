@@ -1,19 +1,19 @@
 {
-  "generatedAt": "2026-08-19T14:34:11.861Z",
+  "generatedAt": "2026-09-21T12:59:17.970Z",
   "summary": {
     "Bawang Merah": {
       "bestMonth": 5,
-      "worstMonth": 9,
+      "worstMonth": 8,
       "momentumUpMonth": 11,
       "momentumDownMonth": 7,
       "confidence": 90.9,
       "patternConsistency": 50,
-      "dataDays": 3670,
-      "observedDays": 3632,
-      "imputedDays": 43,
+      "dataDays": 3700,
+      "observedDays": 3662,
+      "imputedDays": 51,
       "terendah": {
-        "bulan": 9,
-        "harga": 14167
+        "bulan": 8,
+        "harga": 14234
       },
       "tertinggi": {
         "bulan": 5,
@@ -22,21 +22,21 @@
     },
     "Beras": {
       "bestMonth": 2,
-      "worstMonth": 9,
-      "momentumUpMonth": 11,
-      "momentumDownMonth": 6,
+      "worstMonth": 8,
+      "momentumUpMonth": 1,
+      "momentumDownMonth": 8,
       "confidence": 90.9,
       "patternConsistency": 50,
-      "dataDays": 3670,
-      "observedDays": 3558,
-      "imputedDays": 339,
+      "dataDays": 3700,
+      "observedDays": 3584,
+      "imputedDays": 396,
       "terendah": {
-        "bulan": 9,
-        "harga": 9819
+        "bulan": 8,
+        "harga": 9548
       },
       "tertinggi": {
         "bulan": 2,
-        "harga": 11373
+        "harga": 10046
       }
     },
     "Cabe Rawit": {
@@ -46,16 +46,16 @@
       "momentumDownMonth": 4,
       "confidence": 90.9,
       "patternConsistency": 60,
-      "dataDays": 3670,
-      "observedDays": 3639,
-      "imputedDays": 263,
+      "dataDays": 3700,
+      "observedDays": 3667,
+      "imputedDays": 299,
       "terendah": {
         "bulan": 9,
-        "harga": 18750
+        "harga": 19758
       },
       "tertinggi": {
         "bulan": 3,
-        "harga": 47298
+        "harga": 47762
       }
     },
     "Cabe Besar": {
@@ -65,12 +65,12 @@
       "momentumDownMonth": 9,
       "confidence": 90.9,
       "patternConsistency": 50,
-      "dataDays": 3670,
-      "observedDays": 3640,
-      "imputedDays": 43,
+      "dataDays": 3700,
+      "observedDays": 3669,
+      "imputedDays": 49,
       "terendah": {
         "bulan": 9,
-        "harga": 15700
+        "harga": 14417
       },
       "tertinggi": {
         "bulan": 3,
@@ -83,32 +83,32 @@
       "momentumUpMonth": 11,
       "momentumDownMonth": 9,
       "confidence": 90.9,
-      "patternConsistency": 80,
-      "dataDays": 3670,
-      "observedDays": 3637,
-      "imputedDays": 301,
+      "patternConsistency": 90,
+      "dataDays": 3700,
+      "observedDays": 3646,
+      "imputedDays": 337,
       "terendah": {
         "bulan": 9,
         "harga": 16618
       },
       "tertinggi": {
         "bulan": 12,
-        "harga": 21676
+        "harga": 21760
       }
     },
     "Ayam Potong": {
       "bestMonth": 5,
       "worstMonth": 9,
-      "momentumUpMonth": 10,
-      "momentumDownMonth": 9,
+      "momentumUpMonth": 11,
+      "momentumDownMonth": 2,
       "confidence": 90.9,
       "patternConsistency": 70,
-      "dataDays": 3670,
-      "observedDays": 3633,
-      "imputedDays": 273,
+      "dataDays": 3700,
+      "observedDays": 3662,
+      "imputedDays": 304,
       "terendah": {
         "bulan": 9,
-        "harga": 17448
+        "harga": 18160
       },
       "tertinggi": {
         "bulan": 5,
@@ -118,20 +118,20 @@
     "Daging Sapi": {
       "bestMonth": 6,
       "worstMonth": 2,
-      "momentumUpMonth": null,
+      "momentumUpMonth": 6,
       "momentumDownMonth": 7,
       "confidence": 90.9,
-      "patternConsistency": 40,
-      "dataDays": 3670,
-      "observedDays": 3551,
-      "imputedDays": 349,
+      "patternConsistency": 50,
+      "dataDays": 3700,
+      "observedDays": 3580,
+      "imputedDays": 390,
       "terendah": {
         "bulan": 2,
-        "harga": 87498
+        "harga": 87648
       },
       "tertinggi": {
         "bulan": 6,
-        "harga": 92741
+        "harga": 93194
       }
     },
     "Kentang": {
@@ -141,9 +141,9 @@
       "momentumDownMonth": 3,
       "confidence": 87.5,
       "patternConsistency": 42.9,
-      "dataDays": 3670,
+      "dataDays": 3700,
       "observedDays": 2301,
-      "imputedDays": 1372,
+      "imputedDays": 1407,
       "terendah": {
         "bulan": 4,
         "harga": 7805
@@ -160,21 +160,21 @@
         "Pasar Dlinggu Kabupaten Probolinggo",
         "Pasar Sukomoro Kabupaten Nganjuk"
       ],
-      "dataDays": 3670,
-      "observedDays": 3632,
-      "imputedDays": 43,
+      "dataDays": 3700,
+      "observedDays": 3662,
+      "imputedDays": 51,
       "averageByMonth": {
-        "1": 18615,
+        "1": 18473,
         "2": 18706,
-        "3": 21918,
+        "3": 21443,
         "4": 23265,
         "5": 23189,
         "6": 22969,
         "7": 19891,
-        "8": 16300,
-        "9": 14941,
-        "10": 17034,
-        "11": 19658,
+        "8": 16204,
+        "9": 15379,
+        "10": 16908,
+        "11": 19684,
         "12": 20581
       },
       "medianByMonth": {
@@ -186,9 +186,9 @@
         "6": 23683,
         "7": 17362,
         "8": 14234,
-        "9": 14167,
+        "9": 14975,
         "10": 14653,
-        "11": 18928,
+        "11": 19059,
         "12": 21475
       },
       "samplesByMonth": {
@@ -200,23 +200,23 @@
         "6": 10,
         "7": 10,
         "8": 11,
-        "9": 10,
+        "9": 11,
         "10": 10,
         "11": 10,
         "12": 10
       },
       "rataRata": {
-        "1": 18615,
+        "1": 18473,
         "2": 18706,
-        "3": 21918,
+        "3": 21443,
         "4": 23265,
         "5": 23189,
         "6": 22969,
         "7": 19891,
-        "8": 16300,
-        "9": 14941,
-        "10": 17034,
-        "11": 19658,
+        "8": 16204,
+        "9": 15379,
+        "10": 16908,
+        "11": 19684,
         "12": 20581
       },
       "perubahan": {
@@ -228,10 +228,10 @@
         "6": -2.7,
         "7": -26.7,
         "8": -18,
-        "9": -0.5,
-        "10": 3.4,
-        "11": 29.2,
-        "12": 13.5
+        "9": 5.2,
+        "10": -2.2,
+        "11": 30.1,
+        "12": 12.7
       },
       "consistency": {
         "1": {
@@ -246,14 +246,14 @@
           "rising": 3,
           "falling": 7,
           "risingRate": 30,
-          "medianChange": -8.7
+          "medianChange": -6.1
         },
         "3": {
           "samples": 10,
           "rising": 7,
           "falling": 3,
           "risingRate": 70,
-          "medianChange": 15.8
+          "medianChange": 12
         },
         "4": {
           "samples": 10,
@@ -291,18 +291,18 @@
           "medianChange": -16.9
         },
         "9": {
-          "samples": 10,
+          "samples": 11,
           "rising": 5,
-          "falling": 5,
-          "risingRate": 50,
-          "medianChange": -3.5
+          "falling": 6,
+          "risingRate": 45.5,
+          "medianChange": -5.1
         },
         "10": {
           "samples": 10,
           "rising": 8,
           "falling": 2,
           "risingRate": 80,
-          "medianChange": 12.1
+          "medianChange": 11.7
         },
         "11": {
           "samples": 10,
@@ -322,7 +322,7 @@
       "bulanNaik": [
         {
           "bulan": 11,
-          "pct": 29.2
+          "pct": 30.1
         },
         {
           "bulan": 4,
@@ -330,7 +330,7 @@
         },
         {
           "bulan": 12,
-          "pct": 13.5
+          "pct": 12.7
         },
         {
           "bulan": 5,
@@ -341,8 +341,8 @@
           "pct": 6.8
         },
         {
-          "bulan": 10,
-          "pct": 3.4
+          "bulan": 9,
+          "pct": 5.2
         }
       ],
       "bulanTurun": [
@@ -361,11 +361,15 @@
         {
           "bulan": 6,
           "pct": -2.7
+        },
+        {
+          "bulan": 10,
+          "pct": -2.2
         }
       ],
       "terendah": {
-        "bulan": 9,
-        "harga": 14167
+        "bulan": 8,
+        "harga": 14234
       },
       "tertinggi": {
         "bulan": 5,
@@ -373,10 +377,10 @@
       },
       "recommendation": {
         "sellMonth": 5,
-        "lowMonth": 9,
+        "lowMonth": 8,
         "momentumUp": {
           "bulan": 11,
-          "pct": 29.2
+          "pct": 30.1
         },
         "momentumDown": {
           "bulan": 7,
@@ -392,9 +396,9 @@
         }
       },
       "recent": {
-        "from": "2025-09",
-        "to": "2026-08",
-        "change": -9.8
+        "from": "2025-10",
+        "to": "2026-09",
+        "change": -25.2
       },
       "yoy": {
         "1": 26,
@@ -404,7 +408,8 @@
         "5": 30,
         "6": 7.8,
         "7": -33,
-        "8": -33.2
+        "8": -34.8,
+        "9": -15.7
       }
     },
     "Beras": {
@@ -412,36 +417,36 @@
         "UD Hasil Tani Kabupaten Probolinggo",
         "PS Bendul Mrisi Kota Surabaya"
       ],
-      "dataDays": 3670,
-      "observedDays": 3558,
-      "imputedDays": 339,
+      "dataDays": 3700,
+      "observedDays": 3584,
+      "imputedDays": 396,
       "averageByMonth": {
-        "1": 11179,
-        "2": 11212,
-        "3": 11320,
-        "4": 10993,
-        "5": 11039,
+        "1": 10640,
+        "2": 10865,
+        "3": 10846,
+        "4": 10704,
+        "5": 10603,
         "6": 10647,
-        "7": 10906,
-        "8": 10945,
-        "9": 11928,
-        "10": 10800,
-        "11": 10943,
-        "12": 10739
+        "7": 10772,
+        "8": 10694,
+        "9": 10753,
+        "10": 10532,
+        "11": 10521,
+        "12": 10616
       },
       "medianByMonth": {
-        "1": 10801,
-        "2": 11373,
-        "3": 11258,
-        "4": 10542,
-        "5": 11062,
+        "1": 9931,
+        "2": 10046,
+        "3": 9970,
+        "4": 9926,
+        "5": 9888,
         "6": 9896,
-        "7": 10405,
-        "8": 9990,
-        "9": 9819,
-        "10": 9913,
-        "11": 10658,
-        "12": 10096
+        "7": 9853,
+        "8": 9548,
+        "9": 9551,
+        "10": 9569,
+        "11": 9687,
+        "12": 9700
       },
       "samplesByMonth": {
         "1": 10,
@@ -452,38 +457,38 @@
         "6": 10,
         "7": 10,
         "8": 11,
-        "9": 10,
+        "9": 11,
         "10": 10,
         "11": 10,
         "12": 10
       },
       "rataRata": {
-        "1": 11179,
-        "2": 11212,
-        "3": 11320,
-        "4": 10993,
-        "5": 11039,
+        "1": 10640,
+        "2": 10865,
+        "3": 10846,
+        "4": 10704,
+        "5": 10603,
         "6": 10647,
-        "7": 10906,
-        "8": 10945,
-        "9": 11928,
-        "10": 10800,
-        "11": 10943,
-        "12": 10739
+        "7": 10772,
+        "8": 10694,
+        "9": 10753,
+        "10": 10532,
+        "11": 10521,
+        "12": 10616
       },
       "perubahan": {
-        "1": 7,
-        "2": 5.3,
-        "3": -1,
-        "4": -6.4,
-        "5": 4.9,
-        "6": -10.5,
-        "7": 5.1,
-        "8": -4,
-        "9": -1.7,
-        "10": 1,
-        "11": 7.5,
-        "12": -5.3
+        "1": 2.4,
+        "2": 1.2,
+        "3": -0.8,
+        "4": -0.4,
+        "5": -0.4,
+        "6": 0.1,
+        "7": -0.4,
+        "8": -3.1,
+        "9": 0,
+        "10": 0.2,
+        "11": 1.2,
+        "12": 0.1
       },
       "consistency": {
         "1": {
@@ -496,16 +501,16 @@
         "2": {
           "samples": 10,
           "rising": 5,
-          "falling": 4,
+          "falling": 3,
           "risingRate": 50,
-          "medianChange": 0.1
+          "medianChange": 0.3
         },
         "3": {
           "samples": 10,
           "rising": 5,
           "falling": 5,
           "risingRate": 50,
-          "medianChange": 0.4
+          "medianChange": 0.2
         },
         "4": {
           "samples": 10,
@@ -516,10 +521,10 @@
         },
         "5": {
           "samples": 10,
-          "rising": 3,
-          "falling": 6,
-          "risingRate": 30,
-          "medianChange": -0.4
+          "rising": 2,
+          "falling": 7,
+          "risingRate": 20,
+          "medianChange": -0.6
         },
         "6": {
           "samples": 10,
@@ -530,31 +535,31 @@
         },
         "7": {
           "samples": 10,
-          "rising": 8,
-          "falling": 2,
-          "risingRate": 80,
-          "medianChange": 1.1
+          "rising": 7,
+          "falling": 3,
+          "risingRate": 70,
+          "medianChange": 0.7
         },
         "8": {
           "samples": 10,
           "rising": 6,
           "falling": 4,
           "risingRate": 60,
-          "medianChange": 0.8
+          "medianChange": 0.3
         },
         "9": {
-          "samples": 10,
-          "rising": 7,
-          "falling": 3,
-          "risingRate": 70,
-          "medianChange": 1.1
+          "samples": 11,
+          "rising": 6,
+          "falling": 4,
+          "risingRate": 54.5,
+          "medianChange": 0.6
         },
         "10": {
           "samples": 10,
-          "rising": 5,
-          "falling": 5,
-          "risingRate": 50,
-          "medianChange": -0.1
+          "rising": 6,
+          "falling": 4,
+          "risingRate": 60,
+          "medianChange": 0.3
         },
         "11": {
           "samples": 10,
@@ -565,84 +570,56 @@
         },
         "12": {
           "samples": 10,
-          "rising": 5,
-          "falling": 5,
-          "risingRate": 50,
-          "medianChange": 0.2
+          "rising": 6,
+          "falling": 4,
+          "risingRate": 60,
+          "medianChange": 0.3
         }
       },
       "bulanNaik": [
         {
-          "bulan": 11,
-          "pct": 7.5
-        },
-        {
           "bulan": 1,
-          "pct": 7
-        },
-        {
-          "bulan": 2,
-          "pct": 5.3
-        },
-        {
-          "bulan": 7,
-          "pct": 5.1
-        },
-        {
-          "bulan": 5,
-          "pct": 4.9
+          "pct": 2.4
         }
       ],
       "bulanTurun": [
         {
-          "bulan": 6,
-          "pct": -10.5
-        },
-        {
-          "bulan": 4,
-          "pct": -6.4
-        },
-        {
-          "bulan": 12,
-          "pct": -5.3
-        },
-        {
           "bulan": 8,
-          "pct": -4
+          "pct": -3.1
         }
       ],
       "terendah": {
-        "bulan": 9,
-        "harga": 9819
+        "bulan": 8,
+        "harga": 9548
       },
       "tertinggi": {
         "bulan": 2,
-        "harga": 11373
+        "harga": 10046
       },
       "recommendation": {
         "sellMonth": 2,
-        "lowMonth": 9,
+        "lowMonth": 8,
         "momentumUp": {
-          "bulan": 11,
-          "pct": 7.5
+          "bulan": 1,
+          "pct": 2.4
         },
         "momentumDown": {
-          "bulan": 6,
-          "pct": -10.5
+          "bulan": 8,
+          "pct": -3.1
         },
         "coverage": 90.9,
         "consistency": {
           "samples": 10,
           "rising": 5,
-          "falling": 4,
+          "falling": 3,
           "risingRate": 50,
-          "medianChange": 0.1
+          "medianChange": 0.3
         }
       },
       "recent": {
-        "from": "2025-09",
-        "to": "2026-08",
-        "change": -1.9
+        "from": "2025-10",
+        "to": "2026-09",
+        "change": -0.3
       },
       "yoy": {
         "1": 11.5,
@@ -652,7 +629,8 @@
         "5": 4.1,
         "6": 2.5,
         "7": 1.8,
-        "8": -0.7
+        "8": -0.7,
+        "9": -1.3
       }
     },
     "Cabe Rawit": {
@@ -660,19 +638,19 @@
         "Pasar Tanjung Kabupaten Jember",
         "Pasar Tulung Rejo Kabupaten Kediri"
       ],
-      "dataDays": 3670,
-      "observedDays": 3639,
-      "imputedDays": 263,
+      "dataDays": 3700,
+      "observedDays": 3667,
+      "imputedDays": 299,
       "averageByMonth": {
-        "1": 43234,
-        "2": 50298,
-        "3": 51510,
+        "1": 43272,
+        "2": 50503,
+        "3": 51811,
         "4": 30047,
         "5": 26632,
-        "6": 30544,
+        "6": 30667,
         "7": 37424,
-        "8": 28405,
-        "9": 21493,
+        "8": 28802,
+        "9": 24584,
         "10": 22405,
         "11": 25727,
         "12": 39687
@@ -680,13 +658,13 @@
       "medianByMonth": {
         "1": 37492,
         "2": 45655,
-        "3": 47298,
+        "3": 47762,
         "4": 21933,
         "5": 21291,
         "6": 25949,
         "7": 38307,
         "8": 28419,
-        "9": 18750,
+        "9": 19758,
         "10": 22887,
         "11": 20767,
         "12": 34177
@@ -700,21 +678,21 @@
         "6": 10,
         "7": 10,
         "8": 11,
-        "9": 10,
+        "9": 11,
         "10": 10,
         "11": 10,
         "12": 10
       },
       "rataRata": {
-        "1": 43234,
-        "2": 50298,
-        "3": 51510,
+        "1": 43272,
+        "2": 50503,
+        "3": 51811,
         "4": 30047,
         "5": 26632,
-        "6": 30544,
+        "6": 30667,
         "7": 37424,
-        "8": 28405,
-        "9": 21493,
+        "8": 28802,
+        "9": 24584,
         "10": 22405,
         "11": 25727,
         "12": 39687
@@ -722,14 +700,14 @@
       "perubahan": {
         "1": 9.7,
         "2": 21.8,
-        "3": 3.6,
-        "4": -53.6,
+        "3": 4.6,
+        "4": -54.1,
         "5": -2.9,
         "6": 21.9,
         "7": 47.6,
         "8": -25.8,
-        "9": -34,
-        "10": 22.1,
+        "9": -30.5,
+        "10": 15.8,
         "11": -9.3,
         "12": 64.6
       },
@@ -739,7 +717,7 @@
           "rising": 6,
           "falling": 4,
           "risingRate": 60,
-          "medianChange": 26.4
+          "medianChange": 27.4
         },
         "2": {
           "samples": 10,
@@ -753,7 +731,7 @@
           "rising": 6,
           "falling": 4,
           "risingRate": 60,
-          "medianChange": 16.1
+          "medianChange": 16.4
         },
         "4": {
           "samples": 10,
@@ -791,18 +769,18 @@
           "medianChange": -34
         },
         "9": {
-          "samples": 10,
-          "rising": 2,
+          "samples": 11,
+          "rising": 3,
           "falling": 8,
-          "risingRate": 20,
-          "medianChange": -29.9
+          "risingRate": 27.3,
+          "medianChange": -27.6
         },
         "10": {
           "samples": 10,
           "rising": 7,
           "falling": 3,
           "risingRate": 70,
-          "medianChange": 10.7
+          "medianChange": 15.1
         },
         "11": {
           "samples": 10,
@@ -829,10 +807,6 @@
           "pct": 47.6
         },
         {
-          "bulan": 10,
-          "pct": 22.1
-        },
-        {
           "bulan": 6,
           "pct": 21.9
         },
@@ -841,22 +815,26 @@
           "pct": 21.8
         },
         {
+          "bulan": 10,
+          "pct": 15.8
+        },
+        {
           "bulan": 1,
           "pct": 9.7
         },
         {
           "bulan": 3,
-          "pct": 3.6
+          "pct": 4.6
         }
       ],
       "bulanTurun": [
         {
           "bulan": 4,
-          "pct": -53.6
+          "pct": -54.1
         },
         {
           "bulan": 9,
-          "pct": -34
+          "pct": -30.5
         },
         {
           "bulan": 8,
@@ -873,11 +851,11 @@
       ],
       "terendah": {
         "bulan": 9,
-        "harga": 18750
+        "harga": 19758
       },
       "tertinggi": {
         "bulan": 3,
-        "harga": 47298
+        "harga": 47762
       },
       "recommendation": {
         "sellMonth": 3,
@@ -888,7 +866,7 @@
         },
         "momentumDown": {
           "bulan": 4,
-          "pct": -53.6
+          "pct": -54.1
         },
         "coverage": 90.9,
         "consistency": {
@@ -896,13 +874,13 @@
           "rising": 6,
           "falling": 4,
           "risingRate": 60,
-          "medianChange": 16.1
+          "medianChange": 16.4
         }
       },
       "recent": {
-        "from": "2025-09",
-        "to": "2026-08",
-        "change": 48.7
+        "from": "2025-10",
+        "to": "2026-09",
+        "change": 179.2
       },
       "yoy": {
         "1": -42.5,
@@ -910,9 +888,10 @@
         "3": -16.4,
         "4": -25.3,
         "5": 203.7,
-        "6": 3.2,
+        "6": 6.3,
         "7": -32,
-        "8": 73.2
+        "8": 94.3,
+        "9": 134.9
       }
     },
     "Cabe Besar": {
@@ -920,21 +899,21 @@
         "Pasar Pare Kabupaten Kediri",
         "Kec. Gending Kabupaten Probolinggo"
       ],
-      "dataDays": 3670,
-      "observedDays": 3640,
-      "imputedDays": 43,
+      "dataDays": 3700,
+      "observedDays": 3669,
+      "imputedDays": 49,
       "averageByMonth": {
         "1": 26872,
         "2": 28197,
-        "3": 25782,
+        "3": 25830,
         "4": 24805,
         "5": 24038,
         "6": 24422,
         "7": 24801,
-        "8": 20334,
-        "9": 17808,
+        "8": 20037,
+        "9": 17409,
         "10": 21417,
-        "11": 25340,
+        "11": 24592,
         "12": 25866
       },
       "medianByMonth": {
@@ -945,8 +924,8 @@
         "5": 21049,
         "6": 21275,
         "7": 19726,
-        "8": 21092,
-        "9": 15700,
+        "8": 20750,
+        "9": 14417,
         "10": 20436,
         "11": 20017,
         "12": 23132
@@ -960,7 +939,7 @@
         "6": 10,
         "7": 10,
         "8": 11,
-        "9": 10,
+        "9": 11,
         "10": 10,
         "11": 10,
         "12": 10
@@ -968,15 +947,15 @@
       "rataRata": {
         "1": 26872,
         "2": 28197,
-        "3": 25782,
+        "3": 25830,
         "4": 24805,
         "5": 24038,
         "6": 24422,
         "7": 24801,
-        "8": 20334,
-        "9": 17808,
+        "8": 20037,
+        "9": 17409,
         "10": 21417,
-        "11": 25340,
+        "11": 24592,
         "12": 25866
       },
       "perubahan": {
@@ -987,9 +966,9 @@
         "5": -13,
         "6": 1.1,
         "7": -7.3,
-        "8": 6.9,
-        "9": -25.6,
-        "10": 30.2,
+        "8": 5.2,
+        "9": -30.5,
+        "10": 41.7,
         "11": -2.1,
         "12": 15.6
       },
@@ -1020,7 +999,7 @@
           "rising": 5,
           "falling": 5,
           "risingRate": 50,
-          "medianChange": 1.6
+          "medianChange": 0.9
         },
         "5": {
           "samples": 10,
@@ -1045,17 +1024,17 @@
         },
         "8": {
           "samples": 10,
-          "rising": 2,
-          "falling": 8,
-          "risingRate": 20,
+          "rising": 1,
+          "falling": 9,
+          "risingRate": 10,
           "medianChange": -14.5
         },
         "9": {
-          "samples": 10,
+          "samples": 11,
           "rising": 4,
-          "falling": 6,
-          "risingRate": 40,
-          "medianChange": -8.2
+          "falling": 7,
+          "risingRate": 36.4,
+          "medianChange": -9.8
         },
         "10": {
           "samples": 10,
@@ -1073,16 +1052,16 @@
         },
         "12": {
           "samples": 10,
-          "rising": 7,
-          "falling": 3,
-          "risingRate": 70,
-          "medianChange": 7.5
+          "rising": 8,
+          "falling": 2,
+          "risingRate": 80,
+          "medianChange": 10.3
         }
       },
       "bulanNaik": [
         {
           "bulan": 10,
-          "pct": 30.2
+          "pct": 41.7
         },
         {
           "bulan": 12,
@@ -1094,7 +1073,7 @@
         },
         {
           "bulan": 8,
-          "pct": 6.9
+          "pct": 5.2
         },
         {
           "bulan": 2,
@@ -1104,7 +1083,7 @@
       "bulanTurun": [
         {
           "bulan": 9,
-          "pct": -25.6
+          "pct": -30.5
         },
         {
           "bulan": 5,
@@ -1129,7 +1108,7 @@
       ],
       "terendah": {
         "bulan": 9,
-        "harga": 15700
+        "harga": 14417
       },
       "tertinggi": {
         "bulan": 3,
@@ -1140,11 +1119,11 @@
         "lowMonth": 9,
         "momentumUp": {
           "bulan": 10,
-          "pct": 30.2
+          "pct": 41.7
         },
         "momentumDown": {
           "bulan": 9,
-          "pct": -25.6
+          "pct": -30.5
         },
         "coverage": 90.9,
         "consistency": {
@@ -1156,9 +1135,9 @@
         }
       },
       "recent": {
-        "from": "2025-09",
-        "to": "2026-08",
-        "change": -10.3
+        "from": "2025-10",
+        "to": "2026-09",
+        "change": -59.9
       },
       "yoy": {
         "1": -68.9,
@@ -1168,7 +1147,8 @@
         "5": 110.5,
         "6": 18.3,
         "7": -18,
-        "8": 8.3
+        "8": -10.7,
+        "9": -45.6
       }
     },
     "Telur": {
@@ -1176,22 +1156,22 @@
         "UD. Telur Intan Kabupaten Blitar",
         "Peternak Kec. Srengat Kabupaten Kediri"
       ],
-      "dataDays": 3670,
-      "observedDays": 3637,
-      "imputedDays": 301,
+      "dataDays": 3700,
+      "observedDays": 3646,
+      "imputedDays": 337,
       "averageByMonth": {
-        "1": 19904,
-        "2": 20486,
+        "1": 19932,
+        "2": 20516,
         "3": 20598,
         "4": 19999,
         "5": 20864,
         "6": 20732,
         "7": 21486,
-        "8": 20187,
+        "8": 19961,
         "9": 18406,
-        "10": 18835,
-        "11": 20588,
-        "12": 22189
+        "10": 18602,
+        "11": 20288,
+        "12": 22221
       },
       "medianByMonth": {
         "1": 18591,
@@ -1201,11 +1181,11 @@
         "5": 20686,
         "6": 20315,
         "7": 20900,
-        "8": 19444,
+        "8": 19495,
         "9": 16618,
-        "10": 18068,
+        "10": 17042,
         "11": 19811,
-        "12": 21676
+        "12": 21760
       },
       "samplesByMonth": {
         "1": 10,
@@ -1222,32 +1202,32 @@
         "12": 10
       },
       "rataRata": {
-        "1": 19904,
-        "2": 20486,
+        "1": 19932,
+        "2": 20516,
         "3": 20598,
         "4": 19999,
         "5": 20864,
         "6": 20732,
         "7": 21486,
-        "8": 20187,
+        "8": 19961,
         "9": 18406,
-        "10": 18835,
-        "11": 20588,
-        "12": 22189
+        "10": 18602,
+        "11": 20288,
+        "12": 22221
       },
       "perubahan": {
-        "1": -14.2,
+        "1": -14.6,
         "2": 9.4,
         "3": -0.5,
         "4": -1.7,
         "5": 4,
         "6": -1.8,
         "7": 2.9,
-        "8": -7,
-        "9": -14.5,
-        "10": 8.7,
-        "11": 9.6,
-        "12": 9.4
+        "8": -6.7,
+        "9": -14.8,
+        "10": 2.6,
+        "11": 16.2,
+        "12": 9.8
       },
       "consistency": {
         "1": {
@@ -1262,7 +1242,7 @@
           "rising": 5,
           "falling": 5,
           "risingRate": 50,
-          "medianChange": 1.1
+          "medianChange": 1.9
         },
         "3": {
           "samples": 10,
@@ -1308,49 +1288,45 @@
         },
         "9": {
           "samples": 10,
-          "rising": 1,
-          "falling": 9,
-          "risingRate": 10,
-          "medianChange": -9.7
+          "rising": 2,
+          "falling": 8,
+          "risingRate": 20,
+          "medianChange": -8.8
         },
         "10": {
           "samples": 10,
-          "rising": 6,
-          "falling": 4,
-          "risingRate": 60,
-          "medianChange": 1.4
+          "rising": 5,
+          "falling": 5,
+          "risingRate": 50,
+          "medianChange": -0.6
         },
         "11": {
           "samples": 10,
           "rising": 7,
           "falling": 3,
           "risingRate": 70,
-          "medianChange": 9.3
+          "medianChange": 10
         },
         "12": {
           "samples": 10,
-          "rising": 8,
-          "falling": 2,
-          "risingRate": 80,
+          "rising": 9,
+          "falling": 1,
+          "risingRate": 90,
           "medianChange": 11.9
         }
       },
       "bulanNaik": [
         {
           "bulan": 11,
-          "pct": 9.6
+          "pct": 16.2
+        },
+        {
+          "bulan": 12,
+          "pct": 9.8
         },
         {
           "bulan": 2,
           "pct": 9.4
-        },
-        {
-          "bulan": 12,
-          "pct": 9.4
-        },
-        {
-          "bulan": 10,
-          "pct": 8.7
         },
         {
           "bulan": 5,
@@ -1359,20 +1335,24 @@
         {
           "bulan": 7,
           "pct": 2.9
+        },
+        {
+          "bulan": 10,
+          "pct": 2.6
         }
       ],
       "bulanTurun": [
         {
           "bulan": 9,
-          "pct": -14.5
+          "pct": -14.8
         },
         {
           "bulan": 1,
-          "pct": -14.2
+          "pct": -14.6
         },
         {
           "bulan": 8,
-          "pct": -7
+          "pct": -6.7
         }
       ],
       "terendah": {
@@ -1381,32 +1361,32 @@
       },
       "tertinggi": {
         "bulan": 12,
-        "harga": 21676
+        "harga": 21760
       },
       "recommendation": {
         "sellMonth": 12,
         "lowMonth": 9,
         "momentumUp": {
           "bulan": 11,
-          "pct": 9.6
+          "pct": 16.2
         },
         "momentumDown": {
           "bulan": 9,
-          "pct": -14.5
+          "pct": -14.8
         },
         "coverage": 90.9,
         "consistency": {
           "samples": 10,
-          "rising": 8,
-          "falling": 2,
-          "risingRate": 80,
+          "rising": 9,
+          "falling": 1,
+          "risingRate": 90,
           "medianChange": 11.9
         }
       },
       "recent": {
         "from": "2025-09",
         "to": "2026-08",
-        "change": -18.3
+        "change": -15.5
       },
       "yoy": {
         "1": 5.9,
@@ -1416,7 +1396,7 @@
         "5": -10.1,
         "6": -14,
         "7": -18.1,
-        "8": -26
+        "8": -13.1
       }
     },
     "Ayam Potong": {
@@ -1424,19 +1404,19 @@
         "Peternak Desa Kambingan Kabupaten Blitar",
         "Pasar Gringging Kabupaten Kediri"
       ],
-      "dataDays": 3670,
-      "observedDays": 3633,
-      "imputedDays": 273,
+      "dataDays": 3700,
+      "observedDays": 3662,
+      "imputedDays": 304,
       "averageByMonth": {
         "1": 19375,
         "2": 18849,
         "3": 19076,
-        "4": 18915,
+        "4": 18945,
         "5": 19583,
         "6": 19475,
         "7": 19398,
-        "8": 18812,
-        "9": 18041,
+        "8": 18830,
+        "9": 18546,
         "10": 18310,
         "11": 19028,
         "12": 19722
@@ -1450,7 +1430,7 @@
         "6": 19498,
         "7": 19467,
         "8": 18868,
-        "9": 17448,
+        "9": 18160,
         "10": 18437,
         "11": 19255,
         "12": 19310
@@ -1464,7 +1444,7 @@
         "6": 10,
         "7": 10,
         "8": 11,
-        "9": 10,
+        "9": 11,
         "10": 10,
         "11": 10,
         "12": 10
@@ -1473,12 +1453,12 @@
         "1": 19375,
         "2": 18849,
         "3": 19076,
-        "4": 18915,
+        "4": 18945,
         "5": 19583,
         "6": 19475,
         "7": 19398,
-        "8": 18812,
-        "9": 18041,
+        "8": 18830,
+        "9": 18546,
         "10": 18310,
         "11": 19028,
         "12": 19722
@@ -1492,8 +1472,8 @@
         "6": -2.1,
         "7": -0.2,
         "8": -3.1,
-        "9": -7.5,
-        "10": 5.7,
+        "9": -3.8,
+        "10": 1.5,
         "11": 4.4,
         "12": 0.3
       },
@@ -1531,7 +1511,7 @@
           "rising": 7,
           "falling": 3,
           "risingRate": 70,
-          "medianChange": 7.6
+          "medianChange": 6.7
         },
         "6": {
           "samples": 10,
@@ -1555,11 +1535,11 @@
           "medianChange": -3.9
         },
         "9": {
-          "samples": 10,
-          "rising": 4,
+          "samples": 11,
+          "rising": 5,
           "falling": 6,
-          "risingRate": 40,
-          "medianChange": -3
+          "risingRate": 45.5,
+          "medianChange": -2.4
         },
         "10": {
           "samples": 10,
@@ -1585,10 +1565,6 @@
       },
       "bulanNaik": [
         {
-          "bulan": 10,
-          "pct": 5.7
-        },
-        {
           "bulan": 11,
           "pct": 4.4
         },
@@ -1603,12 +1579,12 @@
       ],
       "bulanTurun": [
         {
-          "bulan": 9,
-          "pct": -7.5
-        },
-        {
           "bulan": 2,
           "pct": -3.9
+        },
+        {
+          "bulan": 9,
+          "pct": -3.8
         },
         {
           "bulan": 8,
@@ -1621,7 +1597,7 @@
       ],
       "terendah": {
         "bulan": 9,
-        "harga": 17448
+        "harga": 18160
       },
       "tertinggi": {
         "bulan": 5,
@@ -1631,12 +1607,12 @@
         "sellMonth": 5,
         "lowMonth": 9,
         "momentumUp": {
-          "bulan": 10,
-          "pct": 5.7
+          "bulan": 11,
+          "pct": 4.4
         },
         "momentumDown": {
-          "bulan": 9,
-          "pct": -7.5
+          "bulan": 2,
+          "pct": -3.9
         },
         "coverage": 90.9,
         "consistency": {
@@ -1644,23 +1620,24 @@
           "rising": 7,
           "falling": 3,
           "risingRate": 70,
-          "medianChange": 7.6
+          "medianChange": 6.7
         }
       },
       "recent": {
-        "from": "2025-09",
-        "to": "2026-08",
-        "change": -2.3
+        "from": "2025-10",
+        "to": "2026-09",
+        "change": 5.3
       },
       "yoy": {
         "1": 15.6,
         "2": 25.9,
         "3": 23.6,
-        "4": 37.4,
+        "4": 34.9,
         "5": 19.7,
         "6": 6.9,
         "7": 8.4,
-        "8": 12.2
+        "8": 13.2,
+        "9": 3.4
       }
     },
     "Daging Sapi": {
@@ -1669,33 +1646,33 @@
         "UD RPH Kota Malang",
         "RPH Krian Kabupaten Sidoarjo"
       ],
-      "dataDays": 3670,
-      "observedDays": 3551,
-      "imputedDays": 349,
+      "dataDays": 3700,
+      "observedDays": 3580,
+      "imputedDays": 390,
       "averageByMonth": {
-        "1": 89666,
-        "2": 95586,
-        "3": 94181,
+        "1": 89745,
+        "2": 91902,
+        "3": 92991,
         "4": 93648,
-        "5": 94578,
-        "6": 94839,
-        "7": 93164,
-        "8": 94944,
-        "9": 91675,
+        "5": 94689,
+        "6": 95152,
+        "7": 93403,
+        "8": 95030,
+        "9": 95335,
         "10": 92090,
         "11": 92088,
         "12": 91862
       },
       "medianByMonth": {
         "1": 87809,
-        "2": 87498,
+        "2": 87648,
         "3": 88706,
         "4": 89343,
         "5": 90898,
-        "6": 92741,
+        "6": 93194,
         "7": 88543,
         "8": 89279,
-        "9": 89494,
+        "9": 89655,
         "10": 90450,
         "11": 90375,
         "12": 89104
@@ -1709,36 +1686,36 @@
         "6": 10,
         "7": 10,
         "8": 11,
-        "9": 10,
+        "9": 11,
         "10": 10,
         "11": 10,
         "12": 10
       },
       "rataRata": {
-        "1": 89666,
-        "2": 95586,
-        "3": 94181,
+        "1": 89745,
+        "2": 91902,
+        "3": 92991,
         "4": 93648,
-        "5": 94578,
-        "6": 94839,
-        "7": 93164,
-        "8": 94944,
-        "9": 91675,
+        "5": 94689,
+        "6": 95152,
+        "7": 93403,
+        "8": 95030,
+        "9": 95335,
         "10": 92090,
         "11": 92088,
         "12": 91862
       },
       "perubahan": {
         "1": -1.5,
-        "2": -0.4,
-        "3": 1.4,
+        "2": -0.2,
+        "3": 1.2,
         "4": 0.7,
         "5": 1.7,
-        "6": 2,
-        "7": -4.5,
+        "6": 2.5,
+        "7": -5,
         "8": 0.8,
-        "9": 0.2,
-        "10": 1.1,
+        "9": 0.4,
+        "10": 0.9,
         "11": -0.1,
         "12": -1.4
       },
@@ -1752,65 +1729,65 @@
         },
         "2": {
           "samples": 10,
-          "rising": 3,
-          "falling": 4,
-          "risingRate": 30,
-          "medianChange": 0
+          "rising": 2,
+          "falling": 5,
+          "risingRate": 20,
+          "medianChange": -0.1
         },
         "3": {
           "samples": 10,
-          "rising": 5,
-          "falling": 4,
-          "risingRate": 50,
-          "medianChange": 0.3
+          "rising": 6,
+          "falling": 3,
+          "risingRate": 60,
+          "medianChange": 0.7
         },
         "4": {
           "samples": 10,
-          "rising": 5,
-          "falling": 5,
-          "risingRate": 50,
-          "medianChange": 0.1
+          "rising": 6,
+          "falling": 4,
+          "risingRate": 60,
+          "medianChange": 0.8
         },
         "5": {
           "samples": 10,
-          "rising": 5,
-          "falling": 4,
-          "risingRate": 50,
-          "medianChange": 0.2
+          "rising": 6,
+          "falling": 3,
+          "risingRate": 60,
+          "medianChange": 0.5
         },
         "6": {
           "samples": 10,
-          "rising": 4,
-          "falling": 4,
-          "risingRate": 40,
-          "medianChange": 0
+          "rising": 5,
+          "falling": 3,
+          "risingRate": 50,
+          "medianChange": 0.1
         },
         "7": {
           "samples": 10,
           "rising": 4,
           "falling": 5,
           "risingRate": 40,
-          "medianChange": -0.8
+          "medianChange": -0.1
         },
         "8": {
           "samples": 10,
           "rising": 6,
           "falling": 3,
           "risingRate": 60,
-          "medianChange": 1
+          "medianChange": 0.8
         },
         "9": {
-          "samples": 10,
-          "rising": 5,
-          "falling": 3,
-          "risingRate": 50,
+          "samples": 11,
+          "rising": 6,
+          "falling": 2,
+          "risingRate": 54.5,
           "medianChange": 0.1
         },
         "10": {
           "samples": 10,
-          "rising": 7,
-          "falling": 2,
-          "risingRate": 70,
+          "rising": 6,
+          "falling": 3,
+          "risingRate": 60,
           "medianChange": 0.2
         },
         "11": {
@@ -1828,52 +1805,61 @@
           "medianChange": -0.1
         }
       },
-      "bulanNaik": [],
+      "bulanNaik": [
+        {
+          "bulan": 6,
+          "pct": 2.5
+        }
+      ],
       "bulanTurun": [
         {
           "bulan": 7,
-          "pct": -4.5
+          "pct": -5
         }
       ],
       "terendah": {
         "bulan": 2,
-        "harga": 87498
+        "harga": 87648
       },
       "tertinggi": {
         "bulan": 6,
-        "harga": 92741
+        "harga": 93194
       },
       "recommendation": {
         "sellMonth": 6,
         "lowMonth": 2,
-        "momentumUp": null,
+        "momentumUp": {
+          "bulan": 6,
+          "pct": 2.5
+        },
         "momentumDown": {
           "bulan": 7,
-          "pct": -4.5
+          "pct": -5
         },
         "coverage": 90.9,
         "consistency": {
           "samples": 10,
-          "rising": 4,
-          "falling": 4,
-          "risingRate": 40,
-          "medianChange": 0
+          "rising": 5,
+          "falling": 3,
+          "risingRate": 50,
+          "medianChange": 0.1
         }
       },
       "recent": {
-        "from": "2025-09",
-        "to": "2026-08",
-        "change": 26.1
+        "from": "2025-10",
+        "to": "2026-09",
+        "change": 25.8
       },
       "yoy": {
         "1": 8.3,
-        "2": 77.7,
+        "2": 34.5,
         "3": 38.3,
         "4": 36.8,
         "5": 28.5,
         "6": 27.5,
         "7": 28.2,
-        "8": 33.5
+        "8": 33.5,
+        "9": 26.1
       }
     },
     "Kentang": {
@@ -1881,18 +1867,18 @@
         "Distributor Kabupaten Malang",
         "Kawasan Bromo Kabupaten Probolinggo"
       ],
-      "dataDays": 3670,
+      "dataDays": 3700,
       "observedDays": 2301,
-      "imputedDays": 1372,
+      "imputedDays": 1407,
       "averageByMonth": {
         "1": 9999,
-        "2": 8991,
-        "3": 7784,
-        "4": 8001,
+        "2": 8753,
+        "3": 7599,
+        "4": 7769,
         "5": 8573,
         "6": 8696,
         "7": 8857,
-        "8": 9710,
+        "8": 9757,
         "9": 9691,
         "10": 8798,
         "11": 8691,
@@ -1901,7 +1887,7 @@
       "medianByMonth": {
         "1": 9476,
         "2": 8951,
-        "3": 8129,
+        "3": 7909,
         "4": 7805,
         "5": 8226,
         "6": 8257,
@@ -1928,13 +1914,13 @@
       },
       "rataRata": {
         "1": 9999,
-        "2": 8991,
-        "3": 7784,
-        "4": 8001,
+        "2": 8753,
+        "3": 7599,
+        "4": 7769,
         "5": 8573,
         "6": 8696,
         "7": 8857,
-        "8": 9710,
+        "8": 9757,
         "9": 9691,
         "10": 8798,
         "11": 8691,
@@ -1943,8 +1929,8 @@
       "perubahan": {
         "1": 2.9,
         "2": -5.5,
-        "3": -9.2,
-        "4": -4,
+        "3": -11.6,
+        "4": -1.3,
         "5": 5.4,
         "6": 0.4,
         "7": 5.3,
@@ -1967,14 +1953,14 @@
           "rising": 2,
           "falling": 4,
           "risingRate": 33.3,
-          "medianChange": -10.1
+          "medianChange": -10.7
         },
         "3": {
           "samples": 6,
           "rising": 1,
           "falling": 5,
           "risingRate": 16.7,
-          "medianChange": -10.1
+          "medianChange": -13
         },
         "4": {
           "samples": 6,
@@ -1985,9 +1971,9 @@
         },
         "5": {
           "samples": 6,
-          "rising": 5,
-          "falling": 1,
-          "risingRate": 83.3,
+          "rising": 6,
+          "falling": 0,
+          "risingRate": 100,
           "medianChange": 7.9
         },
         "6": {
@@ -2065,7 +2051,7 @@
       "bulanTurun": [
         {
           "bulan": 3,
-          "pct": -9.2
+          "pct": -11.6
         },
         {
           "bulan": 10,
@@ -2074,10 +2060,6 @@
         {
           "bulan": 2,
           "pct": -5.5
-        },
-        {
-          "bulan": 4,
-          "pct": -4
         },
         {
           "bulan": 11,
@@ -2101,7 +2083,7 @@
         },
         "momentumDown": {
           "bulan": 3,
-          "pct": -9.2
+          "pct": -11.6
         },
         "coverage": 87.5,
         "consistency": {

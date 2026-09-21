@@ -11,7 +11,7 @@
     "PS Bendul Mrisi Kota Surabaya": 9200
   },
   "Cabe Rawit": {
-    "Pasar Tanjung Kabupaten Jember": 1000,
+    "Pasar Tanjung Kabupaten Jember": 9000,
     "Pasar Tulung Rejo Kabupaten Kediri": 9000
   },
   "Cabe Besar": {
@@ -34,5 +34,10 @@
   "Kentang": {
     "Distributor Kabupaten Malang": 10000,
     "Kawasan Bromo Kabupaten Probolinggo": 11000
+  },
+  "imputed": {
+    "Cabe Rawit": {
+      "Pasar Tanjung Kabupaten Jember": true
+    }
   }
 }

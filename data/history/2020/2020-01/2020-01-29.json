@@ -7,7 +7,7 @@
     "Pasar Sukomoro Kabupaten Nganjuk": 18000
   },
   "Beras": {
-    "UD Hasil Tani Kabupaten Probolinggo": 97000,
+    "UD Hasil Tani Kabupaten Probolinggo": 9800,
     "PS Bendul Mrisi Kota Surabaya": 10500
   },
   "Cabe Rawit": {
@@ -34,5 +34,10 @@
   "Kentang": {
     "Distributor Kabupaten Malang": 12000,
     "Kawasan Bromo Kabupaten Probolinggo": 11500
+  },
+  "imputed": {
+    "Beras": {
+      "UD Hasil Tani Kabupaten Probolinggo": true
+    }
   }
 }

@@ -20,7 +20,7 @@
   },
   "Telur": {
     "UD. Telur Intan Kabupaten Blitar": 21600,
-    "Peternak Kec. Srengat Kabupaten Kediri": 2200
+    "Peternak Kec. Srengat Kabupaten Kediri": 22200
   },
   "Ayam Potong": {
     "Peternak Desa Kambingan Kabupaten Blitar": 17500,
@@ -39,6 +39,9 @@
     "Kentang": {
       "Distributor Kabupaten Malang": true,
       "Kawasan Bromo Kabupaten Probolinggo": true
+    },
+    "Telur": {
+      "Peternak Kec. Srengat Kabupaten Kediri": true
     }
   }
 }

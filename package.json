@@ -5,6 +5,7 @@
   "scripts": {
     "scrape": "node scripts/scrape-produsen.js",
     "scrape:full": "node scripts/scrape-produsen.js --full",
-    "analisa": "node scripts/analisa-tren.js"
+    "analisa": "node scripts/analisa-tren.js",
+    "bersihkan": "node scripts/bersihkan-data.js"
   }
 }

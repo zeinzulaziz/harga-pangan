@@ -8,7 +8,7 @@
   },
   "Beras": {
     "UD Hasil Tani Kabupaten Probolinggo": 9600,
-    "PS Bendul Mrisi Kota Surabaya": 1000
+    "PS Bendul Mrisi Kota Surabaya": 10000
   },
   "Cabe Rawit": {
     "Pasar Tanjung Kabupaten Jember": 25000,
@@ -27,12 +27,20 @@
     "Pasar Gringging Kabupaten Kediri": 21200
   },
   "Daging Sapi": {
-    "RPH Pegirikan  Kota Surabaya": 9000,
+    "RPH Pegirikan  Kota Surabaya": 90000,
     "UD RPH Kota Malang": 95000,
     "RPH Krian Kabupaten Sidoarjo": 70000
   },
   "Kentang": {
     "Distributor Kabupaten Malang": 8500,
     "Kawasan Bromo Kabupaten Probolinggo": 8000
+  },
+  "imputed": {
+    "Beras": {
+      "PS Bendul Mrisi Kota Surabaya": true
+    },
+    "Daging Sapi": {
+      "RPH Pegirikan  Kota Surabaya": true
+    }
   }
 }

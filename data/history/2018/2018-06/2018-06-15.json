@@ -27,12 +27,18 @@
     "Pasar Gringging Kabupaten Kediri": 23200
   },
   "Daging Sapi": {
-    "RPH Pegirikan  Kota Surabaya": 10500,
-    "UD RPH Kota Malang": 10500,
+    "RPH Pegirikan  Kota Surabaya": 108000,
+    "UD RPH Kota Malang": 109000,
     "RPH Krian Kabupaten Sidoarjo": 108000
   },
   "Kentang": {
     "Distributor Kabupaten Malang": 8500,
     "Kawasan Bromo Kabupaten Probolinggo": 8000
+  },
+  "imputed": {
+    "Daging Sapi": {
+      "RPH Pegirikan  Kota Surabaya": true,
+      "UD RPH Kota Malang": true
+    }
   }
 }
