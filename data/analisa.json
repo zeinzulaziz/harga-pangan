@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-21T12:59:17.970Z",
+  "generatedAt": "2026-09-21T13:11:53.864Z",
   "summary": {
     "Bawang Merah": {
       "bestMonth": 5,
@@ -9,8 +9,8 @@
       "confidence": 90.9,
       "patternConsistency": 50,
       "dataDays": 3700,
-      "observedDays": 3662,
-      "imputedDays": 51,
+      "observedDays": 3664,
+      "imputedDays": 52,
       "terendah": {
         "bulan": 8,
         "harga": 14234
@@ -161,18 +161,18 @@
         "Pasar Sukomoro Kabupaten Nganjuk"
       ],
       "dataDays": 3700,
-      "observedDays": 3662,
-      "imputedDays": 51,
+      "observedDays": 3664,
+      "imputedDays": 52,
       "averageByMonth": {
         "1": 18473,
         "2": 18706,
-        "3": 21443,
+        "3": 21456,
         "4": 23265,
         "5": 23189,
         "6": 22969,
         "7": 19891,
         "8": 16204,
-        "9": 15379,
+        "9": 15282,
         "10": 16908,
         "11": 19684,
         "12": 20581
@@ -208,13 +208,13 @@
       "rataRata": {
         "1": 18473,
         "2": 18706,
-        "3": 21443,
+        "3": 21456,
         "4": 23265,
         "5": 23189,
         "6": 22969,
         "7": 19891,
         "8": 16204,
-        "9": 15379,
+        "9": 15282,
         "10": 16908,
         "11": 19684,
         "12": 20581
@@ -253,7 +253,7 @@
           "rising": 7,
           "falling": 3,
           "risingRate": 70,
-          "medianChange": 12
+          "medianChange": 12.3
         },
         "4": {
           "samples": 10,
@@ -295,7 +295,7 @@
           "rising": 5,
           "falling": 6,
           "risingRate": 45.5,
-          "medianChange": -5.1
+          "medianChange": -6.7
         },
         "10": {
           "samples": 10,
@@ -398,7 +398,7 @@
       "recent": {
         "from": "2025-10",
         "to": "2026-09",
-        "change": -25.2
+        "change": -29.2
       },
       "yoy": {
         "1": 26,
@@ -409,7 +409,7 @@
         "6": 7.8,
         "7": -33,
         "8": -34.8,
-        "9": -15.7
+        "9": -20.3
       }
     },
     "Beras": {

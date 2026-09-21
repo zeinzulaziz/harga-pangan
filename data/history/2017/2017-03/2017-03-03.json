@@ -3,12 +3,11 @@
   "source": "SISKAPERBAPO Jatim",
   "type": "produsen",
   "Bawang Merah": {
-    "Pasar Dlinggu Kabupaten Probolinggo": 290000,
+    "Pasar Dlinggu Kabupaten Probolinggo": 29000,
     "Pasar Sukomoro Kabupaten Nganjuk": 29000
   },
   "imputed": {
     "Bawang Merah": {
-      "Pasar Dlinggu Kabupaten Probolinggo": true,
       "Pasar Sukomoro Kabupaten Nganjuk": true
     },
     "Beras": {

@@ -10,6 +10,32 @@ const LOWER_RATIO = 0.25;
 
 const DATA_PATH = path.join(__dirname, '..', 'data', 'produsen.json');
 
+// Koreksi manual untuk nilai yang dipastikan salah input tapi rasio < threshold.
+// Berlaku hanya jika nilai saat ini masih sama dengan `value` (supaya tidak
+// menghapus nilai lain yang sudah dikoreksi sumber).
+const CORRECTIONS = [
+  {
+    commodity: 'Bawang Merah',
+    column: 'Pasar Dlinggu Kabupaten Probolinggo',
+    date: '2026-09-20',
+    value: 62000
+  },
+  {
+    commodity: 'Bawang Merah',
+    column: 'Pasar Dlinggu Kabupaten Probolinggo',
+    date: '2017-03-03',
+    value: 290000,
+    replacement: 29000
+  },
+  {
+    commodity: 'Bawang Merah',
+    column: 'Pasar Dlinggu Kabupaten Probolinggo',
+    date: '2017-03-04',
+    value: 290000,
+    replacement: 29000
+  }
+];
+
 function valid(value) {
   return Number.isFinite(value) && value > 0;
 }
@@ -147,13 +173,43 @@ function saveHistoryFiles(outDir, commodity, columns, rows, imputedRows = {}) {
   return saved;
 }
 
+function applyCorrections(data) {
+  const changed = new Set();
+
+  for (const correction of CORRECTIONS) {
+    const info = data.commodities[correction.commodity];
+    if (!info) continue;
+    const colIndex = info.columns.indexOf(correction.column);
+    if (colIndex === -1) continue;
+    const prices = info.prices[correction.date];
+    if (!prices || prices[colIndex] !== correction.value) continue;
+
+    if (correction.replacement != null) {
+      prices[colIndex] = correction.replacement;
+      if (info.imputed[correction.date]) info.imputed[correction.date][colIndex] = false;
+      console.log(`  ${correction.commodity} | ${correction.column} | ${correction.date} | ${correction.value} -> {perbaiki: ${correction.replacement}}`);
+    } else {
+      prices[colIndex] = null;
+      if (!info.imputed[correction.date]) info.imputed[correction.date] = [];
+      info.imputed[correction.date][colIndex] = true;
+      console.log(`  ${correction.commodity} | ${correction.column} | ${correction.date} | ${correction.value} -> {hapus}`);
+    }
+    changed.add(correction.commodity);
+  }
+
+  return changed;
+}
+
 function main() {
   const data = JSON.parse(fs.readFileSync(DATA_PATH, 'utf-8'));
   let totalAnomalies = 0;
+  const corrected = applyCorrections(data);
 
   for (const [commodity, info] of Object.entries(data.commodities)) {
     const anomalies = detectAnomalies(commodity, info);
-    if (anomalies.length === 0) {
+    totalAnomalies += anomalies.length;
+
+    if (anomalies.length === 0 && !corrected.has(commodity)) {
       console.log(`${commodity}: bersih`);
       continue;
     }
@@ -172,12 +228,11 @@ function main() {
     info.dateRange = dates.length > 0
       ? { from: dates[0], to: dates[dates.length - 1] }
       : {};
-    totalAnomalies += anomalies.length;
   }
 
   data.lastUpdate = new Date().toISOString();
   fs.writeFileSync(DATA_PATH, JSON.stringify(data));
-  console.log(`\n✅ ${totalAnomalies} data tidak normal dihapus dari produsen.json`);
+  console.log(`\n✅ ${totalAnomalies} data tidak normal dihapus, ${corrected.size ? [...corrected].length + ' komoditas dikoreksi' : 'tanpa koreksi manual'}`);
 
   const outDir = path.join(__dirname, '..', 'data');
   let historySaved = 0;
