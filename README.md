@@ -22,12 +22,12 @@ membantu petani memahami waktu harga tinggi, rendah, dan momentum kenaikan.
 - Chart interaktif dengan zoom, pan, dan drag selection.
 - Filter periode preset dan rentang tanggal bebas.
 - Pemilihan pasar pada sidebar.
+- Pembaruan data dilakukan secara manual dari SISKAPERBAPO.
 - Penanda data aktual dan data estimasi carry-forward.
 - Analisa tren berdasarkan median harga historis.
 - Rekomendasi bulan dengan harga tertinggi, harga terendah, momentum kenaikan,
   konsistensi pola, dan coverage data.
 - Layout desktop dengan sidebar dan toggle sidebar pada mobile.
-- Update data otomatis melalui GitHub Actions.
 
 ## Sumber Data
 
@@ -58,10 +58,9 @@ harga-pangan/
 │       └── YYYY/
 │           └── YYYY-MM/
 │               └── YYYY-MM-DD.json
-├── scripts/
-│   ├── scrape-produsen.js
-│   └── analisa-tren.js
-└── .github/workflows/main.yml
+└── scripts/
+    ├── scrape-produsen.js
+    └── analisa-tren.js
 ```
 
 ### `data/produsen.json`
@@ -117,7 +116,8 @@ dan menyimpan arsip ke `data/history/`.
 npm run scrape
 ```
 
-Mode ini digunakan oleh GitHub Actions.
+Mode ini dijalankan secara manual untuk memperbarui data terbaru dari
+SISKAPERBAPO.
 
 ### Backfill Historis
 
@@ -157,30 +157,23 @@ Hasil analisa meliputi:
 - Coverage data dan jumlah hari aktual/estimasi
 - Perbandingan tahun berjalan dengan tahun sebelumnya
 
-## GitHub Actions
+## Update Data
 
-Workflow berada di `.github/workflows/main.yml` dan berjalan otomatis setiap
-hari sekitar pukul 16:00 WIB. Jadwal GitHub Actions menggunakan UTC:
+Pembaruan data dilakukan secara manual dari SISKAPERBAPO. Setiap kali ingin
+memperbarui data:
 
-```yaml
-cron: '0 9 * * *'
+```bash
+npm run scrape
+npm run analisa
 ```
 
-Setiap proses harian:
-
-1. Checkout repository.
-2. Menjalankan `npm run scrape`.
-3. Menjalankan `npm run analisa`.
-4. Menyimpan perubahan ke folder `data/`.
-5. Commit dan push perubahan.
-6. GitHub Pages melakukan deploy ulang.
-
-Workflow memiliki concurrency agar dua proses scraping tidak berjalan bersamaan
-dan menggunakan rebase sebelum push untuk mengurangi konflik.
+1. `npm run scrape` mengambil data terbaru dari SISKAPERBAPO, menggabungkannya
+   dengan `produsen.json`, dan menyimpan arsip ke `data/history/`.
+2. `npm run analisa` menghitung ulang `data/analisa.json`.
+3. Commit dan push perubahan ke repository agar dashboard diperbarui.
 
 ## Catatan Data
 
-- Jadwal GitHub Actions dapat terlambat beberapa menit dari jadwal cron.
 - SISKAPERBAPO dapat terlambat mengisi data tanggal terbaru.
 - Nama atau jumlah pasar dapat berubah dari waktu ke waktu.
 - Data carry-forward hanya digunakan agar chart tidak terputus, bukan sebagai
@@ -195,5 +188,4 @@ dan menggunakan rebase sebelum push untuk mengurangi konflik.
 - Chart.js
 - chartjs-plugin-zoom
 - Node.js untuk scraper dan analisa
-- GitHub Actions untuk otomasi
 - GitHub Pages untuk hosting dashboard
