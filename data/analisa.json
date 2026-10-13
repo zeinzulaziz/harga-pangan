@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-13T15:01:24.234Z",
+  "generatedAt": "2026-10-13T15:23:57.057Z",
   "summary": {
     "Bawang Merah": {
       "bestMonth": 5,
@@ -10,7 +10,7 @@
       "patternConsistency": 50,
       "dataDays": 3722,
       "observedDays": 3685,
-      "imputedDays": 52,
+      "imputedDays": 53,
       "terendah": {
         "bulan": 8,
         "harga": 14234
@@ -162,7 +162,7 @@
       ],
       "dataDays": 3722,
       "observedDays": 3685,
-      "imputedDays": 52,
+      "imputedDays": 53,
       "averageByMonth": {
         "1": 18473,
         "2": 18706,
@@ -172,7 +172,7 @@
         "6": 22969,
         "7": 19891,
         "8": 16204,
-        "9": 15383,
+        "9": 15315,
         "10": 17091,
         "11": 19684,
         "12": 20581
@@ -214,7 +214,7 @@
         "6": 22969,
         "7": 19891,
         "8": 16204,
-        "9": 15383,
+        "9": 15315,
         "10": 17091,
         "11": 19684,
         "12": 20581
@@ -295,13 +295,13 @@
           "rising": 5,
           "falling": 6,
           "risingRate": 45.5,
-          "medianChange": -4.9
+          "medianChange": -6.7
         },
         "10": {
           "samples": 11,
-          "rising": 8,
-          "falling": 3,
-          "risingRate": 72.7,
+          "rising": 9,
+          "falling": 2,
+          "risingRate": 81.8,
           "medianChange": 10.7
         },
         "11": {
@@ -409,7 +409,7 @@
         "6": 7.8,
         "7": -33,
         "8": -34.8,
-        "9": -15.5,
+        "9": -18.7,
         "10": -27.6
       }
     },
