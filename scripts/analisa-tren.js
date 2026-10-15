@@ -126,7 +126,7 @@ function analyzeCommodity(commodity, info) {
       columns: info.columns || [], dataDays: dates.length, observedDays, imputedDays,
       averageByMonth, medianByMonth, samplesByMonth, perubahan: changes,
       consistency, bulanNaik: [], bulanTurun: [], terendah: null, tertinggi: null,
-      recommendation: null, recent: null, yoy: {}
+      recommendation: null, recent: null, yoy: {}, byYearMonth: monthlyValues
     };
   }
 
@@ -188,7 +188,8 @@ function analyzeCommodity(commodity, info) {
       consistency: consistency[highestMonth]
     },
     recent,
-    yoy
+    yoy,
+    byYearMonth: monthlyValues
   };
 }
 

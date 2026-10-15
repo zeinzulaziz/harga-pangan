@@ -3,10 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Harga Produsen Pangan — SISKAPERBAPO Jawa Timur</title>
+  <title>Harga Produsen Pangan: SISKAPERBAPO Jawa Timur</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/hammerjs@2.0.8/hammer.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.2.0/dist/chartjs-plugin-zoom.min.js"></script>
+  <!-- impeccable-disable overused-font: Inter dipertahankan agar konsisten dengan dashboard ini dan tanam.html; mengganti font akan memecah identitas produk -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -26,14 +27,15 @@
     .sidebar { width: var(--sidebar-w); min-width: var(--sidebar-w); background: var(--card); border-right: 1px solid var(--border); display: flex; flex-direction: column; transition: all 0.3s; overflow: hidden; z-index: 100; }
     .sidebar.collapsed { width: 0; min-width: 0; border-right: none; }
     .sidebar-header { padding: 1rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
-    .sidebar-title { font-size: 0.85rem; font-weight: 700; background: linear-gradient(135deg, var(--accent4), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; white-space: nowrap; }
+    .sidebar-title { font-size: 0.85rem; font-weight: 700; color: var(--accent4); white-space: nowrap; }
     .sidebar-close { background: none; border: none; color: var(--text-dim); cursor: pointer; font-size: 1.1rem; padding: 0.25rem; border-radius: 6px; transition: all 0.2s; }
     .sidebar-close:hover { background: var(--card-hover); color: var(--text); }
     .sidebar-body { flex: 1; overflow-y: auto; padding: 1rem; }
     .sidebar-body::-webkit-scrollbar { width: 4px; }
     .sidebar-body::-webkit-scrollbar-track { background: transparent; }
     .sidebar-body::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
-    .sidebar-footer { padding: 0.75rem 1rem; border-top: 1px solid var(--border); font-size: 0.7rem; color: var(--text-dim); flex-shrink: 0; }
+    .sidebar-footer { padding: 0.75rem 1rem; border-top: 1px solid var(--border); font-size: 0.75rem; color: var(--text-dim); flex-shrink: 0; }
+    .sidebar-footer small { font-size: inherit; }
     .sidebar-footer a { color: var(--accent4); }
 
     .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; position: relative; }
@@ -44,9 +46,9 @@
     .menu-btn:hover { background: var(--card-hover); color: var(--text); border-color: var(--accent); }
     .header-info { flex: 1; min-width: 0; }
     .header-title { font-size: 0.95rem; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .header-sub { font-size: 0.72rem; color: var(--text-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .header-sub { font-size: 0.75rem; color: var(--text-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .header-badges { display: flex; gap: 0.4rem; flex-shrink: 0; }
-    .badge { background: rgba(52,211,153,0.1); border: 1px solid rgba(52,211,153,0.2); color: var(--accent4); padding: 0.15rem 0.5rem; border-radius: 999px; font-size: 0.68rem; white-space: nowrap; }
+    .badge { background: rgba(52,211,153,0.1); border: 1px solid rgba(52,211,153,0.2); color: var(--accent4); padding: 0.15rem 0.5rem; border-radius: 999px; font-size: 0.75rem; white-space: nowrap; }
     .zoom-actions { display: flex; gap: 0.3rem; flex-shrink: 0; }
     .icon-btn { background: var(--card); border: 1px solid var(--border); color: var(--text-dim); width: 32px; height: 32px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; transition: all 0.2s; }
     .icon-btn:hover { background: var(--accent5); color: #0f172a; border-color: var(--accent5); }
@@ -57,12 +59,12 @@
     .chart-area canvas { flex: 1; }
     .chart-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem; gap: 0.5rem; flex-shrink: 0; }
     .chart-bar-title { font-size: 0.85rem; font-weight: 600; }
-    .chart-bar-sub { font-size: 0.7rem; color: var(--text-dim); }
+    .chart-bar-sub { font-size: 0.75rem; color: var(--text-dim); }
     .chart-bar-right { display: flex; gap: 0.4rem; align-items: center; flex-shrink: 0; }
 
     /* SIDEBAR SECTIONS */
     .section { margin-bottom: 1.25rem; }
-    .section-title { font-size: 0.72rem; font-weight: 600; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem; }
+    .section-title { font-size: 0.75rem; font-weight: 600; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem; }
     .view-toggle { display: flex; gap: 0.3rem; margin-bottom: 1rem; }
     .view-btn { flex: 1; padding: 0.5rem; border-radius: 8px; border: 1px solid var(--border); background: transparent; color: var(--text-dim); font-family: inherit; font-size: 0.78rem; font-weight: 500; cursor: pointer; transition: all 0.2s; text-align: center; }
     .view-btn:hover { border-color: var(--accent); color: var(--text); }
@@ -75,16 +77,16 @@
     .commodity-btn.active { background: color-mix(in srgb, var(--accent4) 12%, transparent); color: var(--accent4); border-color: var(--accent4); font-weight: 600; }
     .commodity-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
     .period-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.3rem; }
-    .period-btn { padding: 0.4rem; border-radius: 6px; border: 1px solid var(--border); background: transparent; color: var(--text-dim); font-family: inherit; font-size: 0.72rem; font-weight: 500; cursor: pointer; transition: all 0.2s; text-align: center; }
+    .period-btn { padding: 0.4rem; border-radius: 6px; border: 1px solid var(--border); background: transparent; color: var(--text-dim); font-family: inherit; font-size: 0.75rem; font-weight: 500; cursor: pointer; transition: all 0.2s; text-align: center; }
     .period-btn:hover { border-color: var(--accent); color: var(--text); }
     .period-btn.active { background: var(--accent); color: #0f172a; border-color: var(--accent); font-weight: 600; }
     .month-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.3rem; }
-    .month-btn { padding: 0.4rem; border-radius: 6px; border: 1px solid var(--border); background: transparent; color: var(--text-dim); font-family: inherit; font-size: 0.72rem; font-weight: 500; cursor: pointer; transition: all 0.2s; text-align: center; }
+    .month-btn { padding: 0.4rem; border-radius: 6px; border: 1px solid var(--border); background: transparent; color: var(--text-dim); font-family: inherit; font-size: 0.75rem; font-weight: 500; cursor: pointer; transition: all 0.2s; text-align: center; }
     .month-btn:hover { border-color: var(--accent2); color: var(--text); }
     .month-btn.active { background: var(--accent2); color: #0f172a; border-color: var(--accent2); font-weight: 600; }
-    .month-hint { font-size: 0.62rem; color: var(--text-dim); margin-top: 0.4rem; }
+    .month-hint { font-size: 0.75rem; color: var(--text-dim); margin-top: 0.4rem; }
     .range-picker { margin-top: 0.75rem; padding: 0.65rem; border: 1px solid var(--border); border-radius: 8px; background: rgba(15,23,42,0.35); }
-    .range-picker-head, .range-values { display: flex; justify-content: space-between; gap: 0.5rem; font-size: 0.62rem; color: var(--text-dim); }
+    .range-picker-head, .range-values { display: flex; justify-content: space-between; gap: 0.5rem; font-size: 0.75rem; color: var(--text-dim); }
     .range-picker-head { margin-bottom: 0.45rem; color: var(--text); font-weight: 600; }
     .range-values { margin-top: 0.35rem; font-variant-numeric: tabular-nums; }
     .range-track { height: 18px; position: relative; margin: 0 0.2rem; }
@@ -104,16 +106,16 @@
     .pasar-item.active { background: color-mix(in srgb, var(--pasar-color, var(--accent)) 10%, transparent); }
     .pasar-item.inactive { opacity: 0.4; }
     .pasar-item.inactive:hover { opacity: 0.7; }
-    .pasar-check { width: 16px; height: 16px; border-radius: 4px; border: 2px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 0.6rem; transition: all 0.2s; flex-shrink: 0; }
+    .pasar-check { width: 16px; height: 16px; border-radius: 4px; border: 2px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 0.75rem; transition: all 0.2s; flex-shrink: 0; }
     .pasar-item.active .pasar-check { background: var(--pasar-color, var(--accent)); border-color: var(--pasar-color, var(--accent)); color: #0f172a; }
     .pasar-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
     .pasar-info { flex: 1; min-width: 0; }
     .pasar-name { font-size: 0.75rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .pasar-loc { font-size: 0.62rem; color: var(--text-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .pasar-loc { font-size: 0.75rem; color: var(--text-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .pasar-val { font-size: 0.78rem; font-weight: 700; font-variant-numeric: tabular-nums; flex-shrink: 0; }
-    .pasar-status { display: block; font-size: 0.55rem; font-weight: 500; color: var(--text-dim); text-transform: uppercase; }
+    .pasar-status { display: block; font-size: 0.75rem; font-weight: 500; color: var(--text-dim); text-transform: uppercase; }
     .select-row { display: flex; gap: 0.3rem; margin-bottom: 0.4rem; }
-    .select-sm { padding: 0.2rem 0.5rem; border-radius: 4px; border: 1px solid var(--border); background: transparent; color: var(--text-dim); font-family: inherit; font-size: 0.65rem; cursor: pointer; transition: all 0.2s; }
+    .select-sm { padding: 0.2rem 0.5rem; border-radius: 4px; border: 1px solid var(--border); background: transparent; color: var(--text-dim); font-family: inherit; font-size: 0.75rem; cursor: pointer; transition: all 0.2s; }
     .select-sm:hover { border-color: var(--accent); color: var(--text); }
 
     /* ANALISA VIEW */
@@ -123,33 +125,39 @@
     .analisa-header h2 { font-size: 1.2rem; font-weight: 700; color: var(--accent4); }
     .analisa-header p { color: var(--text-dim); font-size: 0.8rem; margin-top: 0.2rem; }
     .summary-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; margin-bottom: 1.5rem; background: var(--card); border-radius: 12px; overflow: hidden; }
-    .summary-table th { padding: 0.6rem 0.8rem; text-align: left; font-weight: 600; color: var(--text-dim); font-size: 0.7rem; text-transform: uppercase; background: rgba(51,65,85,0.5); }
+    .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    .summary-table th { padding: 0.6rem 0.8rem; text-align: left; font-weight: 600; color: var(--text-dim); font-size: 0.75rem; text-transform: uppercase; background: rgba(51,65,85,0.5); }
     .summary-table td { padding: 0.6rem 0.8rem; border-top: 1px solid var(--border); }
     .summary-table tr:hover td { background: rgba(51,65,85,0.3); }
-    .month-badge { display: inline-block; padding: 0.1rem 0.4rem; border-radius: 4px; font-size: 0.7rem; font-weight: 600; }
+    .month-badge { display: inline-block; padding: 0.1rem 0.4rem; border-radius: 4px; font-size: 0.75rem; font-weight: 600; }
     .month-badge.good { background: rgba(34,197,94,0.15); color: var(--green); }
     .month-badge.bad { background: rgba(239,68,68,0.15); color: var(--red); }
-    .analisa-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1rem; }
+    .analisa-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 1rem; }
     .analisa-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 1rem; }
     .analisa-card-title { font-size: 0.9rem; font-weight: 700; margin-bottom: 0.15rem; }
-    .analisa-card-cols { font-size: 0.65rem; color: var(--text-dim); margin-bottom: 0.75rem; }
+    .analisa-card-cols { font-size: 0.75rem; color: var(--text-dim); margin-bottom: 0.75rem; }
     .rec-box { background: rgba(52,211,153,0.06); border: 1px solid rgba(52,211,153,0.15); border-radius: 8px; padding: 0.6rem; margin-bottom: 0.75rem; }
-    .rec-title { font-size: 0.7rem; font-weight: 600; color: var(--accent4); margin-bottom: 0.3rem; }
+    .rec-title { font-size: 0.75rem; font-weight: 600; color: var(--accent4); margin-bottom: 0.3rem; }
     .rec-row { display: flex; justify-content: space-between; font-size: 0.75rem; margin-bottom: 0.15rem; }
     .rec-label { color: var(--text-dim); }
     .rec-val { font-weight: 600; }
     .rec-val.good { color: var(--green); }
     .rec-val.bad { color: var(--red); }
     .heatmap-row { display: flex; gap: 2px; margin-bottom: 0.3rem; }
-    .heatmap-cell { flex: 1; height: 26px; border-radius: 3px; display: flex; align-items: center; justify-content: center; font-size: 0.55rem; font-weight: 600; }
+    .heatmap-cell { flex: 1; min-width: 0; height: 26px; border-radius: 3px; display: flex; align-items: center; justify-content: center; font-size: 0.72rem; font-weight: 600; }
     .heatmap-labels { display: flex; gap: 2px; margin-bottom: 0.5rem; }
-    .heatmap-labels span { flex: 1; text-align: center; font-size: 0.5rem; color: var(--text-dim); }
-    .heatmap-legend { display: flex; align-items: center; gap: 0.4rem; font-size: 0.6rem; color: var(--text-dim); margin-bottom: 0.75rem; }
+    .heatmap-labels span { flex: 1; text-align: center; font-size: 0.72rem; color: var(--text-dim); }
+    .heatmap-legend { display: flex; align-items: center; gap: 0.4rem; font-size: 0.75rem; color: var(--text-dim); margin-bottom: 0.75rem; }
     .heatmap-legend-bar { height: 6px; width: 60px; border-radius: 3px; background: linear-gradient(90deg, #22c55e, #eab308, #ef4444); }
-    .chart-note { font-size: 0.65rem; color: var(--text-dim); margin-top: 0.35rem; }
+    .ym-grid { display: grid; grid-template-columns: 34px repeat(12, minmax(0, 1fr)); gap: 2px; }
+    .ym-mhead { text-align: center; font-size: 0.72rem; color: var(--text-dim); }
+    .ym-year { font-size: 0.72rem; color: var(--text-dim); display: flex; align-items: center; justify-content: flex-end; padding-right: 2px; font-variant-numeric: tabular-nums; }
+    .ym-cell { height: 24px; border-radius: 3px; display: flex; align-items: center; justify-content: center; font-size: 0.72rem; font-weight: 600; color: var(--text); }
+    .ym-cell.empty { background: rgba(51,65,85,0.4); color: var(--text-dim); }
+    .chart-note { font-size: 0.75rem; color: var(--text-dim); margin-top: 0.35rem; }
     .stats-mini { display: flex; gap: 0.4rem; flex-wrap: wrap; }
-    .stat-mini { background: rgba(51,65,85,0.4); border-radius: 5px; padding: 0.3rem 0.5rem; font-size: 0.68rem; }
-    .stat-mini-label { color: var(--text-dim); font-size: 0.58rem; }
+    .stat-mini { background: rgba(51,65,85,0.4); border-radius: 5px; padding: 0.3rem 0.5rem; font-size: 0.75rem; }
+    .stat-mini-label { color: var(--text-dim); font-size: 0.75rem; }
     .stat-mini-val { font-weight: 600; }
 
     /* MOBILE TOGGLE */
@@ -163,8 +171,7 @@
       .mobile-toggle { display: flex; }
       .mobile-overlay.active { display: block; }
       .header-badges { display: none; }
-      .analisa-grid { grid-template-columns: 1fr; }
-      .summary-table { font-size: 0.7rem; }
+      .summary-table { font-size: 0.75rem; }
       .summary-table th, .summary-table td { padding: 0.4rem 0.5rem; }
     }
 
@@ -190,10 +197,10 @@
       <!-- View Toggle -->
       <div class="section">
         <div class="view-toggle">
-          <button class="view-btn active" data-view="grafik">📈 Grafik</button>
-          <button class="view-btn" data-view="analisa">💡 Analisa</button>
+          <button class="view-btn active" data-view="grafik">Grafik</button>
+          <button class="view-btn" data-view="analisa">Analisa</button>
         </div>
-        <a class="nav-link" href="tanam.html">🌱 Kalkulator Waktu Tanam</a>
+        <a class="nav-link" href="tanam.html">Kalkulator Waktu Tanam</a>
       </div>
 
       <!-- Komoditas -->
@@ -292,13 +299,15 @@
     <!-- Analisa View -->
     <div class="analisa-overlay" id="analisaView">
       <div class="analisa-header">
-        <h2>💡 Analisa Tren & Rekomendasi</h2>
-        <p>Berdasarkan data historis — bantu petani menentukan waktu jual terbaik</p>
+        <h2>Analisa Tren & Rekomendasi</h2>
+        <p>Berdasarkan data historis untuk membantu petani menentukan waktu jual terbaik</p>
       </div>
-      <table class="summary-table" id="summaryTable">
-        <thead><tr><th>Komoditas</th><th>Jual: Harga Tertinggi</th><th>Harga Terendah</th><th>Momentum Naik</th><th>Konsistensi Pola</th><th>Data Aktual</th></tr></thead>
-        <tbody id="summaryBody"></tbody>
-      </table>
+      <div class="table-scroll">
+        <table class="summary-table" id="summaryTable">
+          <thead><tr><th>Komoditas</th><th>Jual: Harga Tertinggi</th><th>Harga Terendah</th><th>Momentum Naik</th><th>Konsistensi Pola</th><th>Data Aktual</th></tr></thead>
+          <tbody id="summaryBody"></tbody>
+        </table>
+      </div>
       <div class="analisa-grid" id="analisaGrid"></div>
     </div>
   </div>
@@ -611,6 +620,39 @@ function getHeatColor(pct) {
   return v > 0 ? `rgba(239,68,68,${0.15 + v/30*0.5})` : v < 0 ? `rgba(34,197,94,${0.15 + Math.abs(v)/30*0.5})` : 'rgba(51,65,85,0.4)';
 }
 
+const CARD_RGB = [30, 41, 59];
+function seasonalColor(t) {
+  let r, g, b;
+  if (t < 0.5) { const u = t / 0.5; r = 34 + (234 - 34) * u; g = 197 + (179 - 197) * u; b = 94 + (8 - 94) * u; }
+  else { const u = (t - 0.5) / 0.5; r = 234 + (239 - 234) * u; g = 179 + (68 - 179) * u; b = 8 + (68 - 8) * u; }
+  const a = 0.22 + 0.33 * t;
+  const blend = [r, g, b].map((c, i) => Math.round(c * a + CARD_RGB[i] * (1 - a)));
+  return `rgb(${blend[0]},${blend[1]},${blend[2]})`;
+}
+
+function seasonalHeatmap(info) {
+  const ym = info.byYearMonth;
+  if (!ym) return '';
+  const keys = Object.keys(ym).sort();
+  if (!keys.length) return '';
+  const years = [...new Set(keys.map(k => k.slice(0, 4)))].sort();
+  const vals = keys.map(k => ym[k]).filter(v => v != null);
+  const vmin = Math.min(...vals), vmax = Math.max(...vals);
+  const head = `<div class="ym-corner"></div>` + BULAN.map(b => `<div class="ym-mhead">${b}</div>`).join('');
+  const rows = years.map(y => {
+    const cells = Array.from({ length: 12 }, (_, i) => {
+      const v = ym[`${y}-${String(i + 1).padStart(2, '0')}`];
+      if (v == null) return `<div class="ym-cell empty" title="${BULAN_FULL[i]} ${y}: tidak ada data">-</div>`;
+      const t = vmax > vmin ? (v - vmin) / (vmax - vmin) : 0.5;
+      return `<div class="ym-cell" style="background:${seasonalColor(t)}" title="${BULAN_FULL[i]} ${y}: ${R(v)}">${(v / 1000).toFixed(0)}</div>`;
+    }).join('');
+    return `<div class="ym-year">${y}</div>${cells}`;
+  }).join('');
+  return `<div style="font-size:0.75rem;color:var(--text-dim);margin-bottom:0.35rem;">Peta Musiman Bulan x Tahun (Ribu Rp)</div>
+    <div class="ym-grid">${head}${rows}</div>
+    <div class="heatmap-legend" style="margin-top:0.4rem;"><span>Murah</span><div class="heatmap-legend-bar"></div><span>Mahal</span></div>`;
+}
+
 function renderAnalisa() {
   if (!analisaData) return;
   const sb = document.getElementById('summaryBody');
@@ -630,16 +672,14 @@ function renderAnalisa() {
     if (!info.tertinggi || !info.terendah) {
       return `<div class="analisa-card"><div class="analisa-card-title" style="color:${color}">${c}</div><div style="color:var(--text-dim);font-size:0.75rem;">Data belum cukup untuk dianalisa.</div></div>`;
     }
-    const hm = BULAN.map((b, i) => { const p = info.perubahan[i+1]; return `<div class="heatmap-cell" style="background:${getHeatColor(p ? parseFloat(p) : null)}">${p ? (parseFloat(p) > 0 ? '+' : '') + parseFloat(p).toFixed(0) + '%' : '-'}</div>`; }).join('');
-    const baseline = info.medianByMonth || info.rataRata || {};
-    const hp = BULAN.map((b, i) => { const h = baseline[i+1]; return `<div class="heatmap-cell" style="background:rgba(56,189,248,${h ? 0.1 + h/info.tertinggi.harga*0.5 : 0.1})">${h ? (h/1000).toFixed(1)+'k' : '-'}</div>`; }).join('');
+    const hm = BULAN.map((b, i) => { const p = info.perubahan[i+1]; return `<div class="heatmap-cell" style="background:${getHeatColor(p ? parseFloat(p) : null)}">${p ? (parseFloat(p) > 0 ? '+' : '') + parseFloat(p).toFixed(0) : '-'}</div>`; }).join('');
     const best = info.recommendation?.momentumUp, worst = info.recommendation?.momentumDown;
     const sel = info.tertinggi.harga - info.terendah.harga;
     return `<div class="analisa-card">
       <div class="analisa-card-title" style="color:${color}">${c}</div>
       <div class="analisa-card-cols">${info.columns.join(' vs ')}</div>
       <div class="rec-box">
-        <div class="rec-title">💡 Rekomendasi</div>
+        <div class="rec-title">Rekomendasi</div>
         <div class="rec-row"><span class="rec-label">Jual harga tertinggi:</span><span class="rec-val good">${BULAN_FULL[info.tertinggi.bulan-1]} (${R(info.tertinggi.harga)})</span></div>
         <div class="rec-row"><span class="rec-label">Harga terendah:</span><span class="rec-val bad">${BULAN_FULL[info.terendah.bulan-1]} (${R(info.terendah.harga)})</span></div>
         <div class="rec-row"><span class="rec-label">Momentum naik:</span><span class="rec-val good">${best ? BULAN_FULL[best.bulan-1] + ' (+' + best.pct + '%)' : '-'}</span></div>
@@ -647,11 +687,10 @@ function renderAnalisa() {
         <div class="rec-row"><span class="rec-label">Coverage data:</span><span class="rec-val">${info.recommendation?.coverage || 0}%</span></div>
         <div class="rec-row"><span class="rec-label">Selisih:</span><span class="rec-val">${R(sel)} (${((sel/info.terendah.harga)*100).toFixed(1)}%)</span></div>
       </div>
-      <div style="font-size:0.65rem;color:var(--text-dim);margin-bottom:0.2rem;">Tren Perubahan Bulanan</div>
+      <div style="font-size:0.75rem;color:var(--text-dim);margin-bottom:0.2rem;">Tren Perubahan Bulanan (%)</div>
       <div class="heatmap-row">${hm}</div>
       <div class="heatmap-labels">${BULAN.map(b => `<span>${b}</span>`).join('')}</div>
-      <div style="font-size:0.65rem;color:var(--text-dim);margin-bottom:0.2rem;">Rata-rata Harga (Ribu Rp)</div>
-      <div class="heatmap-row">${hp}</div>
+      ${seasonalHeatmap(info)}
       <div class="stats-mini">
         <div class="stat-mini"><div class="stat-mini-label">Terendah</div><div class="stat-mini-val" style="color:var(--green)">${BULAN[info.terendah.bulan-1]} ${R(info.terendah.harga)}</div></div>
         <div class="stat-mini"><div class="stat-mini-label">Tertinggi</div><div class="stat-mini-val" style="color:var(--red)">${BULAN[info.tertinggi.bulan-1]} ${R(info.tertinggi.harga)}</div></div>
