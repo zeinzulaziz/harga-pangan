@@ -27,6 +27,8 @@ membantu petani memahami waktu harga tinggi, rendah, dan momentum kenaikan.
 - Analisa tren berdasarkan median harga historis.
 - Rekomendasi bulan dengan harga tertinggi, harga terendah, momentum kenaikan,
   konsistensi pola, dan coverage data.
+- Kalkulator waktu tanam: memperkirakan waktu panen dari tanggal tanam beserta
+  rata-rata umur tanaman sampai panen.
 - Layout desktop dengan sidebar dan toggle sidebar pada mobile.
 
 ## Sumber Data
@@ -50,6 +52,7 @@ sebelumnya agar chart tetap berkesinambungan. Nilai tersebut diberi penanda
 ```text
 harga-pangan/
 ├── index.html
+├── tanam.html
 ├── package.json
 ├── data/
 │   ├── produsen.json
@@ -82,6 +85,23 @@ rekaman historis dan tidak menggantikan file hari sebelumnya.
 
 Hasil analisa yang dibuat dari `produsen.json` dan digunakan oleh view
 `Analisa` pada dashboard.
+
+## Kalkulator Waktu Tanam
+
+Halaman `tanam.html` memperkirakan waktu panen berdasarkan komoditas dan
+tanggal tanam yang dipilih, lalu menampilkan rentang panen paling cepat,
+rata-rata, dan paling lambat beserta rata-rata umur tanaman. Perkiraan umur
+tanaman yang dipakai:
+
+- Bawang Merah: 55–80 hari (rata-rata 65)
+- Beras: 95–125 hari (rata-rata 110, belum termasuk persemaian)
+- Cabe Rawit: 70–90 hari (panen pertama)
+- Cabe Besar: 75–95 hari (panen pertama)
+- Kentang: 85–120 hari (rata-rata 100)
+
+Halaman ini juga menampilkan bulan dengan harga tertinggi dan terendah secara
+historis dari `analisa.json` sebagai pertimbangan jadwal tanam. Nilai tersebut
+adalah perkiraan umum, bukan jaminan hasil panen.
 
 ## Menjalankan Lokal
 

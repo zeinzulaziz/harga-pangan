@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="dark">
+  <title>Kalkulator Waktu Tanam | Harga Pangan Jatim</title>
+  <!-- impeccable-disable overused-font: Inter dipertahankan agar konsisten dengan sistem desain dashboard index.html yang sudah ada; menambah font kedua akan memecah identitas produk -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0f172a; --surface: #1e293b; --surface-2: #273549;
+      --line: #334155; --border: #64748b;
+      --text: #f1f5f9; --muted: #cbd5e1; --dim: #94a3b8;
+      --accent: #34d399; --accent-ink: #0f172a; --amber: #fbbf24; --danger: #fca5a5;
+      --r-sm: 8px; --r-md: 12px; --maxw: 820px;
+    }
+    html { color-scheme: dark; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg); color: var(--text); line-height: 1.55;
+      -webkit-font-smoothing: antialiased; min-height: 100vh;
+    }
+    :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+    .skip { position: absolute; left: -9999px; top: 0; }
+    .skip:focus { left: 1rem; top: 1rem; z-index: 60; background: var(--accent); color: var(--accent-ink); padding: 0.6rem 0.9rem; border-radius: var(--r-sm); font-size: 0.9rem; font-weight: 600; }
+
+    .topbar { position: sticky; top: 0; z-index: 10; display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; padding: 0.7rem 1rem; background: var(--bg); border-bottom: 1px solid var(--line); }
+    .back { display: inline-flex; align-items: center; gap: 0.4rem; min-height: 44px; padding: 0.4rem 0.85rem; border: 1px solid var(--border); border-radius: var(--r-sm); color: var(--muted); text-decoration: none; font-size: 0.9rem; font-weight: 500; transition: color 0.15s, border-color 0.15s; }
+    .back:hover { color: var(--text); border-color: var(--accent); }
+    .page-title { font-size: clamp(1rem, 1.4vw + 0.7rem, 1.2rem); font-weight: 700; letter-spacing: -0.01em; }
+
+    main { max-width: var(--maxw); margin: 0 auto; padding: 1.25rem 1rem 3rem; }
+    .lead { color: var(--muted); font-size: 0.95rem; max-width: 62ch; margin-bottom: 1.25rem; }
+
+    .panel { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-md); padding: 1.25rem; margin-bottom: 1.25rem; }
+    .panel > h2 { font-size: 1rem; font-weight: 700; margin-bottom: 0.75rem; }
+
+    .field { border: 0; margin-bottom: 1.15rem; }
+    .field:last-child { margin-bottom: 0; }
+    .field-label { display: block; font-size: 0.85rem; font-weight: 600; color: var(--muted); margin-bottom: 0.5rem; }
+
+    .crop-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 0.5rem; }
+    .crop-option { position: relative; display: flex; }
+    .crop-option input { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: pointer; }
+    .crop-option span { flex: 1; display: flex; align-items: center; min-height: 44px; padding: 0.5rem 0.75rem; border: 1px solid var(--border); border-radius: var(--r-sm); color: var(--muted); font-size: 0.9rem; font-weight: 500; transition: background-color 0.15s, border-color 0.15s, color 0.15s; }
+    .crop-option span:hover { border-color: var(--accent); color: var(--text); }
+    .crop-option input:checked + span { background: color-mix(in srgb, var(--accent) 16%, transparent); border-color: var(--accent); color: var(--accent); font-weight: 600; }
+    .crop-option input:focus-visible + span { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+    input[type="date"] { width: 100%; min-height: 44px; padding: 0.5rem 0.75rem; border: 1px solid var(--border); border-radius: var(--r-sm); background: var(--surface-2); color: var(--text); font-family: inherit; font-size: 0.95rem; }
+    input[type="date"]:hover { border-color: var(--accent); }
+    .hint { font-size: 0.8rem; color: var(--dim); margin-top: 0.5rem; }
+
+    /* Result: satu titik fokus halaman, ditandai garis aksen */
+    .result { background: var(--surface); border: 1px solid var(--accent); border-radius: var(--r-md); padding: 1.25rem; margin-bottom: 1.25rem; }
+    .result-head { font-size: 0.85rem; font-weight: 600; color: var(--dim); }
+    .result-range { font-size: clamp(1.5rem, 5vw, 2.1rem); font-weight: 800; color: var(--accent); line-height: 1.2; letter-spacing: -0.02em; margin-top: 0.15rem; }
+    .result-avg { font-size: 0.95rem; color: var(--muted); margin-top: 0.4rem; }
+    .result-avg strong { color: var(--text); }
+
+    .growth { position: relative; height: 40px; margin-top: 1.1rem; }
+    .growth-track { position: absolute; left: 0; right: 0; top: 17px; height: 6px; background: var(--line); border-radius: 3px; }
+    .growth-window { position: absolute; top: 17px; height: 6px; background: var(--accent); border-radius: 3px; }
+    .growth-avg { position: absolute; top: 9px; width: 2px; height: 22px; background: var(--text); }
+    .growth-foot { display: flex; justify-content: space-between; gap: 1rem; font-size: 0.85rem; color: var(--dim); }
+    .growth-foot span:last-child { text-align: right; }
+
+    .stats { list-style: none; margin: 1.1rem 0 0; display: grid; gap: 0.5rem; }
+    .stat { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; padding: 0.65rem 0.85rem; background: var(--surface-2); border-radius: var(--r-sm); }
+    .stat-label { font-size: 0.875rem; color: var(--muted); }
+    .stat-value { font-weight: 700; font-variant-numeric: tabular-nums; text-align: right; }
+    .stat-value small { display: block; font-size: 0.8rem; font-weight: 500; color: var(--dim); }
+    .s-fast .stat-value { color: var(--accent); }
+    .s-slow .stat-value { color: var(--amber); }
+
+    .block { border-top: 1px solid var(--line); margin-top: 1.1rem; padding-top: 1rem; }
+    .block h3 { font-size: 0.85rem; font-weight: 700; color: var(--muted); margin-bottom: 0.4rem; }
+    .block p { font-size: 0.9rem; color: var(--muted); }
+    .varieties { list-style: none; margin-top: 0.6rem; display: grid; gap: 0.3rem; }
+    .varieties li { display: flex; justify-content: space-between; gap: 1rem; font-size: 0.875rem; }
+    .varieties li span:first-child { color: var(--muted); }
+    .varieties li span:last-child { font-weight: 600; white-space: nowrap; font-variant-numeric: tabular-nums; }
+
+    .insight { margin-top: 1.1rem; padding: 0.85rem; border-radius: var(--r-sm); background: color-mix(in srgb, var(--accent) 9%, transparent); border: 1px solid color-mix(in srgb, var(--accent) 32%, var(--line)); }
+    .insight h3 { font-size: 0.85rem; font-weight: 700; color: var(--accent); margin-bottom: 0.3rem; }
+    .insight p { font-size: 0.9rem; color: var(--muted); }
+    .insight p + p { margin-top: 0.4rem; }
+    .insight strong { color: var(--text); }
+    .insight-warn { color: var(--amber); font-weight: 600; }
+    .insight-error { color: var(--danger); }
+    .insight-note { font-size: 0.78rem; color: var(--dim); margin-top: 0.35rem; }
+    .btn { display: inline-flex; align-items: center; min-height: 44px; margin-top: 0.6rem; padding: 0.4rem 0.9rem; border-radius: var(--r-sm); border: 1px solid var(--border); background: transparent; color: var(--text); font-family: inherit; font-size: 0.875rem; font-weight: 600; cursor: pointer; transition: border-color 0.15s, background-color 0.15s; }
+    .btn:hover { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, transparent); }
+
+    .empty, .result-error { padding: 0.5rem 0; }
+    .empty-title, .result-error-title { font-size: 1rem; font-weight: 700; color: var(--text); }
+    .empty p, .result-error p { font-size: 0.9rem; color: var(--muted); margin-top: 0.25rem; }
+    .result-error-title { color: var(--danger); }
+
+    .ref { list-style: none; margin-top: 0.25rem; }
+    .ref-row { padding: 0.85rem 0; border-top: 1px solid var(--line); }
+    .ref-row:first-child { border-top: 0; }
+    .ref-main { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; flex-wrap: wrap; }
+    .ref-name { font-size: 0.95rem; font-weight: 700; }
+    .ref-age { font-size: 0.875rem; color: var(--accent); font-weight: 600; font-variant-numeric: tabular-nums; }
+    .ref-bar { position: relative; height: 14px; margin: 0.5rem 0 0.35rem; }
+    .ref-bar .growth-track, .ref-bar .growth-window { top: 4px; }
+    .ref-bar .growth-track { background: var(--line); }
+    .ref-bar .growth-avg { top: 1px; height: 12px; width: 2px; }
+    .ref-note { font-size: 0.82rem; color: var(--dim); }
+    .scale-note { font-size: 0.78rem; color: var(--dim); margin-top: 0.5rem; }
+
+    .foot { font-size: 0.8rem; color: var(--dim); max-width: 70ch; }
+
+    @media (min-width: 640px) {
+      main { padding-left: 1.5rem; padding-right: 1.5rem; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      * { transition: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#main">Lewati ke konten</a>
+
+  <header class="topbar">
+    <a class="back" href="index.html"><span aria-hidden="true">←</span> Dashboard</a>
+    <h1 class="page-title">Kalkulator Waktu Tanam</h1>
+  </header>
+
+  <main id="main">
+    <p class="lead">Masukkan tanggal tanam untuk memperkirakan waktu panen, umur tanaman, dan bulan harga tertinggi secara historis.</p>
+
+    <form class="panel" id="form" novalidate>
+      <fieldset class="field">
+        <legend class="field-label">Komoditas</legend>
+        <div class="crop-grid" id="cropGrid" role="radiogroup" aria-label="Pilih komoditas"></div>
+      </fieldset>
+      <div class="field">
+        <label class="field-label" for="tanggalTanam">Tanggal tanam (pindah tanam ke lahan)</label>
+        <input type="date" id="tanggalTanam" name="tanggalTanam">
+        <p class="hint" id="seedlingHint"></p>
+      </div>
+    </form>
+
+    <section class="result" id="result" aria-live="polite" aria-atomic="true"></section>
+
+    <section class="panel" aria-labelledby="refTitle">
+      <h2 id="refTitle">Rata-rata umur tanaman sampai panen</h2>
+      <ul class="ref" id="refList"></ul>
+      <p class="scale-note">Skala bar: 0 sampai 130 hari sejak tanam.</p>
+    </section>
+
+    <p class="foot">Umur tanaman adalah perkiraan umum, bukan jaminan hasil. Panen sebenarnya dipengaruhi varietas, ketinggian tempat, musim, kesuburan tanah, dan perawatan. Untuk cabe, tanggal yang ditampilkan adalah panen pertama, sedangkan panen berikutnya berlanjut berkala.</p>
+  </main>
+
+  <script>
+    const CROPS = {
+      'Bawang Merah': {
+        min: 55, max: 80, avg: 65, seedling: 0,
+        desc: 'Siap panen saat sekitar 60 sampai 70 persen daun menguning dan leher batang melunak. Umur panen dipengaruhi varietas, ketinggian tempat, dan kesuburan tanah.',
+        varieties: [['Genjah (Bima Curut, Trisula)', '55-60 hari'], ['Sedang (Tajuk, Mentes)', '60-70 hari'], ['Dalam', '70-80 hari']]
+      },
+      'Beras': {
+        min: 95, max: 125, avg: 110, seedling: 21,
+        desc: 'Umur padi dihitung sejak pindah tanam ke lahan, setelah benih disemai sekitar 21 sampai 25 hari. Panen ditandai bulir menguning dan kadar air gabah menurun.',
+        varieties: [['Genjah (IR64, Inpari)', '95-105 hari'], ['Sedang (Ciherang)', '105-120 hari'], ['Dalam', '120-125 hari']]
+      },
+      'Cabe Rawit': {
+        min: 70, max: 90, avg: 80, seedling: 21,
+        desc: 'Panen pertama muncul 70 sampai 90 hari setelah pindah tanam, lalu berlanjut berkala selama 4 sampai 6 bulan. Persemaian berlangsung 21 sampai 28 hari.',
+        varieties: [['Panen pertama', '70-90 HST'], ['Panen lanjutan', '4-6 bulan']]
+      },
+      'Cabe Besar': {
+        min: 75, max: 95, avg: 85, seedling: 21,
+        desc: 'Panen pertama muncul 75 sampai 95 hari setelah pindah tanam, lalu berlanjut berkala 4 sampai 6 bulan. Persemaian berlangsung 21 sampai 28 hari.',
+        varieties: [['Panen pertama', '75-95 HST'], ['Panen lanjutan', '4-6 bulan']]
+      },
+      'Kentang': {
+        min: 85, max: 120, avg: 100, seedling: 0,
+        desc: 'Dipanen saat daun menguning dan kulit umbi tidak mudah terkelupas. Umur panen tergantung varietas dan ketinggian tempat tanam.',
+        varieties: [['Genjah', '85-95 hari'], ['Sedang (Granola)', '100-110 hari'], ['Dalam', '110-120 hari']]
+      }
+    };
+    const BULAN_FULL = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+    const MAX_AXIS = 130;
+
+    let analisa = null;
+    let analisaState = 'loading';
+    const el = id => document.getElementById(id);
+    const addDays = (base, n) => { const d = new Date(base.getTime()); d.setDate(d.getDate() + n); return d; };
+    const fmtLong = d => d.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+    const fmtShort = d => d.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+    const currentCrop = () => document.querySelector('input[name="crop"]:checked').value;
+
+    function bar(min, max, avg, axis) {
+      const left = min / axis * 100, width = (max - min) / axis * 100, avgPos = avg / axis * 100;
+      return `<div class="ref-bar" aria-hidden="true">
+        <div class="growth-track"></div>
+        <div class="growth-window" style="left:${left}%;width:${width}%"></div>
+        <div class="growth-avg" style="left:${avgPos}%"></div>
+      </div>`;
+    }
+
+    function renderCrops() {
+      const names = Object.keys(CROPS);
+      el('cropGrid').innerHTML = names.map((name, i) =>
+        `<label class="crop-option">
+          <input type="radio" name="crop" value="${name}" ${i === 0 ? 'checked' : ''}>
+          <span>${name}</span>
+        </label>`
+      ).join('');
+      el('cropGrid').addEventListener('change', calculate);
+    }
+
+    function renderReference() {
+      el('refList').innerHTML = Object.entries(CROPS).map(([name, t]) =>
+        `<li class="ref-row">
+          <div class="ref-main">
+            <span class="ref-name">${name}</span>
+            <span class="ref-age">${t.min}-${t.max} hari, rata-rata ${t.avg}</span>
+          </div>
+          ${bar(t.min, t.max, t.avg, MAX_AXIS)}
+          <p class="ref-note">${t.varieties.map(v => v[0]).join(', ')}</p>
+        </li>`
+      ).join('');
+    }
+
+    function monthDiff(from, to) { return (to - from + 12) % 12; }
+
+    function insightHTML(crop, avgDate) {
+      if (analisaState === 'loading') {
+        return `<div class="insight"><h3>Bulan harga tertinggi historis</h3><p>Memuat data harga dari analisa.json.</p></div>`;
+      }
+      if (analisaState === 'error') {
+        return `<div class="insight">
+          <h3>Bulan harga tertinggi historis</h3>
+          <p class="insight-error">Data harga historis tidak bisa dimuat. Perkiraan panen tetap bisa dipakai.</p>
+          <button type="button" class="btn" id="retryInsight">Coba muat ulang</button>
+        </div>`;
+      }
+      const s = analisa && analisa.summary ? analisa.summary[crop] : null;
+      if (!s || !s.bestMonth) {
+        return `<div class="insight"><h3>Bulan harga tertinggi historis</h3><p>Data historis untuk ${crop} belum cukup untuk dibandingkan.</p></div>`;
+      }
+      const harvestMonth = avgDate.getMonth() + 1;
+      const diff = monthDiff(harvestMonth, s.bestMonth);
+      let align;
+      if (diff === 0) {
+        align = `<span class="insight-warn" style="color:var(--accent)">Waktu panen bertepatan dengan bulan harga tertinggi.</span>`;
+      } else {
+        const months = diff <= 6 ? diff : 12 - diff;
+        const dir = diff <= 6 ? 'mempercepat' : 'menunda';
+        align = `<span class="insight-warn">Menggeser tanam sekitar ${months} bulan (${dir} tanam) dapat mendekatkan panen ke bulan itu.</span>`;
+      }
+      return `<div class="insight">
+        <h3>Bulan harga tertinggi historis</h3>
+        <p>Rata-rata panen jatuh pada bulan <strong>${BULAN_FULL[avgDate.getMonth()]}</strong>. Harga <strong>${crop}</strong> cenderung tertinggi pada bulan <strong>${BULAN_FULL[s.bestMonth - 1]}</strong> dan terendah pada bulan <strong>${BULAN_FULL[s.worstMonth - 1]}</strong>.</p>
+        <p>${align}</p>
+        <p class="insight-note">Berdasarkan data historis SISKAPERBAPO, bukan jaminan harga masa depan.</p>
+      </div>`;
+    }
+
+    function emptyState() {
+      return `<div class="empty">
+        <p class="empty-title">Belum ada tanggal tanam</p>
+        <p>Isi tanggal tanam di atas untuk melihat perkiraan panen dan umur tanaman.</p>
+      </div>`;
+    }
+
+    function dateErrorState() {
+      return `<div class="result-error">
+        <p class="result-error-title">Tanggal tanam tidak valid</p>
+        <p>Periksa kembali tanggal yang dimasukkan, lalu hitung ulang.</p>
+      </div>`;
+    }
+
+    function calculate() {
+      const crop = currentCrop();
+      const t = CROPS[crop];
+      const result = el('result');
+      const value = el('tanggalTanam').value;
+
+      el('seedlingHint').textContent = t.seedling
+        ? `Belum termasuk persemaian. Tambahkan sekitar ${t.seedling} hari bila masa persemaian dihitung.`
+        : '';
+
+      if (!value) { result.innerHTML = emptyState(); return; }
+
+      const base = new Date(value + 'T00:00:00');
+      if (Number.isNaN(base.getTime())) { result.innerHTML = dateErrorState(); return; }
+
+      const fast = addDays(base, t.min), avg = addDays(base, t.avg), slow = addDays(base, t.max);
+      const left = t.min / t.max * 100, width = (t.max - t.min) / t.max * 100, avgPos = t.avg / t.max * 100;
+
+      result.innerHTML = `
+        <p class="result-head">Perkiraan panen ${crop}</p>
+        <p class="result-range">${fmtLong(fast)} - ${fmtLong(slow)}</p>
+        <p class="result-avg">Rata-rata <strong>${t.avg} hari</strong> setelah tanam, sekitar ${fmtShort(avg)}.</p>
+
+        <div class="growth" aria-hidden="true">
+          <div class="growth-track"></div>
+          <div class="growth-window" style="left:${left}%;width:${width}%"></div>
+          <div class="growth-avg" style="left:${avgPos}%"></div>
+        </div>
+        <div class="growth-foot"><span>Tanam ${fmtShort(base)}</span><span>Panen ${fmtShort(slow)}</span></div>
+
+        <ul class="stats">
+          <li class="stat s-fast"><span class="stat-label">Paling cepat</span><span class="stat-value">${fmtShort(fast)}<small>${t.min} hari</small></span></li>
+          <li class="stat s-avg"><span class="stat-label">Rata-rata</span><span class="stat-value">${fmtShort(avg)}<small>${t.avg} hari</small></span></li>
+          <li class="stat s-slow"><span class="stat-label">Paling lambat</span><span class="stat-value">${fmtShort(slow)}<small>${t.max} hari</small></span></li>
+        </ul>
+
+        <div class="block">
+          <h3>Umur tanaman</h3>
+          <p>${t.desc}</p>
+          <ul class="varieties">${t.varieties.map(v => `<li><span>${v[0]}</span><span>${v[1]}</span></li>`).join('')}</ul>
+        </div>
+
+        <div id="insight">${insightHTML(crop, avg)}</div>`;
+
+      const retry = el('retryInsight');
+      if (retry) retry.addEventListener('click', loadAnalisa);
+    }
+
+    async function loadAnalisa() {
+      analisaState = 'loading';
+      if (el('tanggalTanam').value) calculate();
+      try {
+        const res = await fetch('data/analisa.json');
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        analisa = await res.json();
+        analisaState = 'ok';
+      } catch (e) {
+        analisaState = 'error';
+      }
+      if (el('tanggalTanam').value) calculate();
+    }
+
+    function init() {
+      el('tanggalTanam').value = new Date().toISOString().slice(0, 10);
+      el('tanggalTanam').addEventListener('input', calculate);
+      renderCrops();
+      renderReference();
+      calculate();
+      loadAnalisa();
+    }
+    init();
+  </script>
+</body>
+</html>
