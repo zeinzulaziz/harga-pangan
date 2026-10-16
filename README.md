@@ -53,6 +53,14 @@ sebelumnya agar chart tetap berkesinambungan. Nilai tersebut diberi penanda
 harga-pangan/
 ├── index.html
 ├── tanam.html
+├── site.webmanifest
+├── favicon.svg
+├── favicon.ico
+├── apple-touch-icon.png
+├── icon-192.png
+├── icon-512.png
+├── og-image.svg
+├── og-image.png
 ├── package.json
 ├── data/
 │   ├── produsen.json
@@ -85,6 +93,17 @@ rekaman historis dan tidak menggantikan file hari sebelumnya.
 
 Hasil analisa yang dibuat dari `produsen.json` dan digunakan oleh view
 `Analisa` pada dashboard.
+
+### Aset & Metadata
+
+- `favicon.svg` adalah sumber ikon; `favicon.ico`, `apple-touch-icon.png`,
+  `icon-192.png`, dan `icon-512.png` dihasilkan darinya.
+- `og-image.svg` adalah sumber gambar pratinjau sosial; `og-image.png`
+  (1200x630) dihasilkan darinya dan dirujuk oleh meta Open Graph/Twitter.
+- `site.webmanifest` mendaftarkan ikon dan nama aplikasi untuk PWA.
+- Canonical URL, `og:url`, dan `og:image` pada kedua halaman mengarah ke
+  `https://zeinzulaziz.github.io/harga-pangan/`. Jika dashboard dipindah ke
+  domain custom, ganti nilai tersebut di `index.html` dan `tanam.html`.
 
 ## Kalkulator Waktu Tanam
 
