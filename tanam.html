@@ -73,6 +73,10 @@
     .panel { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-md); padding: 1.25rem; margin-bottom: 1.25rem; }
     .panel > h2 { font-size: 1rem; font-weight: 700; margin-bottom: 0.75rem; }
 
+    .layout { display: grid; gap: 1rem; }
+    .col-main, .col-side { display: grid; gap: 1rem; align-content: start; min-width: 0; }
+    .layout .panel, .layout .result { margin-bottom: 0; }
+
     .field { border: 0; margin-bottom: 1.15rem; }
     .field:last-child { margin-bottom: 0; }
     .field-label { display: block; font-size: 0.85rem; font-weight: 600; color: var(--muted); margin-bottom: 0.5rem; }
@@ -88,7 +92,7 @@
     input[type="date"], input[type="number"] { width: 100%; min-height: 44px; padding: 0.5rem 0.75rem; border: 1px solid var(--border); border-radius: var(--r-sm); background: var(--surface-2); color: var(--text); font-family: inherit; font-size: 0.95rem; }
     input[type="date"]:hover, input[type="number"]:hover { border-color: var(--accent); }
     .hint { font-size: 0.8rem; color: var(--dim); margin-top: 0.5rem; }
-    .money-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 0.75rem; }
+    .money-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 0.75rem; }
     .money-field { display: block; }
     .money-field span { display: block; font-size: 0.8rem; color: var(--muted); margin-bottom: 0.35rem; }
 
@@ -139,7 +143,7 @@
     .result-error-title { color: var(--danger); }
 
     .ref { list-style: none; margin-top: 0.25rem; }
-    .ref-row { padding: 0.85rem 0; border-top: 1px solid var(--line); }
+    .ref-row { padding: 0.7rem 0; border-top: 1px solid var(--line); }
     .ref-row:first-child { border-top: 0; }
     .ref-main { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; flex-wrap: wrap; }
     .ref-name { font-size: 0.95rem; font-weight: 700; }
@@ -151,10 +155,35 @@
     .ref-note { font-size: 0.82rem; color: var(--dim); }
     .scale-note { font-size: 0.78rem; color: var(--dim); margin-top: 0.5rem; }
 
-    .foot { font-size: 0.8rem; color: var(--dim); max-width: 70ch; }
+    .tag { display: inline-block; margin-left: 0.4rem; padding: 0.05rem 0.45rem; border-radius: 999px; font-size: 0.72rem; font-weight: 700; background: color-mix(in srgb, var(--accent) 18%, transparent); border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent); color: var(--accent); vertical-align: 1px; white-space: nowrap; }
+    .sched-row { padding: 0.6rem 0.6rem; }
+    .sched-row.now { background: color-mix(in srgb, var(--accent) 8%, transparent); border-radius: var(--r-sm); }
+    .sched-delta { margin-left: 0.4rem; font-size: 0.8rem; font-weight: 600; color: var(--dim); }
+
+    .foot { font-size: 0.8rem; color: var(--dim); max-width: 70ch; margin-top: 1.25rem; }
 
     @media (min-width: 640px) {
       main { padding-left: 1.5rem; padding-right: 1.5rem; }
+    }
+    @media (min-width: 880px) {
+      :root { --maxw: 1120px; }
+      .layout { grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: 1.25rem; }
+    }
+    @media (max-width: 640px) {
+      main { padding: 1rem 0.85rem 2.5rem; }
+      .lead { font-size: 0.9rem; margin-bottom: 1rem; }
+      .panel, .result { padding: 1rem; }
+      .panel > h2 { font-size: 0.95rem; }
+      .ref-row { padding: 0.6rem 0; }
+      .sched-row { padding: 0.5rem 0.45rem; }
+      .ref-note { font-size: 0.78rem; }
+      .stat { padding: 0.55rem 0.7rem; }
+      .stat-value small { display: inline; margin-left: 0.35rem; }
+      .stat-value small::before { content: "· "; }
+      .growth { margin-top: 0.9rem; }
+      .block { margin-top: 0.9rem; padding-top: 0.85rem; }
+      .insight { margin-top: 0.9rem; padding: 0.75rem; }
+      .foot { margin-top: 1rem; }
     }
     @media (prefers-reduced-motion: reduce) {
       * { transition: none !important; }
@@ -172,33 +201,45 @@
   <main id="main">
     <p class="lead">Masukkan tanggal tanam untuk memperkirakan waktu panen, umur tanaman, dan bulan harga tertinggi secara historis.</p>
 
-    <form class="panel" id="form" novalidate>
-      <fieldset class="field">
-        <legend class="field-label">Komoditas</legend>
-        <div class="crop-grid" id="cropGrid" role="radiogroup" aria-label="Pilih komoditas"></div>
-      </fieldset>
-      <div class="field">
-        <label class="field-label" for="tanggalTanam">Tanggal tanam (pindah tanam ke lahan)</label>
-        <input type="date" id="tanggalTanam" name="tanggalTanam">
-        <p class="hint" id="seedlingHint"></p>
+    <div class="layout">
+      <div class="col-main">
+        <form class="panel" id="form" novalidate>
+          <fieldset class="field">
+            <legend class="field-label">Komoditas</legend>
+            <div class="crop-grid" id="cropGrid" role="radiogroup" aria-label="Pilih komoditas"></div>
+          </fieldset>
+          <div class="field">
+            <label class="field-label" for="tanggalTanam">Tanggal tanam (pindah tanam ke lahan)</label>
+            <input type="date" id="tanggalTanam" name="tanggalTanam">
+            <p class="hint" id="seedlingHint"></p>
+          </div>
+          <fieldset class="field">
+            <legend class="field-label">Estimasi pendapatan (opsional)</legend>
+            <div class="money-grid">
+              <label class="money-field" for="luas"><span>Luas lahan (hektar)</span><input type="number" id="luas" name="luas" min="0" step="0.1" inputmode="decimal" placeholder="mis. 0.5"></label>
+              <label class="money-field" for="produktivitas"><span>Produktivitas (ton/hektar)</span><input type="number" id="produktivitas" name="produktivitas" min="0" step="0.1" inputmode="decimal" aria-describedby="prodHint"></label>
+            </div>
+            <p class="hint" id="prodHint">Kosongkan produktivitas untuk memakai angka umum sesuai komoditas.</p>
+          </fieldset>
+        </form>
+
+        <section class="result" id="result" aria-live="polite" aria-atomic="true"></section>
       </div>
-      <fieldset class="field">
-        <legend class="field-label">Estimasi pendapatan (opsional)</legend>
-        <div class="money-grid">
-          <label class="money-field" for="luas"><span>Luas lahan (hektar)</span><input type="number" id="luas" name="luas" min="0" step="0.1" inputmode="decimal" placeholder="mis. 0.5"></label>
-          <label class="money-field" for="produktivitas"><span>Produktivitas (ton/hektar)</span><input type="number" id="produktivitas" name="produktivitas" min="0" step="0.1" inputmode="decimal" aria-describedby="prodHint"></label>
-        </div>
-        <p class="hint" id="prodHint">Kosongkan produktivitas untuk memakai angka umum sesuai komoditas.</p>
-      </fieldset>
-    </form>
 
-    <section class="result" id="result" aria-live="polite" aria-atomic="true"></section>
+      <div class="col-side">
+        <section class="panel" aria-labelledby="schedTitle">
+          <h2 id="schedTitle">Jadwal tanam terbaik</h2>
+          <p class="scale-note" id="schedNote">Dihitung dari median harga historis bulan panen tiap opsi tanam.</p>
+          <ul class="ref" id="schedList"></ul>
+        </section>
 
-    <section class="panel" aria-labelledby="refTitle">
-      <h2 id="refTitle">Rata-rata umur tanaman sampai panen</h2>
-      <ul class="ref" id="refList"></ul>
-      <p class="scale-note">Skala bar: 0 sampai 130 hari sejak tanam.</p>
-    </section>
+        <section class="panel" aria-labelledby="refTitle">
+          <h2 id="refTitle">Rata-rata umur tanaman sampai panen</h2>
+          <ul class="ref" id="refList"></ul>
+          <p class="scale-note">Skala bar: 0 sampai 130 hari sejak tanam.</p>
+        </section>
+      </div>
+    </div>
 
     <p class="foot">Umur tanaman adalah perkiraan umum, bukan jaminan hasil. Panen sebenarnya dipengaruhi varietas, ketinggian tempat, musim, kesuburan tanah, dan perawatan. Untuk cabe, tanggal yang ditampilkan adalah panen pertama, sedangkan panen berikutnya berlanjut berkala.</p>
   </main>
@@ -365,6 +406,71 @@
       </div>`;
     }
 
+    function renderSchedule() {
+      const list = el('schedList');
+      const note = el('schedNote');
+      const crop = currentCrop();
+      const t = CROPS[crop];
+
+      if (analisaState === 'loading') {
+        note.textContent = 'Memuat data harga...';
+        list.innerHTML = '';
+        return;
+      }
+      if (analisaState === 'error') {
+        note.textContent = '';
+        list.innerHTML = '<li class="ref-row"><p class="insight-error">Data harga historis tidak bisa dimuat, jadwal tanam belum bisa dihitung.</p></li>';
+        return;
+      }
+
+      const info = commodityAnalisa(crop);
+      const med = info && info.medianByMonth ? info.medianByMonth : null;
+      const values = med ? Object.values(med).filter(v => v != null) : [];
+      if (!values.length) {
+        note.textContent = '';
+        list.innerHTML = '<li class="ref-row"><p class="ref-note">Data historis untuk ' + crop + ' belum cukup untuk menyusun jadwal.</p></li>';
+        return;
+      }
+      note.textContent = 'Diurutkan dari potensi harga panen tertinggi berdasarkan median historis. Persen = selisih dari rata-rata harga bulanan. Estimasi kasar, bukan jaminan harga.';
+
+      const average = values.reduce((a, b) => a + b, 0) / values.length;
+      const dateValue = el('tanggalTanam').value;
+      const selectedMonth = dateValue ? new Date(dateValue + 'T00:00:00').getMonth() + 1 : null;
+      const baseYear = new Date().getFullYear();
+      const options = [];
+
+      for (let m = 1; m <= 12; m++) {
+        const plant = new Date(baseYear, m - 1, 15);
+        const fast = addDays(plant, t.min);
+        const mid = addDays(plant, t.avg);
+        const slow = addDays(plant, t.max);
+        const months = [...new Set([fast.getMonth() + 1, mid.getMonth() + 1, slow.getMonth() + 1])];
+        const prices = months.map(mm => med[mm]).filter(v => v != null);
+        if (!prices.length) continue;
+        const price = prices.reduce((a, b) => a + b, 0) / prices.length;
+        options.push({ m, fast, slow, price, delta: (price - average) / average * 100 });
+      }
+
+      options.sort((a, b) => b.price - a.price);
+      const best = new Set(options.slice(0, 3).map(o => o.m));
+
+      list.innerHTML = options.map(o => {
+        const harvest = o.fast.getMonth() === o.slow.getMonth()
+          ? BULAN_FULL[o.fast.getMonth()]
+          : BULAN_FULL[o.fast.getMonth()] + ' - ' + BULAN_FULL[o.slow.getMonth()];
+        const delta = (o.delta >= 0 ? '+' : '') + o.delta.toLocaleString('id-ID', { maximumFractionDigits: 1 }) + '%';
+        const tags = (best.has(o.m) ? '<span class="tag">Terbaik</span>' : '')
+          + (o.m === selectedMonth ? '<span class="tag">Bulan pilihan</span>' : '');
+        return `<li class="ref-row sched-row${o.m === selectedMonth ? ' now' : ''}">
+          <div class="ref-main">
+            <span class="ref-name">Tanam ${BULAN_FULL[o.m - 1]}${tags}</span>
+            <span class="ref-age">${rp(o.price)}/kg<span class="sched-delta">${delta}</span></span>
+          </div>
+          <p class="ref-note">Perkiraan panen ${harvest}</p>
+        </li>`;
+      }).join('');
+    }
+
     function emptyState() {
       return `<div class="empty">
         <p class="empty-title">Belum ada tanggal tanam</p>
@@ -389,6 +495,8 @@
         ? `Belum termasuk persemaian. Tambahkan sekitar ${t.seedling} hari bila masa persemaian dihitung.`
         : '';
       if (el('produktivitas')) el('produktivitas').placeholder = DEFAULT_YIELD[crop] + ' (umum)';
+
+      renderSchedule();
 
       if (!value) { result.innerHTML = emptyState(); return; }
 
