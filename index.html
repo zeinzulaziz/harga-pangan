@@ -86,6 +86,7 @@
     .header-sub { font-size: 0.75rem; color: var(--text-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .header-badges { display: flex; gap: 0.4rem; flex-shrink: 0; }
     .badge { background: rgba(52,211,153,0.1); border: 1px solid rgba(52,211,153,0.2); color: var(--accent4); padding: 0.15rem 0.5rem; border-radius: 999px; font-size: 0.75rem; white-space: nowrap; }
+    .badge.warn { background: rgba(239,68,68,0.1); border-color: rgba(239,68,68,0.25); color: #f87171; }
     .zoom-actions { display: flex; gap: 0.3rem; flex-shrink: 0; }
     .icon-btn { background: var(--card); border: 1px solid var(--border); color: var(--text-dim); width: 32px; height: 32px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; transition: all 0.2s; }
     .icon-btn:hover { background: var(--accent5); color: #0f172a; border-color: var(--accent5); }
@@ -98,6 +99,17 @@
     .chart-bar-title { font-size: 0.85rem; font-weight: 600; }
     .chart-bar-sub { font-size: 0.75rem; color: var(--text-dim); }
     .chart-bar-right { display: flex; gap: 0.4rem; align-items: center; flex-shrink: 0; }
+
+    /* KARTU HARGA TERKINI */
+    .stat-cards { display: flex; gap: 0.5rem; overflow-x: auto; padding: 0.1rem 0 0.45rem; margin-bottom: 0.4rem; flex-shrink: 0; }
+    .stat-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 0.5rem 0.7rem; min-width: 150px; max-width: 220px; flex-shrink: 0; }
+    .stat-card-name { font-size: 0.72rem; font-weight: 600; color: var(--text-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .stat-card-price { font-size: 1.05rem; font-weight: 800; font-variant-numeric: tabular-nums; margin-top: 0.1rem; }
+    .stat-card-price small { font-size: 0.7rem; font-weight: 500; color: var(--text-dim); }
+    .stat-chips { display: flex; gap: 0.3rem; margin-top: 0.35rem; flex-wrap: wrap; }
+    .stat-chip { font-size: 0.7rem; font-weight: 600; padding: 0.1rem 0.4rem; border-radius: 999px; border: 1px solid var(--border); color: var(--text-dim); font-variant-numeric: tabular-nums; white-space: nowrap; }
+    .stat-chip.up { color: #f87171; border-color: rgba(239,68,68,0.35); background: rgba(239,68,68,0.08); }
+    .stat-chip.down { color: #4ade80; border-color: rgba(34,197,94,0.35); background: rgba(34,197,94,0.08); }
 
     /* SIDEBAR SECTIONS */
     .section { margin-bottom: 1.25rem; }
@@ -314,9 +326,12 @@
         <div class="header-sub" id="headerSub">Data dari SISKAPERBAPO</div>
       </div>
       <div class="header-badges">
+        <span class="badge" id="dataFreshBadge"></span>
         <span class="badge" id="headerBadge"></span>
       </div>
       <div class="zoom-actions" id="zoomActions">
+        <button class="icon-btn" id="exportPngBtn" title="Unduh chart sebagai gambar PNG">PNG</button>
+        <button class="icon-btn" id="exportCsvBtn" title="Unduh data rentang yang tampil sebagai CSV">CSV</button>
         <button class="icon-btn" id="resetZoomBtn" title="Reset zoom">↺</button>
       </div>
     </div>
@@ -329,6 +344,7 @@
           <div class="chart-bar-sub" id="chartSub">Harga produsen per kg (Rp)</div>
         </div>
       </div>
+      <div class="stat-cards" id="statCards"></div>
       <canvas id="priceChart"></canvas>
       <div class="chart-note">Garis putus-putus dan label "Estimasi" berarti harga diisi dari hari sebelumnya karena sumber belum menyediakan nilai aktual.</div>
     </div>
@@ -459,6 +475,156 @@ function displayDate(date, includeYear = true) {
     : { day: 'numeric', month: 'short' });
 }
 
+function shiftDate(dateStr, days) {
+  const date = new Date(dateStr + 'T00:00:00Z');
+  date.setUTCDate(date.getUTCDate() + days);
+  return date.toISOString().slice(0, 10);
+}
+
+function marketParts(column) {
+  const parts = (column || '').split(' ');
+  const multiWord = ['Pasar','UD','UD.','PS','RPH','Peternak','Distributor','Kawasan','Kec.'].includes(parts[0]);
+  return {
+    name: multiWord ? parts.slice(0, 2).join(' ') : parts[0],
+    loc: parts.slice(multiWord ? 2 : 1).join(' ')
+  };
+}
+
+function lastActualPrice(c, index, fromDate, daysAgo) {
+  const target = shiftDate(fromDate, -daysAgo);
+  const dates = Object.keys(c.prices).sort();
+  for (let k = dates.length - 1; k >= 0; k--) {
+    if (dates[k] > target) continue;
+    if ((c.imputed?.[dates[k]] || [])[index]) continue;
+    const value = c.prices[dates[k]]?.[index];
+    if (value != null) return { value, date: dates[k] };
+  }
+  return null;
+}
+
+function renderStatCards() {
+  const c = data.commodities[currentCommodity];
+  if (!c) return;
+  const dates = Object.keys(c.prices).sort();
+  const latest = dates[dates.length - 1];
+  const flags = c.imputed?.[latest] || [];
+
+  document.getElementById('statCards').innerHTML = [...selectedPasars].sort((a, b) => a - b).map(i => {
+    const price = c.prices[latest]?.[i];
+    if (price == null) return '';
+    const color = COLORS[i % COLORS.length];
+    const { name } = marketParts(c.columns[i]);
+    const chips = [];
+    if (flags[i]) chips.push('<span class="stat-chip">estimasi</span>');
+    for (const days of [7, 30]) {
+      const base = lastActualPrice(c, i, latest, days);
+      if (!base) { chips.push(`<span class="stat-chip">${days} hr -</span>`); continue; }
+      const pct = (price - base.value) / base.value * 100;
+      const cls = pct > 0.05 ? 'up' : pct < -0.05 ? 'down' : '';
+      const sign = pct > 0.05 ? '+' : '';
+      const pctText = sign + pct.toLocaleString('id-ID', { maximumFractionDigits: 1 }) + '%';
+      chips.push(`<span class="stat-chip ${cls}" title="Dibanding ${displayDate(base.date)} ${R(base.value)}">${days} hr ${pctText}</span>`);
+    }
+    return `<div class="stat-card" style="border-top:2px solid ${color}">
+      <div class="stat-card-name" title="${c.columns[i]}">${name}</div>
+      <div class="stat-card-price" style="color:${color}">${R(price)}<small>/kg</small></div>
+      <div class="stat-chips">${chips.join('')}</div>
+    </div>`;
+  }).join('');
+}
+
+function renderFreshness() {
+  const toJakarta = date => new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Jakarta' }).format(date);
+  const updated = toJakarta(new Date(data.lastUpdate));
+  const today = toJakarta(new Date());
+  const days = Math.round((new Date(today + 'T00:00:00Z') - new Date(updated + 'T00:00:00Z')) / 86400000);
+  const stale = days >= 3;
+  const text = days <= 0 ? 'Data diperbarui hari ini' : days === 1 ? 'Diperbarui kemarin' : `Diperbarui ${days} hari lalu`;
+  const freshBadge = document.getElementById('dataFreshBadge');
+  freshBadge.textContent = text;
+  freshBadge.classList.toggle('warn', stale);
+  const updateBadge = document.getElementById('updateBadge');
+  const tanggal = new Date(data.lastUpdate).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+  updateBadge.textContent = days <= 0 ? `Update: ${tanggal}` : `Update: ${tanggal} · ${days} hari lalu`;
+  updateBadge.classList.toggle('warn', stale);
+  if (stale) showToast(text + ' — mungkin perlu pembaruan data', 'error');
+}
+
+function downloadBlob(blob, filename) {
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  setTimeout(() => URL.revokeObjectURL(link.href), 1000);
+}
+
+function slugify(text) {
+  return (text || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+}
+
+function csvEscape(value) {
+  const text = value == null ? '' : String(value);
+  return /[",\r\n]/.test(text) ? '"' + text.replace(/"/g, '""') + '"' : text;
+}
+
+function currentDates() {
+  const c = data.commodities[currentCommodity];
+  return getFilteredDates(Object.keys(c.prices).sort());
+}
+
+function exportCsv() {
+  const c = data.commodities[currentCommodity];
+  const dates = currentDates();
+  if (!dates.length) { showToast('Tidak ada data pada rentang ini', 'error'); return; }
+  const index = [...selectedPasars].sort((a, b) => a - b);
+  const header = ['Tanggal', ...index.map(i => c.columns[i] || `Pasar ${i + 1}`), 'Keterangan'];
+  const lines = [header.map(csvEscape).join(',')];
+  for (const date of dates) {
+    const flags = c.imputed?.[date] || [];
+    const estimasi = index.filter(i => flags[i]).map(i => c.columns[i]);
+    lines.push([
+      date,
+      ...index.map(i => c.prices[date]?.[i] ?? ''),
+      estimasi.length ? `estimasi: ${estimasi.join('; ')}` : 'aktual'
+    ].map(csvEscape).join(','));
+  }
+  const blob = new Blob(['\uFEFF' + lines.join('\r\n')], { type: 'text/csv;charset=utf-8' });
+  downloadBlob(blob, `harga-${slugify(currentCommodity)}_${dates[0]}_${dates[dates.length - 1]}.csv`);
+  showToast(`CSV diunduh: ${dates.length} hari`, 'success');
+}
+
+function exportPng() {
+  const source = document.getElementById('priceChart');
+  if (!source || !chart) return;
+  const unit = source.width / 1200;
+  const pad = Math.round(24 * unit);
+  const head = Math.round(84 * unit);
+  const foot = Math.round(40 * unit);
+  const output = document.createElement('canvas');
+  output.width = source.width;
+  output.height = head + source.height + foot;
+  const ctx = output.getContext('2d');
+  ctx.fillStyle = '#0f172a';
+  ctx.fillRect(0, 0, output.width, output.height);
+  ctx.fillStyle = '#f1f5f9';
+  ctx.font = `700 ${Math.round(26 * unit)}px Inter, -apple-system, sans-serif`;
+  ctx.fillText(document.getElementById('chartTitle').textContent, pad, Math.round(42 * unit));
+  ctx.fillStyle = '#94a3b8';
+  ctx.font = `500 ${Math.round(14 * unit)}px Inter, -apple-system, sans-serif`;
+  ctx.fillText(document.getElementById('chartSub').textContent, pad, Math.round(68 * unit));
+  ctx.drawImage(source, 0, head);
+  ctx.fillStyle = '#64748b';
+  ctx.font = `500 ${Math.round(12 * unit)}px Inter, -apple-system, sans-serif`;
+  ctx.fillText('Sumber: SISKAPERBAPO Jatim · Dashboard Harga Pangan', pad, head + source.height + Math.round(24 * unit));
+  output.toBlob(blob => {
+    if (!blob) { showToast('Gagal membuat PNG', 'error'); return; }
+    downloadBlob(blob, `chart-${slugify(currentCommodity)}.png`);
+    showToast('Gambar chart diunduh', 'success');
+  }, 'image/png');
+}
+
 // COMMODITIES
 function renderCommodities() {
   const list = document.getElementById('commodityList');
@@ -499,10 +665,7 @@ function renderPasarList() {
       const color = COLORS[i % COLORS.length];
       const price = latest[i];
       const estimated = Boolean(c.imputed?.[latest]?.[i]);
-    const parts = col.split(' ');
-    const mw = ['Pasar','UD','UD.','PS','RPH','Peternak','Distributor','Kawasan','Kec.'].includes(parts[0]);
-    const name = mw ? parts.slice(0, 2).join(' ') : parts[0];
-    const loc = parts.slice(mw ? 2 : 1).join(' ');
+    const { name, loc } = marketParts(col);
     return `<div class="pasar-item ${active ? 'active' : 'inactive'}" data-index="${i}" style="--pasar-color:${color}">
       <div class="pasar-check">${active ? '✓' : ''}</div>
       <div class="pasar-dot" style="background:${active ? color : 'var(--border)'}"></div>
@@ -635,6 +798,7 @@ function renderChart() {
   const monthInfo = selectedMonths.size ? ` · ${selectedMonths.size} bulan` : '';
   const rangeInfo = dates.length ? ` · ${displayDate(dates[0])} - ${displayDate(dates[dates.length - 1])}` : '';
   document.getElementById('chartSub').textContent = `${dates.length} hari · ${selectedPasars.size} pasar${monthInfo}${rangeInfo}`;
+  renderStatCards();
 }
 
 function renderQuality() {
@@ -649,6 +813,8 @@ function renderQuality() {
 document.getElementById('resetZoomBtn').addEventListener('click', () => {
   if (chart) { chart.resetZoom(); document.getElementById('resetZoomBtn').classList.remove('active'); }
 });
+document.getElementById('exportCsvBtn').addEventListener('click', exportCsv);
+document.getElementById('exportPngBtn').addEventListener('click', exportPng);
 
 // ANALISA
 function getHeatColor(pct) {
@@ -746,7 +912,7 @@ async function init() {
     const commodities = Object.keys(data.commodities);
     currentCommodity = commodities[0];
 
-    document.getElementById('updateBadge').textContent = `Update: ${new Date(data.lastUpdate).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}`;
+    renderFreshness();
     document.getElementById('commodityBadge').textContent = `${commodities.length} komoditas`;
     document.getElementById('headerBadge').textContent = `${commodities.length} komoditas`;
 
