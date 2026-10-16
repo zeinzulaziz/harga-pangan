@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://zeinzulaziz.github.io/harga-pangan/sitemap.xml

@@ -28,6 +28,8 @@ sumber data tanpa konfirmasi user.
 - `tanam.html` — kalkulator waktu tanam; membaca `data/analisa.json`. Daftar
   komoditas + umur panen di-hardcode di objek `CROPS` — kalau scraper menambah
   komoditas baru, update juga di sini.
+- `404.html` — halaman 404 GitHub Pages, pakai base URL absolut yang sama dengan
+  canonical.
 - `data/produsen.json` — agregat utama:
   `{source, type, lastUpdate, commodities: {nama: {columns[], prices{tanggal: [harga
   per kolom]}, imputed{tanggal: [bool]}, days, dateRange}}}`.
@@ -35,8 +37,6 @@ sumber data tanpa konfirmasi user.
   `medianByMonth`, `tertinggi`, `terendah`, `recommendation`, dll.
 - `data/history/YYYY/YYYY-MM/YYYY-MM-DD.json` — arsip harian; satu file memuat
   semua komoditas pada tanggal itu.
-- `data/bawang-merah.json` — output legacy `scripts/scrape-siskaperbapo.js`;
-  tidak dipakai dashboard.
 
 ## Gotchas
 
@@ -58,9 +58,13 @@ sumber data tanpa konfirmasi user.
 - `favicon.svg` dan `og-image.svg` adalah sumber; PNG/ICO di root (`favicon.ico`,
   `apple-touch-icon.png`, `icon-192.png`, `icon-512.png`, `og-image.png`)
   dihasilkan darinya — jangan edit file hasil generate.
-- `canonical`, `og:url`, `og:image` di kedua HTML menunjuk ke
-  `https://zeinzulaziz.github.io/harga-pangan/` (URL live). Domain custom
-  `harga-pangan.built.my.id` belum tersambung ke GitHub Pages (masih 404).
+- `canonical`, `og:url`, `og:image`, `robots.txt`, `sitemap.xml`, dan `404.html`
+  memakai base URL `https://zeinzulaziz.github.io/harga-pangan/` (URL live).
+  Domain custom `harga-pangan.built.my.id` belum tersambung ke GitHub Pages
+  (masih 404). Ganti semua referensi sekaligus bila pindah domain.
+- Screenshot README ada di `assets/`; perbarui bila tampilan berubah.
+- Lisensi kode: MIT (`LICENSE`). Data harga milik SISKAPERBAPO Pemprov Jawa
+  Timur; dashboard bukan kanal resmi.
 
 ## Deployment
 

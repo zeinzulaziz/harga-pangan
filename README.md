@@ -7,6 +7,8 @@ Project ini menampilkan tren harga harian beberapa komoditas produsen, memilih
 pasar, melihat histori sekitar 10 tahun, dan membaca analisa musiman untuk
 membantu petani memahami waktu harga tinggi, rendah, dan momentum kenaikan.
 
+![Screenshot dashboard harga produsen pangan](assets/screenshot-dashboard.png)
+
 ## Fitur
 
 - 8 komoditas produsen:
@@ -53,6 +55,7 @@ sebelumnya agar chart tetap berkesinambungan. Nilai tersebut diberi penanda
 harga-pangan/
 ├── index.html
 ├── tanam.html
+├── 404.html
 ├── site.webmanifest
 ├── favicon.svg
 ├── favicon.ico
@@ -61,6 +64,12 @@ harga-pangan/
 ├── icon-512.png
 ├── og-image.svg
 ├── og-image.png
+├── robots.txt
+├── sitemap.xml
+├── LICENSE
+├── assets/
+│   ├── screenshot-dashboard.png
+│   └── screenshot-tanam.png
 ├── package.json
 ├── data/
 │   ├── produsen.json
@@ -71,6 +80,7 @@ harga-pangan/
 │               └── YYYY-MM-DD.json
 └── scripts/
     ├── scrape-produsen.js
+    ├── bersihkan-data.js
     └── analisa-tren.js
 ```
 
@@ -101,11 +111,17 @@ Hasil analisa yang dibuat dari `produsen.json` dan digunakan oleh view
 - `og-image.svg` adalah sumber gambar pratinjau sosial; `og-image.png`
   (1200x630) dihasilkan darinya dan dirujuk oleh meta Open Graph/Twitter.
 - `site.webmanifest` mendaftarkan ikon dan nama aplikasi untuk PWA.
-- Canonical URL, `og:url`, dan `og:image` pada kedua halaman mengarah ke
-  `https://zeinzulaziz.github.io/harga-pangan/`. Jika dashboard dipindah ke
-  domain custom, ganti nilai tersebut di `index.html` dan `tanam.html`.
+- `robots.txt`, `sitemap.xml`, dan `404.html` memakai base URL yang sama dengan
+  canonical.
+- Screenshot README di `assets/` diambil dari situs yang berjalan.
+- Canonical URL, `og:url`, `og:image`, dan URL di `robots.txt`, `sitemap.xml`,
+  serta `404.html` mengarah ke `https://zeinzulaziz.github.io/harga-pangan/`.
+  Jika dashboard dipindah ke domain custom, ganti nilai tersebut sekaligus di
+  `index.html`, `tanam.html`, dan file-file tadi.
 
 ## Kalkulator Waktu Tanam
+
+![Screenshot kalkulator waktu tanam](assets/screenshot-tanam.png)
 
 Halaman `tanam.html` memperkirakan waktu panen berdasarkan komoditas dan
 tanggal tanam yang dipilih, lalu menampilkan rentang panen paling cepat,
@@ -128,6 +144,7 @@ Project membutuhkan Node.js. Tidak ada dependency npm tambahan.
 
 ```bash
 npm run scrape
+npm run bersihkan
 npm run analisa
 ```
 
@@ -231,3 +248,9 @@ npm run scrape && npm run bersihkan && npm run analisa
 - chartjs-plugin-zoom
 - Node.js untuk scraper dan analisa
 - GitHub Pages untuk hosting dashboard
+
+## Lisensi
+
+Kode di repository ini berlisensi [MIT](LICENSE). Data harga berasal dari
+SISKAPERBAPO Pemerintah Provinsi Jawa Timur; hak atas data tetap milik sumber
+dan dashboard ini bukan kanal resmi.
