@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="dark">
+  <title>Kartu Insight Bulanan | Harga Pangan Jatim</title>
+  <meta name="description" content="Buat kartu gambar ringkasan harga produsen pangan Jawa Timur untuk dibagikan ke WhatsApp atau sosial media.">
+  <meta name="robots" content="noindex, follow">
+  <meta name="theme-color" content="#0f172a">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0f172a; --surface: #1e293b; --surface-2: #273549;
+      --line: #334155; --border: #64748b;
+      --text: #f1f5f9; --muted: #cbd5e1; --dim: #94a3b8;
+      --accent: #34d399; --accent-ink: #0f172a; --red: #f87171;
+      --r-sm: 8px; --r-md: 12px; --maxw: 820px;
+    }
+    html { color-scheme: dark; }
+    body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; background: var(--bg); color: var(--text); line-height: 1.55; -webkit-font-smoothing: antialiased; min-height: 100vh; }
+    .topbar { position: sticky; top: 0; z-index: 10; display: flex; align-items: center; gap: 0.75rem; padding: 0.7rem 1rem; background: var(--bg); border-bottom: 1px solid var(--line); }
+    .back { display: inline-flex; align-items: center; gap: 0.4rem; min-height: 44px; padding: 0.4rem 0.85rem; border: 1px solid var(--border); border-radius: var(--r-sm); color: var(--muted); text-decoration: none; font-size: 0.9rem; font-weight: 500; }
+    .back:hover { color: var(--text); border-color: var(--accent); }
+    .page-title { font-size: clamp(1rem, 1.4vw + 0.7rem, 1.2rem); font-weight: 700; }
+    main { max-width: var(--maxw); margin: 0 auto; padding: 1.25rem 1rem 3rem; }
+    .lead { color: var(--muted); font-size: 0.95rem; max-width: 62ch; margin-bottom: 1.25rem; }
+    .panel { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-md); padding: 1.25rem; margin-bottom: 1.25rem; }
+    .panel > h2 { font-size: 1rem; font-weight: 700; margin-bottom: 0.6rem; }
+    .card-wrap { max-width: 540px; margin: 0 auto; }
+    canvas#card { width: 100%; height: auto; border-radius: var(--r-md); display: block; border: 1px solid var(--line); }
+    .actions { display: flex; gap: 0.6rem; flex-wrap: wrap; margin-top: 0.9rem; justify-content: center; }
+    .btn { display: inline-flex; align-items: center; min-height: 44px; padding: 0.4rem 0.95rem; border-radius: var(--r-sm); border: 1px solid var(--border); background: transparent; color: var(--text); font-family: inherit; font-size: 0.875rem; font-weight: 600; cursor: pointer; text-decoration: none; transition: border-color 0.15s, background-color 0.15s; }
+    .btn:hover { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, transparent); }
+    .btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+    .btn.primary:hover { background: color-mix(in srgb, var(--accent) 85%, white); }
+    textarea#waText { width: 100%; min-height: 120px; padding: 0.6rem 0.75rem; border: 1px solid var(--border); border-radius: var(--r-sm); background: var(--surface-2); color: var(--text); font-family: inherit; font-size: 0.9rem; resize: vertical; }
+    .hint { font-size: 0.8rem; color: var(--dim); margin-top: 0.5rem; }
+    .state { color: var(--muted); font-size: 0.9rem; padding: 2rem 0; text-align: center; }
+    .state.error { color: #f87171; }
+    @media (min-width: 640px) { main { padding-left: 1.5rem; padding-right: 1.5rem; } }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <a class="back" href="index.html"><span aria-hidden="true">←</span> Dashboard</a>
+    <h1 class="page-title">Kartu Insight Bulanan</h1>
+  </header>
+
+  <main>
+    <p class="lead">Gambar siap-posting berisi harga terkini semua komoditas. Unduh PNG-nya, lalu bagikan bersama teks WhatsApp di bawah — pasangan keduanya biar penerima langsung bisa cek situsnya.</p>
+
+    <section class="panel">
+      <h2>Pratinjau kartu</h2>
+      <div class="card-wrap">
+        <canvas id="card" width="1080" height="1080" aria-label="Kartu harga produsen"></canvas>
+        <div class="state" id="cardState">Memuat data harga…</div>
+      </div>
+      <div class="actions">
+        <button class="btn primary" id="downloadBtn" disabled>Unduh PNG</button>
+        <a class="btn" href="index.html">Buka dashboard</a>
+      </div>
+      <p class="hint">Ukuran kartu 1080×1080 — pas untuk WhatsApp, Instagram, dan X.</p>
+    </section>
+
+    <section class="panel">
+      <h2>Teks WhatsApp pendamping</h2>
+      <textarea id="waText" rows="8" readonly></textarea>
+      <div class="actions">
+        <button class="btn" id="copyBtn">Salin teks</button>
+        <a class="btn primary" id="waLink" href="#" target="_blank" rel="noopener">Buka WhatsApp</a>
+      </div>
+      <p class="hint">Salin dulu teksnya, lalu buka WhatsApp — tautan hanya membuka aplikasinya.</p>
+    </section>
+  </main>
+
+  <script>
+    const BG = '#0f172a', SURFACE = '#1e293b', LINE = '#334155',
+          TEXT = '#f1f5f9', MUTED = '#cbd5e1', DIM = '#94a3b8',
+          ACCENT = '#34d399', RED = '#f87171', AMBER = '#fbbf24';
+    const BULAN = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+    const rp = n => 'Rp' + Math.round(n).toLocaleString('id-ID');
+    const pctText = p => (p >= 0 ? '+' : '') + p.toLocaleString('id-ID', { maximumFractionDigits: 1 }) + '%';
+
+    function loadLatest(c) {
+      // Tanggal terbaru yang punya minimal satu harga aktual (bukan carry-forward)
+      const dates = Object.keys(c.prices).sort();
+      for (let k = dates.length - 1; k >= 0; k--) {
+        const d = dates[k], flags = c.imputed?.[d] || [];
+        const vals = (c.prices[d] || []).filter((v, i) => v != null && !flags[i]);
+        if (vals.length) return { date: d, price: vals.reduce((a, b) => a + b, 0) / vals.length, estimated: false };
+      }
+      // Tidak ada aktual sama sekali di akhir rantai — pakai harga terakhir apa pun
+      for (let k = dates.length - 1; k >= 0; k--) {
+        const vals = (c.prices[dates[k]] || []).filter(v => v != null);
+        if (vals.length) return { date: dates[k], price: vals.reduce((a, b) => a + b, 0) / vals.length, estimated: true };
+      }
+      return null;
+    }
+
+    function weekBase(c, fromDate) {
+      // Harga aktual rata-rata pada tanggal <= 7 hari sebelum fromDate
+      const target = new Date(fromDate + 'T00:00:00');
+      target.setDate(target.getDate() - 7);
+      const limit = target.toISOString().slice(0, 10);
+      const dates = Object.keys(c.prices).sort();
+      for (let k = dates.length - 1; k >= 0; k--) {
+        if (dates[k] > limit) continue;
+        const flags = c.imputed?.[dates[k]] || [];
+        const vals = (c.prices[dates[k]] || []).filter((v, i) => v != null && !flags[i]);
+        if (vals.length) return vals.reduce((a, b) => a + b, 0) / vals.length;
+      }
+      return null;
+    }
+
+    function roundRect(ctx, x, y, w, h, r) {
+      ctx.beginPath();
+      ctx.moveTo(x + r, y);
+      ctx.arcTo(x + w, y, x + w, y + h, r);
+      ctx.arcTo(x + w, y + h, x, y + h, r);
+      ctx.arcTo(x, y + h, x, y, r);
+      ctx.arcTo(x, y, x + w, y, r);
+      ctx.closePath();
+    }
+
+    function drawCard(ctx, rows, lastUpdate) {
+      const W = 1080, H = 1080;
+      ctx.fillStyle = BG; ctx.fillRect(0, 0, W, H);
+      const pad = 64;
+
+      // Header
+      ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
+      ctx.fillStyle = ACCENT;
+      ctx.font = '800 46px Inter, sans-serif';
+      ctx.fillText('Harga Produsen Pangan', pad, pad + 38);
+      ctx.fillText('Jawa Timur', pad, pad + 94);
+      const t = new Date(lastUpdate);
+      ctx.fillStyle = DIM; ctx.font = '500 27px Inter, sans-serif';
+      ctx.fillText('Pembaruan per ' + t.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }), pad, pad + 140);
+
+      // Kartu daftar
+      const boxY = pad + 172, boxH = H - boxY - pad - 108;
+      ctx.fillStyle = SURFACE; roundRect(ctx, pad, boxY, W - pad * 2, boxH, 20); ctx.fill();
+      ctx.strokeStyle = LINE; ctx.lineWidth = 2; ctx.stroke();
+
+      const n = rows.length, rowH = boxH / n;
+      rows.forEach((r, i) => {
+        const cy = boxY + rowH * i;
+        if (i > 0) { ctx.strokeStyle = LINE; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(pad + 28, cy); ctx.lineTo(W - pad - 28, cy); ctx.stroke(); }
+        ctx.textBaseline = 'middle';
+        ctx.fillStyle = TEXT; ctx.font = '600 34px Inter, sans-serif';
+        ctx.fillText(r.name, pad + 32, cy + rowH / 2 - 16);
+        ctx.textAlign = 'left';
+        if (r.stale) {
+          const tgl = new Date(r.stale + 'T00:00:00');
+          ctx.font = '500 24px Inter, sans-serif';
+          ctx.fillStyle = AMBER;
+          ctx.fillText('data berhenti ' + tgl.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' }), pad + 34, cy + rowH / 2 + 24);
+        } else {
+          ctx.font = '500 24px Inter, sans-serif';
+          ctx.fillStyle = r.delta == null ? DIM : (r.delta > 0.05 ? RED : r.delta < -0.05 ? ACCENT : DIM);
+          ctx.fillText(r.delta == null ? '−' : pctText(r.delta) + ' vs 7 hr', pad + 34, cy + rowH / 2 + 24);
+        }
+        ctx.textAlign = 'right';
+        ctx.fillStyle = TEXT; ctx.font = '700 40px Inter, sans-serif';
+        ctx.fillText(r.price == null ? '—' : rp(r.price) + '/kg', W - pad - 32, cy + rowH / 2 - 12);
+        if (r.estimated) {
+          ctx.font = '500 22px Inter, sans-serif'; ctx.fillStyle = AMBER; ctx.textAlign = 'right';
+          ctx.fillText('estimasi', W - pad - 32, cy + rowH / 2 + 26);
+        }
+        ctx.textAlign = 'left';
+      });
+
+      // Footer
+      ctx.textBaseline = 'alphabetic';
+      ctx.fillStyle = DIM; ctx.font = '500 25px Inter, sans-serif';
+      ctx.fillText('Sumber: SISKAPERBAPO Pemprov Jatim · harga produsen, bukan harga eceran', pad, H - pad + 6);
+      ctx.fillStyle = ACCENT; ctx.font = '700 27px Inter, sans-serif';
+      ctx.fillText('zeinzulaziz.github.io/harga-pangan', pad, H - pad + 46);
+    }
+
+    function buildWaText(rows, lastUpdate) {
+      const t = new Date(lastUpdate);
+      const lines = rows.map(r => {
+        if (r.stale) {
+          const tgl = new Date(r.stale + 'T00:00:00');
+          return '• ' + r.name + ': ' + rp(r.price) + '/kg (data berhenti ' + tgl.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' }) + ')';
+        }
+        return '• ' + r.name + ': ' + (r.price == null ? 'data tidak tersedia' : rp(r.price) + '/kg') +
+          (r.delta == null ? '' : ' (' + pctText(r.delta) + ' 7 hr)') +
+          (r.estimated ? ' (estimasi)' : '');
+      });
+      return 'Harga produsen pangan Jatim per ' +
+        t.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) + ':\n' +
+        lines.join('\n') +
+        '\n\nGrafik lengkap dan pola musiman tiap komoditas: https://zeinzulaziz.github.io/harga-pangan/';
+    }
+
+    let cardRows = [], lastUpdate = null;
+    fetch('data/produsen.json')
+      .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+      .then(d => {
+        lastUpdate = d.lastUpdate;
+        const updateDate = String(lastUpdate).slice(0, 10);
+        const rows = [];
+        for (const [name, c] of Object.entries(d.commodities)) {
+          const cur = loadLatest(c);
+          if (!cur) { rows.push({ name, price: null, delta: null, stale: null }); continue; }
+          // Kalau harga aktual terakhir sudah terlalu lama (mis. sumber berhenti mengisi),
+          // tandai agar kartu jujur soal usianya.
+          const gap = Math.round((new Date(updateDate) - new Date(cur.date)) / 86400000);
+          rows.push({ name, price: cur.price, estimated: cur.estimated, stale: gap > 45 ? cur.date : null, delta: null });
+          if (!rows[rows.length - 1].stale) {
+            const base = weekBase(c, cur.date);
+            rows[rows.length - 1].delta = base ? (cur.price - base) / base * 100 : null;
+          }
+        }
+        cardRows = rows;
+        document.fonts.ready.then(() => {
+          drawCard(document.getElementById('card').getContext('2d'), rows, lastUpdate);
+          document.getElementById('cardState').style.display = 'none';
+          document.getElementById('downloadBtn').disabled = false;
+          const wa = buildWaText(rows, lastUpdate);
+          document.getElementById('waText').value = wa;
+          document.getElementById('waLink').href = 'https://api.whatsapp.com/send?text=' + encodeURIComponent(wa);
+        });
+      })
+      .catch(() => {
+        const s = document.getElementById('cardState');
+        s.textContent = 'Gagal memuat data/produsen.json — buka lewat server lokal (python3 -m http.server), bukan file://.';
+        s.classList.add('state'); s.classList.add('error');
+      });
+
+    document.getElementById('downloadBtn').addEventListener('click', () => {
+      document.getElementById('card').toBlob(blob => {
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        const d = new Date(lastUpdate);
+        link.download = 'kartu-harga-pangan-' + d.toISOString().slice(0, 10) + '.png';
+        document.body.appendChild(link); link.click(); link.remove();
+        setTimeout(() => URL.revokeObjectURL(link.href), 1000);
+      }, 'image/png');
+    });
+
+    document.getElementById('copyBtn').addEventListener('click', async () => {
+      const ta = document.getElementById('waText');
+      try {
+        await navigator.clipboard.writeText(ta.value);
+      } catch (e) {
+        ta.select(); document.execCommand('copy');
+      }
+      const btn = document.getElementById('copyBtn');
+      btn.textContent = 'Tersalin ✓';
+      setTimeout(() => { btn.textContent = 'Salin teks'; }, 1500);
+    });
+  </script>
+</body>
+</html>

@@ -28,6 +28,13 @@ sumber data tanpa konfirmasi user.
 - `tanam.html` — kalkulator waktu tanam; membaca `data/analisa.json`. Daftar
   komoditas + umur panen di-hardcode di objek `CROPS` — kalau scraper menambah
   komoditas baru, update juga di sini.
+- `tentang.html` — halaman statis "Tentang & Metode": sumber data, pengolahan,
+  batasan. Angka fakta (jumlah komoditas/titik/hari) dihitung dari
+  `data/produsen.json` saat dibuka, bukan ditulis manual.
+- `kartu.html` — generator Kartu Insight Bulanan: menggambar kartu 1080×1080 di
+  canvas dari `data/produsen.json` + teks WhatsApp siap salin. `noindex` dan
+  tidak ada di sitemap. Pertahankan aturan "data berhenti" (aktual terakhir >45
+  hari) agar harga basi tidak tampil seolah harga terkini.
 - `404.html` — halaman 404 GitHub Pages, pakai base URL absolut yang sama dengan
   canonical.
 - `data/produsen.json` — agregat utama:
@@ -52,6 +59,14 @@ sumber data tanpa konfirmasi user.
 - `produsen.json` ditulis minified, `analisa.json` pretty-print. Ikuti format
   masing-masing, jangan reformat manual.
 - Data JSON ikut di-commit ke repo (dashboard statis membacanya langsung).
+- Tinggi chart `index.html`: `#priceChart` dibungkus `.chart-box` (flex,
+  `position: relative`) di dalam `.chart-area`. Jangan kembalikan canvas sebagai
+  anak langsung `.chart-area` — Chart.js akan memakai tinggi penuh container dan
+  bagian bawah chart terpotong. Di layar pendek `.chart-area` menggulir dan
+  `.chart-sticky` (chart-bar + kartu harga) menempel di atas.
+- Kentang tidak punya harga aktual sejak 2 Jan 2023 (semua carry-forward panjang).
+  Permukaan tampilan (stat card, kartu, tombol bagikan) harus menandai "berhenti
+  Jan 2023" alih-alih menyajikannya sebagai harga terkini.
 
 ## Metadata & Aset Situs
 

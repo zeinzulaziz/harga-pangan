@@ -29,6 +29,12 @@ membantu petani memahami waktu harga tinggi, rendah, dan momentum kenaikan.
 - Analisa tren berdasarkan median harga historis.
 - Rekomendasi bulan dengan harga tertinggi, harga terendah, momentum kenaikan,
   konsistensi pola, dan coverage data.
+- Kartu harga terkini per pasar dengan penanda estimasi/berhenti, ekspor CSV,
+  ekspor grafik PNG, dan tombol bagikan harga via WhatsApp.
+- Halaman [Tentang & Metode](tentang.html): sumber data, cara pengolahan, dan
+  batasan yang perlu dipahami.
+- Generator [Kartu Insight Bulanan](kartu.html): gambar ringkasan 1080×1080
+  beserta teks WhatsApp siap dibagikan ke grup.
 - Kalkulator waktu tanam: memperkirakan waktu panen dari tanggal tanam beserta
   rata-rata umur tanaman sampai panen.
 - Layout desktop dengan sidebar dan toggle sidebar pada mobile.
@@ -55,6 +61,8 @@ sebelumnya agar chart tetap berkesinambungan. Nilai tersebut diberi penanda
 harga-pangan/
 ├── index.html
 ├── tanam.html
+├── tentang.html
+├── kartu.html
 ├── 404.html
 ├── site.webmanifest
 ├── favicon.svg
@@ -137,6 +145,19 @@ tanaman yang dipakai:
 Halaman ini juga menampilkan bulan dengan harga tertinggi dan terendah secara
 historis dari `analisa.json` sebagai pertimbangan jadwal tanam. Nilai tersebut
 adalah perkiraan umum, bukan jaminan hasil panen.
+
+## Kartu Insight Bulanan
+
+Halaman [`kartu.html`](kartu.html) menggambar kartu ringkasan harga semua
+komoditas (1080×1080) langsung di browser dari `data/produsen.json`. Alur pakai:
+
+1. Buka `kartu.html` lewat static server.
+2. Klik **Unduh PNG**, lalu **Salin teks** WhatsApp pendamping.
+3. Bagikan gambar + teks ke grup WhatsApp.
+
+Kartu memakai harga aktual terakhir tiap komoditas. Komoditas yang sumbernya
+sudah lama berhenti mengisi (mis. Kentang sejak Januari 2023) ditandai
+"data berhenti &lt;bulan tahun&gt;" alih-alih ditampilkan sebagai harga terkini.
 
 ## Menjalankan Lokal
 

@@ -87,14 +87,20 @@
     .header-badges { display: flex; gap: 0.4rem; flex-shrink: 0; }
     .badge { background: rgba(52,211,153,0.1); border: 1px solid rgba(52,211,153,0.2); color: var(--accent4); padding: 0.15rem 0.5rem; border-radius: 999px; font-size: 0.75rem; white-space: nowrap; }
     .badge.warn { background: rgba(239,68,68,0.1); border-color: rgba(239,68,68,0.25); color: #f87171; }
+    .badge.info-link { text-decoration: none; cursor: pointer; transition: background-color 0.15s, border-color 0.15s; }
+    .badge.info-link:hover { background: rgba(52,211,153,0.18); border-color: rgba(52,211,153,0.5); }
     .zoom-actions { display: flex; gap: 0.3rem; flex-shrink: 0; }
     .icon-btn { background: var(--card); border: 1px solid var(--border); color: var(--text-dim); width: 32px; height: 32px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; transition: all 0.2s; }
     .icon-btn:hover { background: var(--accent5); color: #0f172a; border-color: var(--accent5); }
     .icon-btn.active { background: var(--accent); color: #0f172a; border-color: var(--accent); }
 
     /* CHART AREA */
-    .chart-area { flex: 1; padding: 0.75rem; overflow: hidden; display: flex; flex-direction: column; }
-    .chart-area canvas { flex: 1; }
+    .chart-area { flex: 1; overflow-y: auto; overflow-x: hidden; display: flex; flex-direction: column; }
+    /* Bar + kartu harga menempel di atas saat area chart digulir (layar pendek) */
+    .chart-sticky { position: sticky; top: 0; z-index: 5; flex-shrink: 0; background: var(--bg); padding: 0.75rem 0.75rem 0.1rem; }
+    /* Canvas dibungkus box sendiri agar tingginya = sisa ruang tepat (chart tidak terpotong) */
+    .chart-box { position: relative; flex: 1 1 auto; min-height: 300px; margin: 0 0.75rem; }
+    .chart-box > canvas { position: absolute; inset: 0; width: 100% !important; height: 100% !important; }
     .chart-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem; gap: 0.5rem; flex-shrink: 0; }
     .chart-bar-title { font-size: 0.85rem; font-weight: 600; }
     .chart-bar-sub { font-size: 0.75rem; color: var(--text-dim); }
@@ -203,7 +209,7 @@
     .ym-year { font-size: 0.72rem; color: var(--text-dim); display: flex; align-items: center; justify-content: flex-end; padding-right: 2px; font-variant-numeric: tabular-nums; }
     .ym-cell { height: 24px; border-radius: 3px; display: flex; align-items: center; justify-content: center; font-size: 0.72rem; font-weight: 600; color: var(--text); }
     .ym-cell.empty { background: rgba(51,65,85,0.4); color: var(--text-dim); }
-    .chart-note { font-size: 0.75rem; color: var(--text-dim); margin-top: 0.35rem; }
+    .chart-note { font-size: 0.75rem; color: var(--text-dim); margin: 0.35rem 0 0.75rem; padding: 0 0.75rem; flex-shrink: 0; }
     .stats-mini { display: flex; gap: 0.4rem; flex-wrap: wrap; }
     .stat-mini { background: rgba(51,65,85,0.4); border-radius: 5px; padding: 0.3rem 0.5rem; font-size: 0.75rem; }
     .stat-mini-label { color: var(--text-dim); font-size: 0.75rem; }
@@ -309,6 +315,7 @@
           <div class="badge" id="rangeBadge" style="text-align:left;width:fit-content;"></div>
           <div class="badge" id="qualityBadge" style="text-align:left;width:fit-content;"></div>
           <div class="badge" style="text-align:left;width:fit-content;">siskaperbapo.jatimprov.go.id</div>
+          <a class="badge info-link" href="tentang.html" style="text-align:left;width:fit-content;">Tentang & metode →</a>
         </div>
       </div>
     </div>
@@ -332,20 +339,25 @@
       <div class="zoom-actions" id="zoomActions">
         <button class="icon-btn" id="exportPngBtn" title="Unduh chart sebagai gambar PNG">PNG</button>
         <button class="icon-btn" id="exportCsvBtn" title="Unduh data rentang yang tampil sebagai CSV">CSV</button>
+        <button class="icon-btn" id="shareWaBtn" title="Bagikan harga terkini via WhatsApp">WA</button>
         <button class="icon-btn" id="resetZoomBtn" title="Reset zoom">↺</button>
       </div>
     </div>
 
     <!-- Grafik View -->
     <div class="chart-area" id="grafikView">
-      <div class="chart-bar">
-        <div>
-          <div class="chart-bar-title" id="chartTitle">Tren Harga</div>
-          <div class="chart-bar-sub" id="chartSub">Harga produsen per kg (Rp)</div>
+      <div class="chart-sticky">
+        <div class="chart-bar">
+          <div>
+            <div class="chart-bar-title" id="chartTitle">Tren Harga</div>
+            <div class="chart-bar-sub" id="chartSub">Harga produsen per kg (Rp)</div>
+          </div>
         </div>
+        <div class="stat-cards" id="statCards"></div>
       </div>
-      <div class="stat-cards" id="statCards"></div>
-      <canvas id="priceChart"></canvas>
+      <div class="chart-box">
+        <canvas id="priceChart"></canvas>
+      </div>
       <div class="chart-note">Garis putus-putus dan label "Estimasi" berarti harga diisi dari hari sebelumnya karena sumber belum menyediakan nilai aktual.</div>
     </div>
 
@@ -516,14 +528,22 @@ function renderStatCards() {
     const { name } = marketParts(c.columns[i]);
     const chips = [];
     if (flags[i]) chips.push('<span class="stat-chip">estimasi</span>');
-    for (const days of [7, 30]) {
-      const base = lastActualPrice(c, i, latest, days);
-      if (!base) { chips.push(`<span class="stat-chip">${days} hr -</span>`); continue; }
-      const pct = (price - base.value) / base.value * 100;
-      const cls = pct > 0.05 ? 'up' : pct < -0.05 ? 'down' : '';
-      const sign = pct > 0.05 ? '+' : '';
-      const pctText = sign + pct.toLocaleString('id-ID', { maximumFractionDigits: 1 }) + '%';
-      chips.push(`<span class="stat-chip ${cls}" title="Dibanding ${displayDate(base.date)} ${R(base.value)}">${days} hr ${pctText}</span>`);
+    // Harga aktif bisa jadi carry-forward panjang (sumber berhenti mengisi);
+    // kalau aktual terakhir >45 hari, tampilkan umurnya alih-alih delta yang menyesatkan.
+    const newestActual = lastActualPrice(c, i, latest, 0);
+    const staleDays = newestActual ? Math.round((new Date(latest + 'T00:00:00') - new Date(newestActual.date + 'T00:00:00')) / 86400000) : 0;
+    if (staleDays > 45) {
+      chips.push(`<span class="stat-chip" title="Data aktual terakhir ${displayDate(newestActual.date)}">berhenti ${new Date(newestActual.date + 'T00:00:00').toLocaleDateString('id-ID', { month: 'short', year: 'numeric' })}</span>`);
+    } else {
+      for (const days of [7, 30]) {
+        const base = lastActualPrice(c, i, latest, days);
+        if (!base) { chips.push(`<span class="stat-chip">${days} hr -</span>`); continue; }
+        const pct = (price - base.value) / base.value * 100;
+        const cls = pct > 0.05 ? 'up' : pct < -0.05 ? 'down' : '';
+        const sign = pct > 0.05 ? '+' : '';
+        const pctText = sign + pct.toLocaleString('id-ID', { maximumFractionDigits: 1 }) + '%';
+        chips.push(`<span class="stat-chip ${cls}" title="Dibanding ${displayDate(base.date)} ${R(base.value)}">${days} hr ${pctText}</span>`);
+      }
     }
     return `<div class="stat-card" style="border-top:2px solid ${color}">
       <div class="stat-card-name" title="${c.columns[i]}">${name}</div>
@@ -815,6 +835,34 @@ document.getElementById('resetZoomBtn').addEventListener('click', () => {
 });
 document.getElementById('exportCsvBtn').addEventListener('click', exportCsv);
 document.getElementById('exportPngBtn').addEventListener('click', exportPng);
+document.getElementById('shareWaBtn').addEventListener('click', () => {
+  let text = 'Dashboard harga produsen pangan Jawa Timur: ' + location.href.split('#')[0];
+  const c = data.commodities[currentCommodity];
+  if (c) {
+    const dates = Object.keys(c.prices).sort();
+    const latest = dates[dates.length - 1];
+    const i = [...selectedPasars].sort((a, b) => a - b)[0];
+    const price = c.prices[latest]?.[i];
+    if (price != null) {
+      const { name } = marketParts(c.columns[i]);
+      // Carry-forward yang sudah lama (mis. sumber berhenti mengisi) jangan
+      // dibagikan seolah harga terkini — sebutkan tanggal aktual terakhirnya.
+      const newestActual = lastActualPrice(c, i, latest, 0);
+      const gapDays = newestActual ? Math.round((new Date(latest + 'T00:00:00') - new Date(newestActual.date + 'T00:00:00')) / 86400000) : 0;
+      let detail;
+      if (gapDays > 45) {
+        detail = ` (data aktual terakhir ${displayDate(newestActual.date)})`;
+      } else {
+        const base = lastActualPrice(c, i, latest, 7);
+        const pct = base ? (price - base.value) / base.value * 100 : null;
+        const pctText = pct == null ? '' : ` (${pct >= 0 ? '+' : ''}${pct.toLocaleString('id-ID', { maximumFractionDigits: 1 })}% vs 7 hr)`;
+        detail = pctText + ((c.imputed?.[latest] || [])[i] ? ' (estimasi)' : '');
+      }
+      text = `Harga ${currentCommodity} di ${name} per ${displayDate(latest)}: ${R(price)}/kg${detail}. Grafik lengkap: ${location.href.split('#')[0]}`;
+    }
+  }
+  window.open('https://api.whatsapp.com/send?text=' + encodeURIComponent(text), '_blank', 'noopener');
+});
 
 // ANALISA
 function getHeatColor(pct) {
