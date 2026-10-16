@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-15T08:12:04.372Z",
+  "generatedAt": "2026-10-16T06:43:08.440Z",
   "summary": {
     "Bawang Merah": {
       "bestMonth": 5,
@@ -8,9 +8,9 @@
       "momentumDownMonth": 7,
       "confidence": 90.9,
       "patternConsistency": 50,
-      "dataDays": 3722,
-      "observedDays": 3685,
-      "imputedDays": 53,
+      "dataDays": 3725,
+      "observedDays": 3687,
+      "imputedDays": 55,
       "terendah": {
         "bulan": 8,
         "harga": 14234
@@ -27,9 +27,9 @@
       "momentumDownMonth": 8,
       "confidence": 90.9,
       "patternConsistency": 50,
-      "dataDays": 3722,
+      "dataDays": 3725,
       "observedDays": 3608,
-      "imputedDays": 418,
+      "imputedDays": 421,
       "terendah": {
         "bulan": 8,
         "harga": 9548
@@ -46,9 +46,9 @@
       "momentumDownMonth": 4,
       "confidence": 90.9,
       "patternConsistency": 60,
-      "dataDays": 3722,
-      "observedDays": 3689,
-      "imputedDays": 321,
+      "dataDays": 3725,
+      "observedDays": 3690,
+      "imputedDays": 324,
       "terendah": {
         "bulan": 9,
         "harga": 19758
@@ -65,9 +65,9 @@
       "momentumDownMonth": 9,
       "confidence": 90.9,
       "patternConsistency": 50,
-      "dataDays": 3722,
-      "observedDays": 3691,
-      "imputedDays": 49,
+      "dataDays": 3725,
+      "observedDays": 3692,
+      "imputedDays": 51,
       "terendah": {
         "bulan": 9,
         "harga": 15567
@@ -84,9 +84,9 @@
       "momentumDownMonth": 1,
       "confidence": 90.9,
       "patternConsistency": 90,
-      "dataDays": 3722,
+      "dataDays": 3725,
       "observedDays": 3674,
-      "imputedDays": 358,
+      "imputedDays": 361,
       "terendah": {
         "bulan": 9,
         "harga": 16647
@@ -103,9 +103,9 @@
       "momentumDownMonth": 2,
       "confidence": 90.9,
       "patternConsistency": 70,
-      "dataDays": 3722,
-      "observedDays": 3681,
-      "imputedDays": 326,
+      "dataDays": 3725,
+      "observedDays": 3682,
+      "imputedDays": 329,
       "terendah": {
         "bulan": 9,
         "harga": 18160
@@ -122,9 +122,9 @@
       "momentumDownMonth": 7,
       "confidence": 90.9,
       "patternConsistency": 50,
-      "dataDays": 3722,
-      "observedDays": 3602,
-      "imputedDays": 412,
+      "dataDays": 3725,
+      "observedDays": 3603,
+      "imputedDays": 415,
       "terendah": {
         "bulan": 2,
         "harga": 87648
@@ -141,9 +141,9 @@
       "momentumDownMonth": 3,
       "confidence": 87.5,
       "patternConsistency": 42.9,
-      "dataDays": 3722,
+      "dataDays": 3725,
       "observedDays": 2301,
-      "imputedDays": 1429,
+      "imputedDays": 1432,
       "terendah": {
         "bulan": 4,
         "harga": 7805
@@ -160,9 +160,9 @@
         "Pasar Dlinggu Kabupaten Probolinggo",
         "Pasar Sukomoro Kabupaten Nganjuk"
       ],
-      "dataDays": 3722,
-      "observedDays": 3685,
-      "imputedDays": 53,
+      "dataDays": 3725,
+      "observedDays": 3687,
+      "imputedDays": 55,
       "averageByMonth": {
         "1": 18473,
         "2": 18706,
@@ -173,7 +173,7 @@
         "7": 19891,
         "8": 16204,
         "9": 15315,
-        "10": 17091,
+        "10": 17118,
         "11": 19684,
         "12": 20581
       },
@@ -215,7 +215,7 @@
         "7": 19891,
         "8": 16204,
         "9": 15315,
-        "10": 17091,
+        "10": 17118,
         "11": 19684,
         "12": 20581
       },
@@ -398,7 +398,7 @@
       "recent": {
         "from": "2025-11",
         "to": "2026-10",
-        "change": -36.1
+        "change": -35.1
       },
       "yoy": {
         "1": 26,
@@ -410,7 +410,7 @@
         "7": -33,
         "8": -34.8,
         "9": -18.7,
-        "10": -27.6
+        "10": -26.5
       },
       "byYearMonth": {
         "2016-08": 20417,
@@ -535,7 +535,7 @@
         "2026-07": 22145,
         "2026-08": 20602,
         "2026-09": 18850,
-        "2026-10": 18917
+        "2026-10": 19214
       }
     },
     "Beras": {
@@ -543,9 +543,9 @@
         "UD Hasil Tani Kabupaten Probolinggo",
         "PS Bendul Mrisi Kota Surabaya"
       ],
-      "dataDays": 3722,
+      "dataDays": 3725,
       "observedDays": 3608,
-      "imputedDays": 418,
+      "imputedDays": 421,
       "averageByMonth": {
         "1": 10640,
         "2": 10865,
@@ -890,9 +890,9 @@
         "Pasar Tanjung Kabupaten Jember",
         "Pasar Tulung Rejo Kabupaten Kediri"
       ],
-      "dataDays": 3722,
-      "observedDays": 3689,
-      "imputedDays": 321,
+      "dataDays": 3725,
+      "observedDays": 3690,
+      "imputedDays": 324,
       "averageByMonth": {
         "1": 43272,
         "2": 50503,
@@ -903,7 +903,7 @@
         "7": 37424,
         "8": 28802,
         "9": 24769,
-        "10": 25808,
+        "10": 25746,
         "11": 25727,
         "12": 39687
       },
@@ -945,7 +945,7 @@
         "7": 37424,
         "8": 28802,
         "9": 24769,
-        "10": 25808,
+        "10": 25746,
         "11": 25727,
         "12": 39687
       },
@@ -1132,7 +1132,7 @@
       "recent": {
         "from": "2025-11",
         "to": "2026-10",
-        "change": 113.4
+        "change": 110.9
       },
       "yoy": {
         "1": -42.5,
@@ -1144,7 +1144,7 @@
         "7": -32,
         "8": 94.3,
         "9": 143.4,
-        "10": 194.7
+        "10": 191.3
       },
       "byYearMonth": {
         "2016-08": 33840,
@@ -1269,7 +1269,7 @@
         "2026-07": 30194,
         "2026-08": 40240,
         "2026-09": 58733,
-        "2026-10": 59833
+        "2026-10": 59154
       }
     },
     "Cabe Besar": {
@@ -1277,9 +1277,9 @@
         "Pasar Pare Kabupaten Kediri",
         "Kec. Gending Kabupaten Probolinggo"
       ],
-      "dataDays": 3722,
-      "observedDays": 3691,
-      "imputedDays": 49,
+      "dataDays": 3725,
+      "observedDays": 3692,
+      "imputedDays": 51,
       "averageByMonth": {
         "1": 26872,
         "2": 28197,
@@ -1290,7 +1290,7 @@
         "7": 24801,
         "8": 20037,
         "9": 17604,
-        "10": 22095,
+        "10": 22128,
         "11": 24592,
         "12": 25866
       },
@@ -1332,7 +1332,7 @@
         "7": 24801,
         "8": 20037,
         "9": 17604,
-        "10": 22095,
+        "10": 22128,
         "11": 24592,
         "12": 25866
       },
@@ -1515,7 +1515,7 @@
       "recent": {
         "from": "2025-11",
         "to": "2026-10",
-        "change": -29.3
+        "change": -28.4
       },
       "yoy": {
         "1": -68.9,
@@ -1527,7 +1527,7 @@
         "7": -18,
         "8": -10.7,
         "9": -36.9,
-        "10": -13.8
+        "10": -12.7
       },
       "byYearMonth": {
         "2016-08": 21092,
@@ -1652,7 +1652,7 @@
         "2026-07": 18548,
         "2026-08": 18538,
         "2026-09": 15567,
-        "2026-10": 28875
+        "2026-10": 29231
       }
     },
     "Telur": {
@@ -1660,9 +1660,9 @@
         "UD. Telur Intan Kabupaten Blitar",
         "Peternak Kec. Srengat Kabupaten Kediri"
       ],
-      "dataDays": 3722,
+      "dataDays": 3725,
       "observedDays": 3674,
-      "imputedDays": 358,
+      "imputedDays": 361,
       "averageByMonth": {
         "1": 19932,
         "2": 20516,
@@ -2035,9 +2035,9 @@
         "Peternak Desa Kambingan Kabupaten Blitar",
         "Pasar Gringging Kabupaten Kediri"
       ],
-      "dataDays": 3722,
-      "observedDays": 3681,
-      "imputedDays": 326,
+      "dataDays": 3725,
+      "observedDays": 3682,
+      "imputedDays": 329,
       "averageByMonth": {
         "1": 19375,
         "2": 18849,
@@ -2048,7 +2048,7 @@
         "7": 19398,
         "8": 18830,
         "9": 18555,
-        "10": 18655,
+        "10": 18654,
         "11": 19028,
         "12": 19722
       },
@@ -2090,7 +2090,7 @@
         "7": 19398,
         "8": 18830,
         "9": 18555,
-        "10": 18655,
+        "10": 18654,
         "11": 19028,
         "12": 19722
       },
@@ -2394,7 +2394,7 @@
         "2026-07": 19839,
         "2026-08": 22480,
         "2026-09": 23693,
-        "2026-10": 22111
+        "2026-10": 22100
       }
     },
     "Daging Sapi": {
@@ -2403,9 +2403,9 @@
         "UD RPH Kota Malang",
         "RPH Krian Kabupaten Sidoarjo"
       ],
-      "dataDays": 3722,
-      "observedDays": 3602,
-      "imputedDays": 412,
+      "dataDays": 3725,
+      "observedDays": 3603,
+      "imputedDays": 415,
       "averageByMonth": {
         "1": 89745,
         "2": 91902,
@@ -2750,9 +2750,9 @@
         "Distributor Kabupaten Malang",
         "Kawasan Bromo Kabupaten Probolinggo"
       ],
-      "dataDays": 3722,
+      "dataDays": 3725,
       "observedDays": 2301,
-      "imputedDays": 1429,
+      "imputedDays": 1432,
       "averageByMonth": {
         "1": 9999,
         "2": 8753,

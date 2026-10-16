@@ -4,31 +4,21 @@
   "type": "produsen",
   "Bawang Merah": {
     "Pasar Dlinggu Kabupaten Probolinggo": 22000,
-    "Pasar Sukomoro Kabupaten Nganjuk": 17000
+    "Pasar Sukomoro Kabupaten Nganjuk": 18000
   },
   "imputed": {
-    "Bawang Merah": {
-      "Pasar Dlinggu Kabupaten Probolinggo": true,
-      "Pasar Sukomoro Kabupaten Nganjuk": true
-    },
     "Beras": {
       "UD Hasil Tani Kabupaten Probolinggo": true,
       "PS Bendul Mrisi Kota Surabaya": true
     },
     "Cabe Rawit": {
-      "Pasar Tanjung Kabupaten Jember": true,
-      "Pasar Tulung Rejo Kabupaten Kediri": true
-    },
-    "Cabe Besar": {
-      "Pasar Pare Kabupaten Kediri": true,
-      "Kec. Gending Kabupaten Probolinggo": true
+      "Pasar Tanjung Kabupaten Jember": true
     },
     "Telur": {
       "UD. Telur Intan Kabupaten Blitar": true,
       "Peternak Kec. Srengat Kabupaten Kediri": true
     },
     "Ayam Potong": {
-      "Peternak Desa Kambingan Kabupaten Blitar": true,
       "Pasar Gringging Kabupaten Kediri": true
     },
     "Daging Sapi": {
@@ -57,7 +47,7 @@
     "Peternak Kec. Srengat Kabupaten Kediri": 22500
   },
   "Ayam Potong": {
-    "Peternak Desa Kambingan Kabupaten Blitar": 22500,
+    "Peternak Desa Kambingan Kabupaten Blitar": 22000,
     "Pasar Gringging Kabupaten Kediri": 19500
   },
   "Daging Sapi": {
