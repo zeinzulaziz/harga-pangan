@@ -24,7 +24,7 @@
   },
   "Ayam Potong": {
     "Peternak Desa Kambingan Kabupaten Blitar": 16000,
-    "Pasar Gringging Kabupaten Kediri": 25500
+    "Pasar Gringging Kabupaten Kediri": 15500
   },
   "Daging Sapi": {
     "RPH Pegirikan  Kota Surabaya": 95000,
@@ -34,5 +34,10 @@
   "Kentang": {
     "Distributor Kabupaten Malang": 9000,
     "Kawasan Bromo Kabupaten Probolinggo": 10000
+  },
+  "imputed": {
+    "Ayam Potong": {
+      "Pasar Gringging Kabupaten Kediri": true
+    }
   }
 }

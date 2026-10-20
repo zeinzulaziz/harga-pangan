@@ -6,6 +6,7 @@
     "scrape": "node scripts/scrape-produsen.js",
     "scrape:full": "node scripts/scrape-produsen.js --full",
     "analisa": "node scripts/analisa-tren.js",
+    "cek": "node scripts/cek-anomali.js",
     "bersihkan": "node scripts/bersihkan-data.js"
   }
 }

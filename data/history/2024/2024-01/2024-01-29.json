@@ -15,7 +15,7 @@
     "Pasar Tulung Rejo Kabupaten Kediri": 25000
   },
   "Cabe Besar": {
-    "Pasar Pare Kabupaten Kediri": 33000,
+    "Pasar Pare Kabupaten Kediri": 60000,
     "Kec. Gending Kabupaten Probolinggo": 50000
   },
   "Telur": {
@@ -37,6 +37,7 @@
   },
   "imputed": {
     "Cabe Besar": {
+      "Pasar Pare Kabupaten Kediri": true,
       "Kec. Gending Kabupaten Probolinggo": true
     },
     "Telur": {

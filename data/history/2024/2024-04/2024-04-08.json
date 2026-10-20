@@ -12,7 +12,7 @@
   },
   "Cabe Rawit": {
     "Pasar Tanjung Kabupaten Jember": 32000,
-    "Pasar Tulung Rejo Kabupaten Kediri": 9000
+    "Pasar Tulung Rejo Kabupaten Kediri": 17000
   },
   "Cabe Besar": {
     "Pasar Pare Kabupaten Kediri": 33000,
@@ -39,6 +39,9 @@
     "Kentang": {
       "Distributor Kabupaten Malang": true,
       "Kawasan Bromo Kabupaten Probolinggo": true
+    },
+    "Cabe Rawit": {
+      "Pasar Tulung Rejo Kabupaten Kediri": true
     }
   }
 }

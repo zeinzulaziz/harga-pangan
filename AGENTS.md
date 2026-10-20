@@ -9,13 +9,15 @@ Detail lengkap ada di `README.md`.
 ```bash
 npm run scrape          # data terbaru dari SISKAPERBAPO -> data/produsen.json + arsip history/
 npm run scrape:full     # backfill historis (default 52 request x 28 hari; atur BACKFILL_REQUESTS)
+npm run cek             # laporan kandidat salah input (read-only)
 npm run bersihkan       # hapus outlier + terapkan koreksi manual di scripts/bersihkan-data.js
 npm run analisa         # hitung ulang data/analisa.json
 python3 -m http.server  # preview lokal; fetch ke data/*.json tidak jalan via file://
 ```
 
-Urutan update resmi: **scrape → bersihkan → analisa**. `bersihkan` wajib setelah
-`scrape` karena scrape bisa menimpa nilai yang sudah dikoreksi.
+Urutan update resmi: **scrape → cek → bersihkan → analisa**. `cek` hanya membaca
+data dan menampilkan kandidat salah input; `bersihkan` wajib setelah `scrape`
+karena scrape bisa menimpa nilai yang sudah dikoreksi.
 
 Tidak ada dependency npm. Jangan tambah library, ubah `package.json`, atau ganti
 sumber data tanpa konfirmasi user.
@@ -84,6 +86,8 @@ sumber data tanpa konfirmasi user.
 ## Deployment
 
 GitHub Pages dari branch `master` folder root. Push ke `master` = live.
+Scrape dijalankan manual dari mesin lokal; tidak ada GitHub Actions atau workflow
+terjadwal yang memperbarui data.
 
 ## Konvensi
 

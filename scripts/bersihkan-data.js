@@ -33,6 +33,110 @@ const CORRECTIONS = [
     date: '2017-03-04',
     value: 290000,
     replacement: 29000
+  },
+  {
+    commodity: 'Bawang Merah',
+    column: 'Pasar Sukomoro Kabupaten Nganjuk',
+    date: '2026-08-16',
+    value: 27000,
+    replacement: 17000
+  },
+  {
+    commodity: 'Bawang Merah',
+    column: 'Pasar Sukomoro Kabupaten Nganjuk',
+    date: '2026-03-10',
+    value: 32500
+  },
+  {
+    commodity: 'Beras',
+    column: 'UD Hasil Tani Kabupaten Probolinggo',
+    date: '2024-02-23',
+    value: 23000,
+    replacement: 14000
+  },
+  {
+    commodity: 'Beras',
+    column: 'UD Hasil Tani Kabupaten Probolinggo',
+    date: '2025-02-01',
+    value: 18800,
+    replacement: 11800
+  },
+  {
+    commodity: 'Beras',
+    column: 'UD Hasil Tani Kabupaten Probolinggo',
+    date: '2025-09-13',
+    value: 23600,
+    replacement: 13600
+  },
+  {
+    commodity: 'Telur',
+    column: 'UD. Telur Intan Kabupaten Blitar',
+    date: '2021-01-28',
+    value: 27000,
+    replacement: 17000
+  },
+  {
+    commodity: 'Telur',
+    column: 'Peternak Kec. Srengat Kabupaten Kediri',
+    date: '2024-04-16',
+    value: 12500,
+    replacement: 23500
+  },
+  {
+    commodity: 'Telur',
+    column: 'Peternak Kec. Srengat Kabupaten Kediri',
+    date: '2024-08-03',
+    value: 11400,
+    replacement: 22400
+  },
+  {
+    commodity: 'Ayam Potong',
+    column: 'Peternak Desa Kambingan Kabupaten Blitar',
+    date: '2026-08-12',
+    value: 13500,
+    replacement: 23500
+  },
+  {
+    commodity: 'Ayam Potong',
+    column: 'Peternak Desa Kambingan Kabupaten Blitar',
+    date: '2026-08-31',
+    value: 13000
+  },
+  {
+    commodity: 'Ayam Potong',
+    column: 'Peternak Desa Kambingan Kabupaten Blitar',
+    date: '2024-02-28',
+    value: 32500
+  },
+  {
+    commodity: 'Ayam Potong',
+    column: 'Pasar Gringging Kabupaten Kediri',
+    date: '2022-08-14',
+    value: 25500
+  },
+  {
+    commodity: 'Ayam Potong',
+    column: 'Peternak Desa Kambingan Kabupaten Blitar',
+    date: '2022-10-18',
+    value: 27000
+  },
+  {
+    commodity: 'Cabe Rawit',
+    column: 'Pasar Tulung Rejo Kabupaten Kediri',
+    date: '2025-05-16',
+    value: 10000
+  },
+  {
+    commodity: 'Cabe Rawit',
+    column: 'Pasar Tulung Rejo Kabupaten Kediri',
+    date: '2024-04-08',
+    value: 9000
+  },
+  {
+    commodity: 'Cabe Besar',
+    column: 'Pasar Pare Kabupaten Kediri',
+    date: '2024-01-29',
+    value: 33000
   }
 ];
 
@@ -242,4 +346,6 @@ function main() {
   console.log(`✅ ${historySaved} file histori diperbarui`);
 }
 
-main();
+if (require.main === module) main();
+
+module.exports = { CORRECTIONS };

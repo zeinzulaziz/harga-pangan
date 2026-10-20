@@ -23,7 +23,7 @@
     "Peternak Kec. Srengat Kabupaten Kediri": 26800
   },
   "Ayam Potong": {
-    "Peternak Desa Kambingan Kabupaten Blitar": 32500,
+    "Peternak Desa Kambingan Kabupaten Blitar": 20500,
     "Pasar Gringging Kabupaten Kediri": 22000
   },
   "Daging Sapi": {
@@ -39,6 +39,9 @@
     "Kentang": {
       "Distributor Kabupaten Malang": true,
       "Kawasan Bromo Kabupaten Probolinggo": true
+    },
+    "Ayam Potong": {
+      "Peternak Desa Kambingan Kabupaten Blitar": true
     }
   }
 }

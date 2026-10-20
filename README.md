@@ -240,17 +240,20 @@ Pembaruan data dilakukan secara manual dari SISKAPERBAPO. Setiap kali ingin
 memperbarui data:
 
 ```bash
-npm run scrape && npm run bersihkan && npm run analisa
+npm run scrape && npm run cek && npm run bersihkan && npm run analisa
 ```
 
 1. `npm run scrape` mengambil data terbaru dari SISKAPERBAPO, menggabungkannya
    dengan `produsen.json`, dan menyimpan arsip ke `data/history/`.
-2. `npm run bersihkan` menghapus data tidak normal dan menerapkan koreksi manual
+2. `npm run cek` menampilkan kandidat salah input (spike satu hari 1,5x-4x yang
+   tidak dihapus otomatis). Hanya membaca data; tinjau hasilnya sebelum
+   menambahkan koreksi.
+3. `npm run bersihkan` menghapus data tidak normal dan menerapkan koreksi manual
    yang terdaftar di `scripts/bersihkan-data.js`. Langkah ini wajib dijalankan
    setelah `scrape` karena `scrape` dapat menimpa kembali nilai yang sudah
    dikoreksi dengan data salah dari sumber.
-3. `npm run analisa` menghitung ulang `data/analisa.json`.
-4. Commit dan push perubahan ke repository agar dashboard diperbarui.
+4. `npm run analisa` menghitung ulang `data/analisa.json`.
+5. Commit dan push perubahan ke repository agar dashboard diperbarui.
 
 ## Catatan Data
 
