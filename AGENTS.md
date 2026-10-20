@@ -54,6 +54,10 @@ sumber data tanpa konfirmasi user.
 - Outlier dihapus `bersihkan-data.js` lewat median tetangga (7 hari, rasio 4x/0.25x).
   Salah input yang lolos threshold ditangani lewat array `CORRECTIONS`; koreksi
   hanya jalan bila nilai saat ini persis sama dengan `value`.
+- Nilai aktual yang tidak punya tetangga aktual (mis. setelah sumber lama kosong)
+  tidak terdeteksi aturan median dan bisa menjadi basis carry-forward berhari-hari.
+  `npm run cek` menandainya sebagai "pergeseran level" (lompatan >=3x dari aktual
+  sebelumnya); periksa bagian itu sebelum memperbarui data.
 - Urutan `columns` berasal dari sumber dan bisa berubah; indeks harga selalu
   sejajar dengan posisi di array `columns` yang sama.
 - Tanggal dihitung memakai timezone `Asia/Jakarta` (`formatDate` di scraper).

@@ -164,7 +164,9 @@ function fillMissingPrices(rows, columns, imputedRows = {}) {
     const current = Array.isArray(rows[date]) ? rows[date] : [];
     const flags = Array.isArray(imputedRows[date]) ? imputedRows[date] : [];
     const normalized = columns.map((column, index) => {
-      if (isValidPrice(current[index])) return current[index];
+      // Nilai berflag imputed selalu dihitung ulang dari aktual terakhir supaya
+      // koreksi di tengah rantai carry-forward tidak meninggalkan nilai lama.
+      if (!flags[index] && isValidPrice(current[index])) return current[index];
       if (isValidPrice(previous[index])) flags[index] = true;
       return isValidPrice(previous[index]) ? previous[index] : null;
     });
@@ -173,7 +175,7 @@ function fillMissingPrices(rows, columns, imputedRows = {}) {
     if (flags.some(Boolean)) imputedRows[date] = flags;
     else delete imputedRows[date];
     normalized.forEach((value, index) => {
-      if (isValidPrice(value)) previous[index] = value;
+      if (!flags[index] && isValidPrice(value)) previous[index] = value;
     });
   }
 }

@@ -50,6 +50,13 @@ const CORRECTIONS = [
   {
     commodity: 'Beras',
     column: 'UD Hasil Tani Kabupaten Probolinggo',
+    date: '2026-07-26',
+    value: 19500,
+    replacement: 13900
+  },
+  {
+    commodity: 'Beras',
+    column: 'UD Hasil Tani Kabupaten Probolinggo',
     date: '2024-02-23',
     value: 23000,
     replacement: 14000
@@ -74,6 +81,25 @@ const CORRECTIONS = [
     date: '2021-01-28',
     value: 27000,
     replacement: 17000
+  },
+  {
+    commodity: 'Telur',
+    column: 'UD. Telur Intan Kabupaten Blitar',
+    date: '2023-05-04',
+    value: 18500
+  },
+  {
+    commodity: 'Telur',
+    column: 'UD. Telur Intan Kabupaten Blitar',
+    date: '2023-05-05',
+    value: 16000
+  },
+  {
+    commodity: 'Telur',
+    column: 'Peternak Kec. Srengat Kabupaten Kediri',
+    date: '2023-01-28',
+    value: 14500,
+    replacement: 23200
   },
   {
     commodity: 'Telur',
@@ -116,6 +142,20 @@ const CORRECTIONS = [
   },
   {
     commodity: 'Ayam Potong',
+    column: 'Pasar Gringging Kabupaten Kediri',
+    date: '2023-02-11',
+    value: 11000,
+    replacement: 18000
+  },
+  {
+    commodity: 'Ayam Potong',
+    column: 'Pasar Gringging Kabupaten Kediri',
+    date: '2025-01-31',
+    value: 11800,
+    replacement: 18800
+  },
+  {
+    commodity: 'Ayam Potong',
     column: 'Peternak Desa Kambingan Kabupaten Blitar',
     date: '2022-10-18',
     value: 27000
@@ -137,6 +177,13 @@ const CORRECTIONS = [
     column: 'Pasar Pare Kabupaten Kediri',
     date: '2024-01-29',
     value: 33000
+  },
+  {
+    commodity: 'Daging Sapi',
+    column: 'UD RPH Kota Malang',
+    date: '2026-07-31',
+    value: 13000,
+    replacement: 130000
   }
 ];
 
@@ -215,7 +262,9 @@ function fillMissingPrices(rows, columns, imputedRows = {}) {
     const current = Array.isArray(rows[date]) ? rows[date] : [];
     const flags = Array.isArray(imputedRows[date]) ? imputedRows[date] : [];
     const normalized = columns.map((column, index) => {
-      if (isValidPrice(current[index])) return current[index];
+      // Nilai berflag imputed selalu dihitung ulang dari aktual terakhir supaya
+      // koreksi di tengah rantai carry-forward tidak meninggalkan nilai lama.
+      if (!flags[index] && isValidPrice(current[index])) return current[index];
       if (isValidPrice(previous[index])) flags[index] = true;
       return isValidPrice(previous[index]) ? previous[index] : null;
     });
@@ -224,7 +273,7 @@ function fillMissingPrices(rows, columns, imputedRows = {}) {
     if (flags.some(Boolean)) imputedRows[date] = flags;
     else delete imputedRows[date];
     normalized.forEach((value, index) => {
-      if (isValidPrice(value)) previous[index] = value;
+      if (!flags[index] && isValidPrice(value)) previous[index] = value;
     });
   }
 }
@@ -315,7 +364,6 @@ function main() {
 
     if (anomalies.length === 0 && !corrected.has(commodity)) {
       console.log(`${commodity}: bersih`);
-      continue;
     }
 
     for (const anomaly of anomalies) {
