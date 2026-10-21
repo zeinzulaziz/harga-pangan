@@ -19,6 +19,11 @@ function formatRupiah(v) {
   return v == null ? '—' : Number(v).toLocaleString('id-ID');
 }
 
+function formatMomentum(p) {
+  if (p == null) return '—';
+  return `${p.bulan} (${p.pct >= 0 ? '+' : ''}${p.pct}%)`;
+}
+
 const rows = Object.entries(prod.commodities).map(([nama, c]) => {
   const dates = Object.keys(c.prices || {}).sort();
   const lastDate = dates.length ? dates[dates.length - 1] : null;
@@ -31,7 +36,7 @@ const rows = Object.entries(prod.commodities).map(([nama, c]) => {
     `Rp ${formatRupiah(val)}`,
     `jual ${rec.sellMonth ?? '—'}`,
     `beli ${rec.lowMonth ?? '—'}`,
-    `momentum ${rec.momentumUp ?? '—'}`
+    `momentum ${formatMomentum(rec.momentumUp)}`
   ].join(' | ');
 }).join('\n');
 
