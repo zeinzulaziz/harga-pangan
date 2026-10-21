@@ -31,7 +31,7 @@ echo "[$(date '+%F %T')] cek (baca-only)..."
 npm run cek
 
 echo "[$(date '+%F %T')] bersikken..."
-npm run bersikken
+npm run bersihkan
 
 echo "[$(date '+%F %T')] analisa..."
 npm run analisa
