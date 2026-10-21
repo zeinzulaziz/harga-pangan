@@ -46,4 +46,18 @@ else
   echo "[$(date '+%F %T')] push selesai."
 fi
 
+echo "[$(date '+%F %T')] notifikasi Discord..."
+if [ -n "${WEBHOOK_DISCORD:-}" ]; then
+  node "$REPO/scripts/ringkasan-harian.js" > "${TMPDIR:-/tmp}/ringkasan.json" 2>/dev/null
+  if [ -s "${TMPDIR:-/tmp}/ringkasan.json" ]; then
+    curl -s -X POST -H "Content-Type: application/json" --data-binary "@${TMPDIR:-/tmp}/ringkasan.json" "$WEBHOOK_DISCORD" >/dev/null 2>&1 \
+      && echo "[$(date '+%F %T')] notifikasi Discord terkirim." \
+      || echo "[$(date '+%F %T')] notifikasi Discord gagal dikirim."
+  else
+    echo "[$(date '+%F %T')] ringkasan Discord tidak tersedia (file kosong)."
+  fi
+else
+  echo "[$(date '+%F %T')] notifikasi Discord dilewati — WEBHOOK_DISCORD belum diatur."
+fi
+
 echo "[$(date '+%Y-%m-%d %H:%M:%S %Z')] SELESAI"
