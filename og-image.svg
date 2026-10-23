@@ -1,30 +1,35 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" font-family="Inter, 'Helvetica Neue', Helvetica, Arial, sans-serif">
-  <rect width="1200" height="630" fill="#0f172a"/>
+  <rect width="1200" height="630" fill="#F7F8FA"/>
 
-  <!-- grid halus -->
-  <g stroke="#1e293b" stroke-width="1">
-    <line x1="0" y1="158" x2="1200" y2="158"/>
-    <line x1="0" y1="316" x2="1200" y2="316"/>
-    <line x1="0" y1="474" x2="1200" y2="474"/>
-  </g>
-
-  <!-- chart dekoratif -->
-  <path d="M0 566 L75 551 L150 559 L235 517 L320 531 L405 492 L490 505 L575 464 L660 478 L745 441 L830 453 L915 408 L1000 420 L1085 374 L1160 386 L1200 368 L1200 630 L0 630 Z" fill="#34d399" opacity="0.1"/>
-  <path d="M0 566 L75 551 L150 559 L235 517 L320 531 L405 492 L490 505 L575 464 L660 478 L745 441 L830 453 L915 408 L1000 420 L1085 374 L1160 386 L1200 368" fill="none" stroke="#34d399" stroke-width="3" opacity="0.6"/>
-  <circle cx="1160" cy="386" r="8" fill="#34d399"/>
-
-  <!-- badge sumber data -->
-  <rect x="80" y="70" width="512" height="54" rx="27" fill="none" stroke="#334155" stroke-width="1.5"/>
-  <circle cx="112" cy="97" r="6.5" fill="#34d399"/>
-  <text x="134" y="105" font-size="22" fill="#94a3b8">Sumber data: SISKAPERBAPO Jawa Timur</text>
+  <!-- identitas -->
+  <rect x="80" y="48" width="40" height="40" rx="10" fill="#246B4A"/>
+  <polyline points="89 75 97 67 104 71 111 62" fill="none" stroke="#FFFFFF" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="111" cy="62" r="2.8" fill="#FFFFFF"/>
+  <text x="136" y="65" font-size="22" font-weight="700" fill="#172B24">Harga Pangan</text>
+  <text x="136" y="85" font-size="12" font-weight="600" letter-spacing="1.6" fill="#66736D">JAWA TIMUR</text>
+  <text x="1120" y="73" font-size="16" text-anchor="end" fill="#5F6C66">Sumber: SISKAPERBAPO Jawa Timur</text>
 
   <!-- judul -->
-  <text x="80" y="252" font-size="62" font-weight="800" fill="#f1f5f9" letter-spacing="-1">Harga Produsen Pangan</text>
-  <text x="80" y="328" font-size="62" font-weight="800" fill="#34d399" letter-spacing="-1">Jawa Timur</text>
+  <text x="80" y="180" font-size="16" font-weight="600" letter-spacing="2" fill="#246B4A">DASHBOARD HARGA PRODUSEN</text>
+  <text x="80" y="260" font-size="58" font-weight="700" letter-spacing="-1.5" fill="#172B24">Harga produsen pangan</text>
+  <text x="80" y="330" font-size="58" font-weight="700" letter-spacing="-1.5" fill="#246B4A">Jawa Timur</text>
+  <text x="80" y="386" font-size="23" fill="#5F6C66">Tren harian, perbandingan pasar, dan pola musiman untuk petani.</text>
 
-  <!-- subjudul -->
-  <text x="80" y="396" font-size="26" fill="#94a3b8">Tren harga harian 8 komoditas dan analisa musiman untuk petani.</text>
+  <!-- panel grafik -->
+  <rect x="80" y="414" width="1040" height="150" rx="14" fill="#FFFFFF" stroke="#E5E9E6"/>
+  <text x="108" y="444" font-size="14" font-weight="600" fill="#66736D">Pergerakan harga harian</text>
+  <text x="1092" y="444" font-size="14" text-anchor="end" fill="#8A9490">2016 — 2026</text>
+  <g stroke="#EDF0EE" stroke-width="1">
+    <line x1="108" y1="490" x2="1092" y2="490"/>
+    <line x1="108" y1="512" x2="1092" y2="512"/>
+    <line x1="108" y1="534" x2="1092" y2="534"/>
+  </g>
+  <path d="M108 532 L190 522 L260 528 L330 508 L400 516 L470 496 L540 504 L610 484 L680 492 L750 472 L820 480 L890 462 L960 470 L1030 452 L1092 458 L1092 542 L108 542 Z" fill="#246B4A" opacity="0.07"/>
+  <path d="M108 532 L190 522 L260 528 L330 508 L400 516 L470 496 L540 504 L610 484 L680 492 L750 472 L820 480 L890 462 L960 470 L1030 452 L1092 458" fill="none" stroke="#246B4A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="1092" cy="458" r="4.5" fill="#246B4A"/>
+  <circle cx="1092" cy="458" r="2" fill="#FFFFFF"/>
 
   <!-- footer -->
-  <text x="80" y="612" font-size="20" fill="#64748b">zeinzulaziz.github.io/harga-pangan</text>
+  <text x="80" y="604" font-size="16" fill="#66736D">Harga produsen, bukan harga eceran. Bukan kanal resmi pemerintah.</text>
+  <text x="1120" y="604" font-size="16" font-weight="600" text-anchor="end" fill="#246B4A">zeinzulaziz.github.io/harga-pangan</text>
 </svg>

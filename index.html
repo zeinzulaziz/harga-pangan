@@ -7,8 +7,8 @@
   <meta name="description" content="Dashboard harga produsen pangan Jawa Timur dari SISKAPERBAPO: tren harian 8 komoditas, filter pasar, dan analisa musiman.">
   <meta name="author" content="zeinzulaziz">
   <meta name="robots" content="index, follow">
-  <meta name="color-scheme" content="dark">
-  <meta name="theme-color" content="#080d16">
+  <meta name="color-scheme" content="light">
+  <meta name="theme-color" content="#F7F8FA">
   <link rel="canonical" href="https://zeinzulaziz.github.io/harga-pangan/">
 
   <!-- Ikon -->
@@ -44,388 +44,1502 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/hammerjs@2.0.8/hammer.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.2.0/dist/chartjs-plugin-zoom.min.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&family=IBM+Plex+Sans:wght@100..700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400..700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/site.css">
+
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    :root {
-      --bg: #080d16; --card: #0d131f; --card-hover: #141c2a;
-      --accent: #d8a579; --accent-ink: #080d16;
-      --text: #ede6d9; --text-dim: #b9b9af; --text-faint: #8f978f;
-      --border: rgba(209, 194, 170, 0.18); --border-strong: #8f978f;
-      --green: #22c55e; --red: #ef4444; --yellow: #eab308;
-      --sidebar-w: 320px;
-      --font-display: "Space Grotesk", "IBM Plex Sans", system-ui, sans-serif;
-      --font-sans: "IBM Plex Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-      --radius: 2px;
-      --ease: cubic-bezier(0.16, 1, 0.3, 1);
+    /* ---------- Halaman & intro ---------- */
+    .page { padding-top: 40px; }
+
+    .page-intro { max-width: 880px; }
+
+    .eyebrow {
+      margin-bottom: 10px;
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
     }
-    html, body { height: 100%; overflow: hidden; }
-    body { font-family: var(--font-sans); background: var(--bg); color: var(--text); line-height: 1.7; -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
 
-    /* LAYOUT */
-    .app { display: flex; height: 100vh; }
-    .sidebar { width: var(--sidebar-w); min-width: var(--sidebar-w); background: var(--card); border-right: 1px solid var(--border); display: flex; flex-direction: column; transition: all 0.3s; overflow: hidden; z-index: 100; }
-    .sidebar.collapsed { width: 0; min-width: 0; border-right: none; }
-    .sidebar-header { padding: 1rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
-    .sidebar-title { font-size: 0.85rem; font-weight: 700; color: var(--accent); white-space: nowrap; }
-    .sidebar-close { background: none; border: none; color: var(--text-dim); cursor: pointer; font-size: 1.1rem; padding: 0.25rem; border-radius: 6px; transition: all 0.2s; }
-    .sidebar-close:hover { background: var(--card-hover); color: var(--text); }
-    .sidebar-body { flex: 1; overflow-y: auto; padding: 1rem; }
-    .sidebar-body::-webkit-scrollbar { width: 4px; }
-    .sidebar-body::-webkit-scrollbar-track { background: transparent; }
-    .sidebar-body::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
-    .sidebar-footer { padding: 0.75rem 1rem; border-top: 1px solid var(--border); font-size: 0.75rem; color: var(--text-dim); flex-shrink: 0; }
-    .sidebar-footer small { font-size: inherit; }
-    .sidebar-footer a { color: var(--accent); }
+    .page-intro h1 {
+      max-width: 20ch;
+      font-size: clamp(28px, 3vw, 32px);
+      letter-spacing: -0.025em;
+    }
 
-    .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; position: relative; }
+    .lede {
+      max-width: 72ch;
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 15.5px;
+      line-height: 1.65;
+    }
 
-    /* MAIN HEADER */
-    .main-header { padding: 0.75rem 1rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 0.75rem; flex-shrink: 0; background: var(--bg); }
-    .menu-btn { background: var(--card); border: 1px solid var(--border); color: var(--text-dim); width: 36px; height: 36px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1rem; transition: all 0.2s; flex-shrink: 0; }
-    .menu-btn:hover { background: var(--card-hover); color: var(--text); border-color: var(--accent); }
-    .header-info { flex: 1; min-width: 0; }
-    .header-title { font-size: 0.95rem; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .header-sub { font-size: 0.75rem; color: var(--text-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .header-badges { display: flex; gap: 0.4rem; flex-shrink: 0; }
-    .badge { background: rgba(216,165,121,0.1); border: 1px solid rgba(216,165,121,0.2); color: var(--accent); padding: 0.15rem 0.5rem; border-radius: 999px; font-size: 0.75rem; white-space: nowrap; }
-    .badge.warn { background: rgba(239,68,68,0.1); border-color: rgba(239,68,68,0.25); color: #f87171; }
-    .badge.info-link { text-decoration: none; cursor: pointer; transition: background-color 0.15s, border-color 0.15s; }
-    .badge.info-link:hover { background: rgba(216,165,121,0.18); border-color: rgba(216,165,121,0.5); }
-    .zoom-actions { display: flex; gap: 0.3rem; flex-shrink: 0; }
-    .icon-btn { background: var(--card); border: 1px solid var(--border); color: var(--text-dim); width: 32px; height: 32px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; transition: all 0.2s; }
-    .icon-btn:hover { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
-    .icon-btn.active { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+    .meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px 14px;
+      margin-top: 18px;
+      color: var(--muted);
+      font-size: 12.5px;
+    }
 
-    /* CHART AREA */
-    .chart-area { flex: 1; overflow-y: auto; overflow-x: hidden; display: flex; flex-direction: column; }
-    /* Bar + kartu harga menempel di atas saat area chart digulir (layar pendek) */
-    .chart-sticky { position: sticky; top: 0; z-index: 5; flex-shrink: 0; background: var(--bg); padding: 0.75rem 0.75rem 0.1rem; }
-    /* Canvas dibungkus box sendiri agar tingginya = sisa ruang tepat (chart tidak terpotong) */
-    .chart-box { position: relative; flex: 1 1 auto; min-height: 300px; margin: 0 0.75rem; }
-    .chart-box > canvas { position: absolute; inset: 0; width: 100% !important; height: 100% !important; }
-    .chart-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem; gap: 0.5rem; flex-shrink: 0; }
-    .chart-bar-title { font-size: 0.85rem; font-weight: 600; }
-    .chart-bar-sub { font-size: 0.75rem; color: var(--text-dim); }
-    .chart-bar-right { display: flex; gap: 0.4rem; align-items: center; flex-shrink: 0; }
+    .meta-label { color: var(--faint); }
 
-    /* KARTU HARGA TERKINI */
-    .stat-cards { display: flex; gap: 0.5rem; overflow-x: auto; padding: 0.1rem 0 0.45rem; margin-bottom: 0.4rem; flex-shrink: 0; }
-    .stat-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 0.5rem 0.7rem; min-width: 150px; max-width: 220px; flex-shrink: 0; }
-    .stat-card-name { font-size: 0.72rem; font-weight: 600; color: var(--text-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .stat-card-price { font-size: 1.05rem; font-weight: 800; font-variant-numeric: tabular-nums; margin-top: 0.1rem; }
-    .stat-card-price small { font-size: 0.7rem; font-weight: 500; color: var(--text-dim); }
-    .stat-chips { display: flex; gap: 0.3rem; margin-top: 0.35rem; flex-wrap: wrap; }
-    .stat-chip { font-size: 0.7rem; font-weight: 600; padding: 0.1rem 0.4rem; border-radius: 999px; border: 1px solid var(--border); color: var(--text-dim); font-variant-numeric: tabular-nums; white-space: nowrap; }
-    .stat-chip.up { color: #f87171; border-color: rgba(239,68,68,0.35); background: rgba(239,68,68,0.08); }
-    .stat-chip.down { color: #4ade80; border-color: rgba(34,197,94,0.35); background: rgba(34,197,94,0.08); }
+    .meta-sep {
+      width: 1px;
+      height: 11px;
+      background: var(--line-strong);
+    }
 
-    /* SIDEBAR SECTIONS */
-    .section { margin-bottom: 1.25rem; }
-    .section-title { font-size: 0.75rem; font-weight: 600; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem; }
-    .view-toggle { display: flex; gap: 0.3rem; margin-bottom: 1rem; }
-    .view-btn { flex: 1; padding: 0.5rem; border-radius: 8px; border: 1px solid var(--border); background: transparent; color: var(--text-dim); font-family: inherit; font-size: 0.78rem; font-weight: 500; cursor: pointer; transition: all 0.2s; text-align: center; }
-    .view-btn:hover { border-color: var(--accent); color: var(--text); }
-    .view-btn.active { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); font-weight: 600; }
-    .nav-link { display: flex; align-items: center; gap: 0.5rem; padding: 0.55rem 0.75rem; border-radius: 8px; border: 1px solid var(--border); background: color-mix(in srgb, var(--accent) 8%, transparent); color: var(--accent); font-size: 0.8rem; font-weight: 600; text-decoration: none; transition: all 0.2s; }
-    .nav-link:hover { background: color-mix(in srgb, var(--accent) 16%, transparent); border-color: var(--accent); }
-    .nav-link + .nav-link { margin-top: 0.5rem; }
-    .commodity-list { display: flex; flex-direction: column; gap: 0.3rem; }
-    .commodity-btn { padding: 0.45rem 0.75rem; border-radius: 8px; border: 1px solid var(--border); background: transparent; color: var(--text-dim); font-family: inherit; font-size: 0.8rem; font-weight: 500; cursor: pointer; transition: all 0.2s; text-align: left; display: flex; align-items: center; gap: 0.5rem; }
-    .commodity-btn:hover { border-color: var(--accent); color: var(--text); }
-    .commodity-btn.active { background: color-mix(in srgb, var(--accent) 12%, transparent); color: var(--accent); border-color: var(--accent); font-weight: 600; }
-    .commodity-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-    .period-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.3rem; }
-    .period-btn { padding: 0.4rem; border-radius: 6px; border: 1px solid var(--border); background: transparent; color: var(--text-dim); font-family: inherit; font-size: 0.75rem; font-weight: 500; cursor: pointer; transition: all 0.2s; text-align: center; }
-    .period-btn:hover { border-color: var(--accent); color: var(--text); }
-    .period-btn.active { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); font-weight: 600; }
-    .month-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.3rem; }
-    .month-btn { padding: 0.4rem; border-radius: 6px; border: 1px solid var(--border); background: transparent; color: var(--text-dim); font-family: inherit; font-size: 0.75rem; font-weight: 500; cursor: pointer; transition: all 0.2s; text-align: center; }
-    .month-btn:hover { border-color: var(--accent); color: var(--text); }
-    .month-btn.active { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); font-weight: 600; }
-    .month-hint { font-size: 0.75rem; color: var(--text-dim); margin-top: 0.4rem; }
-    .range-picker { margin-top: 0.75rem; padding: 0.65rem; border: 1px solid var(--border); border-radius: 8px; background: rgba(8,13,22,0.35); }
-    .range-picker-head, .range-values { display: flex; justify-content: space-between; gap: 0.5rem; font-size: 0.75rem; color: var(--text-dim); }
-    .range-picker-head { margin-bottom: 0.45rem; color: var(--text); font-weight: 600; }
-    .range-values { margin-top: 0.35rem; font-variant-numeric: tabular-nums; }
-    .range-track { height: 18px; position: relative; margin: 0 0.2rem; }
-    .range-track::before, .range-fill { content: ''; position: absolute; top: 7px; height: 4px; border-radius: 4px; }
-    .range-track::before { left: 0; right: 0; background: var(--border); }
-    .range-fill { left: 0; right: 0; background: var(--accent); }
-    .range-track input { position: absolute; inset: 0; width: 100%; height: 18px; margin: 0; appearance: none; background: transparent; pointer-events: none; }
+    .meta-link {
+      color: var(--accent);
+      font-weight: 550;
+      text-decoration: none;
+    }
+
+    .meta-link:hover { text-decoration: underline; text-underline-offset: 2px; }
+
+    /* ---------- Tab tampilan ---------- */
+    .view-tabs {
+      display: flex;
+      gap: 24px;
+      margin: 28px 0 20px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .view-btn {
+      position: relative;
+      padding: 0 0 11px;
+      border: 0;
+      background: none;
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 550;
+      cursor: pointer;
+    }
+
+    .view-btn::after {
+      content: "";
+      position: absolute;
+      right: 0;
+      bottom: -1px;
+      left: 0;
+      height: 2px;
+      background: transparent;
+    }
+
+    .view-btn:hover { color: var(--ink); }
+
+    .view-btn.active { color: var(--ink); font-weight: 650; }
+
+    .view-btn.active::after { background: var(--accent); }
+
+    .view-panel { display: none; }
+
+    .view-panel.active { display: block; }
+
+    /* ---------- Filter ---------- */
+    .filters {
+      display: grid;
+      gap: 18px;
+      padding: 20px 22px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      background: var(--surface);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .filter-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+      gap: 20px 28px;
+      padding-top: 18px;
+      border-top: 1px solid var(--line);
+    }
+
+    .filter-block { min-width: 0; }
+
+    .filter-label-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 6px 12px;
+      margin-bottom: 8px;
+    }
+
+    .filter-label {
+      color: var(--faint);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+    }
+
+    .filter-hint {
+      color: var(--faint);
+      font-size: 12px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .filter-actions {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+    }
+
+    .filter-note {
+      margin-top: 7px;
+      color: var(--faint);
+      font-size: 11.5px;
+    }
+
+    .commodity-list {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      padding-bottom: 2px;
+      scrollbar-width: none;
+    }
+
+    .commodity-list::-webkit-scrollbar { display: none; }
+
+    .commodity-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      height: 34px;
+      padding: 0 12px;
+      border: 1px solid transparent;
+      border-radius: 7px;
+      background: var(--surface-3);
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 550;
+      white-space: nowrap;
+      cursor: pointer;
+      transition: border-color 0.15s, background-color 0.15s, color 0.15s;
+    }
+
+    .commodity-btn:hover {
+      border-color: var(--line-strong);
+      color: var(--ink);
+    }
+
+    .commodity-btn.active {
+      border-color: var(--accent-line);
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    .commodity-dot {
+      width: 7px;
+      height: 7px;
+      flex-shrink: 0;
+      border-radius: 50%;
+    }
+
+    .period-grid {
+      display: inline-flex;
+      flex-wrap: wrap;
+      gap: 2px;
+      padding: 2px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      background: var(--surface-3);
+    }
+
+    .period-btn {
+      height: 30px;
+      padding: 0 10px;
+      border: 0;
+      border-radius: 6px;
+      background: transparent;
+      color: var(--muted);
+      font-size: 12.5px;
+      font-weight: 500;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+
+    .period-btn:hover { color: var(--ink); }
+
+    .period-btn.active {
+      background: var(--surface);
+      color: var(--ink);
+      font-weight: 600;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .month-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+    }
+
+    .month-btn {
+      height: 28px;
+      min-width: 42px;
+      padding: 0 8px;
+      border: 1px solid transparent;
+      border-radius: 6px;
+      background: var(--surface-3);
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 550;
+      cursor: pointer;
+    }
+
+    .month-btn:hover { border-color: var(--line-strong); color: var(--ink); }
+
+    .month-btn.active {
+      border-color: var(--accent-line);
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    .filter-months { grid-column: 1 / -1; }
+
+    .range-head {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .range-track {
+      position: relative;
+      height: 20px;
+      margin: 8px 2px 0;
+    }
+
+    .range-track::before,
+    .range-fill {
+      content: "";
+      position: absolute;
+      top: 8px;
+      height: 4px;
+      border-radius: 4px;
+    }
+
+    .range-track::before {
+      right: 0;
+      left: 0;
+      background: var(--line);
+    }
+
+    .range-fill { background: var(--accent); }
+
+    .range-track input {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 20px;
+      margin: 0;
+      appearance: none;
+      background: transparent;
+      pointer-events: none;
+    }
+
     .range-track input::-webkit-slider-runnable-track { height: 4px; background: transparent; }
     .range-track input::-moz-range-track { height: 4px; background: transparent; }
-    .range-track input::-webkit-slider-thumb { width: 14px; height: 14px; margin-top: -5px; appearance: none; border: 2px solid var(--bg); border-radius: 50%; background: var(--accent); cursor: grab; pointer-events: auto; }
-    .range-track input::-moz-range-thumb { width: 10px; height: 10px; border: 2px solid var(--bg); border-radius: 50%; background: var(--accent); cursor: grab; pointer-events: auto; }
-    #rangeStart { z-index: 3; }
-    #rangeEnd { z-index: 2; }
-    .pasar-list { display: flex; flex-direction: column; gap: 0.25rem; }
-    .pasar-item { display: flex; align-items: center; gap: 0.5rem; padding: 0.4rem 0.6rem; border-radius: 6px; cursor: pointer; transition: all 0.2s; user-select: none; }
-    .pasar-item:hover { background: var(--card-hover); }
-    .pasar-item.active { background: color-mix(in srgb, var(--pasar-color, var(--accent)) 10%, transparent); }
-    .pasar-item.inactive { opacity: 0.4; }
-    .pasar-item.inactive:hover { opacity: 0.7; }
-    .pasar-check { width: 16px; height: 16px; border-radius: 4px; border: 2px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 0.75rem; transition: all 0.2s; flex-shrink: 0; }
-    .pasar-item.active .pasar-check { background: var(--pasar-color, var(--accent)); border-color: var(--pasar-color, var(--accent)); color: var(--accent-ink); }
-    .pasar-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-    .pasar-info { flex: 1; min-width: 0; }
-    .pasar-name { font-size: 0.75rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .pasar-loc { font-size: 0.75rem; color: var(--text-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .pasar-val { font-size: 0.78rem; font-weight: 700; font-variant-numeric: tabular-nums; flex-shrink: 0; }
-    .pasar-status { display: block; font-size: 0.75rem; font-weight: 500; color: var(--text-dim); text-transform: uppercase; }
-    .select-row { display: flex; gap: 0.3rem; margin-bottom: 0.4rem; }
-    .select-sm { padding: 0.2rem 0.5rem; border-radius: 4px; border: 1px solid var(--border); background: transparent; color: var(--text-dim); font-family: inherit; font-size: 0.75rem; cursor: pointer; transition: all 0.2s; }
-    .select-sm:hover { border-color: var(--accent); color: var(--text); }
 
-    /* ANALISA VIEW */
-    .analisa-overlay { position: absolute; inset: 0; background: var(--bg); overflow-y: auto; padding: 1.5rem; display: none; z-index: 50; }
-    .analisa-overlay.active { display: block; }
-    .analisa-header { text-align: center; margin-bottom: 1.5rem; }
-    .analisa-header h2 { font-size: 1.2rem; font-weight: 700; color: var(--accent); }
-    .analisa-header p { color: var(--text-dim); font-size: 0.8rem; margin-top: 0.2rem; }
-    .summary-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; margin-bottom: 1.5rem; background: var(--card); border-radius: 12px; overflow: hidden; }
-    .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-    .summary-table th { padding: 0.6rem 0.8rem; text-align: left; font-weight: 600; color: var(--text-dim); font-size: 0.75rem; text-transform: uppercase; background: rgba(51,65,85,0.5); }
-    .summary-table td { padding: 0.6rem 0.8rem; border-top: 1px solid var(--border); }
-    .summary-table tr:hover td { background: rgba(51,65,85,0.3); }
-    .month-badge { display: inline-block; padding: 0.1rem 0.4rem; border-radius: 4px; font-size: 0.75rem; font-weight: 600; }
-    .month-badge.good { background: rgba(34,197,94,0.15); color: var(--green); }
-    .month-badge.bad { background: rgba(239,68,68,0.15); color: var(--red); }
-    .analisa-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 1rem; }
-    .analisa-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 1rem; }
-    .analisa-card-title { font-size: 0.9rem; font-weight: 700; margin-bottom: 0.15rem; }
-    .analisa-card-cols { font-size: 0.75rem; color: var(--text-dim); margin-bottom: 0.75rem; }
-    .rec-box { background: rgba(216,165,121,0.06); border: 1px solid rgba(216,165,121,0.15); border-radius: 8px; padding: 0.6rem; margin-bottom: 0.75rem; }
-    .rec-title { font-size: 0.75rem; font-weight: 600; color: var(--accent); margin-bottom: 0.3rem; }
-    .rec-row { display: flex; justify-content: space-between; font-size: 0.75rem; margin-bottom: 0.15rem; }
-    .rec-label { color: var(--text-dim); }
-    .rec-val { font-weight: 600; }
-    .rec-val.good { color: var(--green); }
-    .rec-val.bad { color: var(--red); }
-    .heatmap-row { display: flex; gap: 2px; margin-bottom: 0.3rem; }
-    .heatmap-cell { flex: 1; min-width: 0; height: 26px; border-radius: 3px; display: flex; align-items: center; justify-content: center; font-size: 0.72rem; font-weight: 600; }
-    .heatmap-labels { display: flex; gap: 2px; margin-bottom: 0.5rem; }
-    .heatmap-labels span { flex: 1; text-align: center; font-size: 0.72rem; color: var(--text-dim); }
-    .heatmap-legend { display: flex; align-items: center; gap: 0.4rem; font-size: 0.75rem; color: var(--text-dim); margin-bottom: 0.75rem; }
-    .heatmap-legend-bar { height: 6px; width: 60px; border-radius: 3px; background: linear-gradient(90deg, #22c55e, #eab308, #ef4444); }
-    .ym-grid { display: grid; grid-template-columns: 34px repeat(12, minmax(0, 1fr)); gap: 2px; }
-    .ym-mhead { text-align: center; font-size: 0.72rem; color: var(--text-dim); }
-    .ym-year { font-size: 0.72rem; color: var(--text-dim); display: flex; align-items: center; justify-content: flex-end; padding-right: 2px; font-variant-numeric: tabular-nums; }
-    .ym-cell { height: 24px; border-radius: 3px; display: flex; align-items: center; justify-content: center; font-size: 0.72rem; font-weight: 600; color: var(--text); }
-    .ym-cell.empty { background: rgba(51,65,85,0.4); color: var(--text-dim); }
-    .chart-note { font-size: 0.75rem; color: var(--text-dim); margin: 0.35rem 0 0.75rem; padding: 0 0.75rem; flex-shrink: 0; }
-    .stats-mini { display: flex; gap: 0.4rem; flex-wrap: wrap; }
-    .stat-mini { background: rgba(51,65,85,0.4); border-radius: 5px; padding: 0.3rem 0.5rem; font-size: 0.75rem; }
-    .stat-mini-label { color: var(--text-dim); font-size: 0.75rem; }
-    .stat-mini-val { font-weight: 600; }
-
-    /* MOBILE TOGGLE */
-    .mobile-toggle { display: none; position: fixed; bottom: 1rem; left: 1rem; width: 44px; height: 44px; border-radius: 50%; background: var(--accent); color: var(--accent-ink); border: none; cursor: pointer; font-size: 1.1rem; z-index: 200; box-shadow: 0 4px 16px rgba(0,0,0,0.4); align-items: center; justify-content: center; }
-    .mobile-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 99; }
-
-    @media (max-width: 768px) {
-      .sidebar { position: fixed; left: 0; top: 0; bottom: 0; transform: translateX(-100%); transition: transform 0.3s; z-index: 150; }
-      .sidebar.open { transform: translateX(0); }
-      .sidebar.collapsed { width: var(--sidebar-w); min-width: var(--sidebar-w); }
-      .mobile-toggle { display: flex; }
-      .mobile-overlay.active { display: block; }
-      .header-badges { display: none; }
-      .summary-table { font-size: 0.75rem; }
-      .summary-table th, .summary-table td { padding: 0.4rem 0.5rem; }
+    .range-track input::-webkit-slider-thumb {
+      width: 16px;
+      height: 16px;
+      margin-top: -6px;
+      appearance: none;
+      border: 2px solid var(--accent);
+      border-radius: 50%;
+      background: var(--surface);
+      cursor: grab;
+      pointer-events: auto;
+      box-shadow: 0 1px 3px rgba(23, 43, 36, 0.18);
     }
 
-    .toast-container { position: fixed; bottom: 1rem; right: 1rem; z-index: 9999; display: flex; flex-direction: column; gap: 0.4rem; }
-    .toast { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 0.6rem 0.8rem; font-size: 0.75rem; color: var(--text); box-shadow: 0 8px 24px rgba(0,0,0,0.3); }
-    .toast.success { border-left: 3px solid var(--green); } .toast.error { border-left: 3px solid var(--red); }
+    .range-track input::-moz-range-thumb {
+      width: 12px;
+      height: 12px;
+      border: 2px solid var(--accent);
+      border-radius: 50%;
+      background: var(--surface);
+      cursor: grab;
+      pointer-events: auto;
+    }
+
+    .range-track input:focus-visible { outline-offset: 4px; border-radius: 10px; }
+
+    #rangeStart { z-index: 3; }
+    #rangeEnd { z-index: 2; }
+
+    .range-values {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 4px;
+      color: var(--faint);
+      font-size: 11.5px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* ---------- Bagian umum ---------- */
+    .section { margin-top: 30px; }
+
+    .section-head {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 10px 24px;
+      margin-bottom: 13px;
+    }
+
+    .section-head h2 {
+      font-size: 20px;
+      letter-spacing: -0.02em;
+    }
+
+    .section-sub {
+      max-width: 78ch;
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 12.5px;
+      line-height: 1.55;
+    }
+
+    .section-kicker {
+      margin-bottom: 3px;
+      color: var(--faint);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .count {
+      margin-left: 6px;
+      color: var(--faint);
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0;
+    }
+
+    .inline-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .inline-sep {
+      width: 1px;
+      height: 11px;
+      background: var(--line-strong);
+    }
+
+    /* ---------- Ringkasan harga ---------- */
+    .stat-cards {
+      display: grid;
+      grid-auto-flow: column;
+      grid-auto-columns: minmax(0, 1fr);
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      background: var(--surface);
+    }
+
+    .stat-cards.is-empty {
+      display: block;
+      padding: 20px;
+    }
+
+    .empty-inline {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .stat-card { min-width: 0; padding: 18px 20px 16px; }
+
+    .stat-card + .stat-card { border-left: 1px solid var(--line); }
+
+    .stat-card-head {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 12.5px;
+      font-weight: 600;
+    }
+
+    .stat-card-name {
+      min-width: 0;
+      overflow: hidden;
+      flex: 1;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .tag-est {
+      margin-left: auto;
+      padding: 1px 6px;
+      border: 1px solid var(--amber-line);
+      border-radius: 4px;
+      background: var(--amber-soft);
+      color: var(--amber);
+      font-size: 10.5px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .stat-card-price {
+      margin-top: 8px;
+      color: var(--ink);
+      font-size: 30px;
+      font-weight: 650;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: -0.03em;
+      line-height: 1.15;
+    }
+
+    .stat-card-price .unit {
+      margin-left: 2px;
+      color: var(--faint);
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0;
+    }
+
+    .stat-changes {
+      display: grid;
+      gap: 3px;
+      margin-top: 12px;
+      padding-top: 9px;
+      border-top: 1px solid var(--line);
+    }
+
+    .change-row {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+      font-size: 12px;
+    }
+
+    .change-period { color: var(--faint); }
+
+    .change {
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+      text-align: right;
+    }
+
+    .change.up { color: var(--up); }
+    .change.down { color: var(--down); }
+    .change.flat { color: var(--muted); font-weight: 500; }
+
+    .stat-note {
+      margin-top: 10px;
+      padding-top: 9px;
+      border-top: 1px solid var(--line);
+      color: var(--amber);
+      font-size: 11.5px;
+      line-height: 1.5;
+    }
+
+    /* ---------- Grafik ---------- */
+    .chart-panel {
+      margin-top: 30px;
+      padding: 20px 22px 14px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      background: var(--surface);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .panel-head {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 14px 24px;
+      margin-bottom: 14px;
+    }
+
+    .panel-title { min-width: 0; }
+
+    .panel-title h2 { font-size: 20px; letter-spacing: -0.02em; }
+
+    .chart-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .chart-actions .btn {
+      min-height: 32px;
+      padding: 0 9px;
+      font-size: 11.5px;
+      font-weight: 550;
+    }
+
+    .chart-actions .btn.active {
+      border-color: var(--accent-line);
+      background: var(--accent-soft);
+      color: var(--accent);
+    }
+
+    .chart-box {
+      position: relative;
+      height: clamp(320px, 36vw, 440px);
+    }
+
+    .chart-box > canvas {
+      position: absolute;
+      inset: 0;
+      width: 100% !important;
+      height: 100% !important;
+    }
+
+    .chart-state {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      background: var(--surface);
+      text-align: center;
+    }
+
+    .chart-state-inner {
+      max-width: 440px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .chart-state-inner strong {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--ink);
+      font-size: 15px;
+      font-weight: 650;
+    }
+
+    .chart-state-inner .btn { margin-top: 12px; }
+
+    .chart-state.error .chart-state-inner strong { color: var(--up); }
+
+    .chart-foot {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 8px 20px;
+      margin-top: 12px;
+      padding-top: 11px;
+      border-top: 1px solid var(--line);
+    }
+
+    .chart-note {
+      max-width: 82ch;
+      color: var(--faint);
+      font-size: 11.5px;
+      line-height: 1.55;
+    }
+
+    .dash-sample {
+      display: inline-block;
+      width: 18px;
+      height: 0;
+      margin-right: 6px;
+      border-top: 2px dashed var(--neutral);
+      vertical-align: middle;
+    }
+
+    .data-quality {
+      color: var(--faint);
+      font-size: 11px;
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+    }
+
+    /* ---------- Tabel pasar ---------- */
+    .table-wrap {
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      background: var(--surface);
+    }
+
+    .table-scroll { overflow-x: auto; }
+
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13.5px;
+    }
+
+    .market-table { table-layout: fixed; }
+
+    .data-table th {
+      padding: 10px 16px;
+      border-bottom: 1px solid var(--line);
+      background: var(--surface-2);
+      color: var(--faint);
+      font-size: 10.5px;
+      font-weight: 600;
+      letter-spacing: 0.07em;
+      text-align: left;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .data-table td {
+      padding: 11px 16px;
+      border-top: 1px solid var(--line);
+      vertical-align: middle;
+    }
+
+    .data-table tbody tr:first-child td { border-top: 0; }
+
+    .pasar-item {
+      cursor: pointer;
+      transition: background-color 0.12s;
+    }
+
+    .pasar-item:hover { background: var(--surface-2); }
+
+    .pasar-item:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: -2px;
+    }
+
+    .market-table .col-check { width: 46px; padding-right: 0; }
+    .market-table .col-loc { width: 30%; }
+    .market-table .col-price { width: 190px; text-align: right; }
+
+    .check {
+      display: inline-grid;
+      place-items: center;
+      width: 17px;
+      height: 17px;
+      border: 1.5px solid var(--line-strong);
+      border-radius: 4px;
+      background: var(--surface);
+      color: #fff;
+    }
+
+    .pasar-item.active .check {
+      border-color: var(--c, var(--accent));
+      background: var(--c, var(--accent));
+    }
+
+    .check svg { width: 10px; height: 8px; }
+
+    .market-name-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .market-dot {
+      width: 8px;
+      height: 8px;
+      flex-shrink: 0;
+      border-radius: 50%;
+    }
+
+    .market-name {
+      overflow: hidden;
+      color: var(--ink);
+      font-weight: 550;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .pasar-item.inactive .market-name { color: var(--muted); }
+
+    .col-loc {
+      overflow: hidden;
+      color: var(--muted);
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .col-price { font-variant-numeric: tabular-nums; }
+
+    .price-line {
+      display: flex;
+      align-items: baseline;
+      justify-content: flex-end;
+      gap: 2px;
+    }
+
+    .price { color: var(--ink); font-weight: 600; }
+
+    .pasar-item.inactive .price { color: var(--muted); }
+
+    .price .unit,
+    .price-line .unit {
+      color: var(--faint);
+      font-size: 10.5px;
+      font-weight: 500;
+    }
+
+    .price-status {
+      display: block;
+      margin-top: 1px;
+      color: var(--faint);
+      font-size: 10.5px;
+      font-weight: 500;
+    }
+
+    .price-status.est { color: var(--amber); }
+    .price-status.none { color: var(--up); }
+
+    /* ---------- Analisa ---------- */
+    .analisa-head { margin-bottom: 16px; }
+
+    .table-panel {
+      padding: 0;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      background: var(--surface);
+    }
+
+    .summary-table {
+      width: 100%;
+      min-width: 780px;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    .summary-table th {
+      padding: 10px 16px;
+      border-bottom: 1px solid var(--line);
+      background: var(--surface-2);
+      color: var(--faint);
+      font-size: 10.5px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-align: left;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .summary-table td {
+      padding: 11px 16px;
+      border-top: 1px solid var(--line);
+      vertical-align: middle;
+    }
+
+    .summary-table tbody tr:first-child td { border-top: 0; }
+
+    .summary-table tbody tr:hover td { background: var(--surface-2); }
+
+    .summary-table td:first-child {
+      color: var(--ink);
+      font-weight: 600;
+    }
+
+    .summary-table .num { text-align: right; font-variant-numeric: tabular-nums; }
+
+    .month-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 3px 7px;
+      border-radius: 5px;
+      font-size: 11.5px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .month-badge.high {
+      border: 1px solid var(--accent-line);
+      background: var(--accent-soft);
+      color: var(--accent);
+    }
+
+    .month-badge.low {
+      border: 1px solid var(--line);
+      background: var(--surface-3);
+      color: var(--muted);
+    }
+
+    .table-empty {
+      color: var(--muted) !important;
+      font-size: 12.5px !important;
+      font-weight: 400 !important;
+      text-align: center !important;
+    }
+
+    .analisa-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+      margin-top: 20px;
+    }
+
+    .analisa-card {
+      min-width: 0;
+      padding: 20px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      background: var(--surface);
+    }
+
+    .analisa-card-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 16px;
+      font-weight: 650;
+      letter-spacing: -0.01em;
+    }
+
+    .analisa-card-cols {
+      margin: 2px 0 14px;
+      color: var(--faint);
+      font-size: 11.5px;
+      line-height: 1.5;
+    }
+
+    .rec-box {
+      margin-bottom: 16px;
+      padding: 12px 14px;
+      border-radius: var(--radius-sm);
+      background: var(--surface-2);
+    }
+
+    .rec-title {
+      margin-bottom: 7px;
+      color: var(--faint);
+      font-size: 10.5px;
+      font-weight: 600;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+    }
+
+    .rec-row {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 2px 0;
+      font-size: 12.5px;
+    }
+
+    .rec-label { color: var(--muted); }
+
+    .rec-val {
+      color: var(--ink);
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+      text-align: right;
+    }
+
+    .heatmap-caption {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 4px 12px;
+      margin-bottom: 6px;
+      color: var(--faint);
+      font-size: 11px;
+    }
+
+    .legend-inline {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      color: var(--faint);
+      font-size: 10.5px;
+      white-space: nowrap;
+    }
+
+    .swatch {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 2px;
+    }
+
+    .swatch.up { background: rgba(194, 65, 59, 0.55); }
+    .swatch.down { background: rgba(22, 128, 93, 0.55); }
+
+    .heatmap-row,
+    .heatmap-labels {
+      display: grid;
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      gap: 3px;
+    }
+
+    .heatmap-cell {
+      display: grid;
+      place-items: center;
+      height: 30px;
+      border-radius: 4px;
+      color: var(--ink);
+      font-size: 11px;
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .heatmap-labels {
+      margin: 4px 0 16px;
+    }
+
+    .heatmap-labels span {
+      color: var(--faint);
+      font-size: 10px;
+      text-align: center;
+    }
+
+    .ym-grid {
+      display: grid;
+      grid-template-columns: 34px repeat(12, minmax(0, 1fr));
+      gap: 2px;
+      overflow-x: auto;
+    }
+
+    .ym-corner { min-width: 0; }
+
+    .ym-mhead {
+      padding-bottom: 2px;
+      color: var(--faint);
+      font-size: 9.5px;
+      text-align: center;
+    }
+
+    .ym-year {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding-right: 2px;
+      color: var(--faint);
+      font-size: 10px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .ym-cell {
+      display: grid;
+      place-items: center;
+      height: 24px;
+      border-radius: 3px;
+      color: var(--ink);
+      font-size: 10px;
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .ym-cell.empty {
+      background: var(--surface-3);
+      color: var(--faint);
+      font-weight: 500;
+    }
+
+    .heatmap-legend {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      margin: 7px 0 0;
+      color: var(--faint);
+      font-size: 10px;
+    }
+
+    .heatmap-legend-bar {
+      width: 110px;
+      height: 6px;
+      border-radius: 3px;
+      background: linear-gradient(90deg, #7FC3A8, #D8C07E, #D99A96);
+    }
+
+    .empty-state {
+      padding: 28px 20px;
+      border: 1px dashed var(--line-strong);
+      border-radius: var(--radius);
+      background: var(--surface-2);
+      text-align: center;
+    }
+
+    .empty-state strong {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--ink);
+      font-size: 14px;
+    }
+
+    .empty-state p {
+      max-width: 50ch;
+      margin: 0 auto;
+      color: var(--muted);
+      font-size: 12.5px;
+    }
+
+    /* ---------- Toast ---------- */
+    .toast-container {
+      position: fixed;
+      right: 16px;
+      bottom: 16px;
+      z-index: 300;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      width: min(360px, calc(100vw - 32px));
+    }
+
+    .toast {
+      padding: 10px 14px;
+      border: 1px solid var(--line);
+      border-left: 3px solid var(--neutral);
+      border-radius: var(--radius-sm);
+      background: var(--surface);
+      color: var(--ink);
+      font-size: 12.5px;
+      line-height: 1.5;
+      box-shadow: var(--shadow-pop);
+    }
+
+    .toast.success { border-left-color: var(--down); }
+    .toast.error { border-left-color: var(--up); }
+
+    /* ---------- Responsif ---------- */
+    @media (max-width: 1024px) {
+      .filter-grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+    }
+
+    @media (max-width: 820px) {
+      .filter-grid { grid-template-columns: minmax(0, 1fr); gap: 18px; }
+      .analisa-grid { grid-template-columns: minmax(0, 1fr); }
+      .filter-months { grid-column: auto; }
+    }
+
+    @media (max-width: 720px) {
+      .stat-cards {
+        grid-auto-flow: row;
+        grid-auto-columns: auto;
+      }
+      .stat-card + .stat-card {
+        border-top: 1px solid var(--line);
+        border-left: 0;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .page { padding-top: 28px; }
+      .lede { font-size: 15px; }
+      .meta-row { font-size: 12px; }
+      .view-btn { padding-top: 8px; padding-bottom: 12px; }
+      .filters { padding: 16px; }
+      .chart-panel { padding: 16px 16px 12px; }
+      .chart-box { height: 320px; }
+      .section { margin-top: 26px; }
+      .chart-panel { margin-top: 26px; }
+      .commodity-list { flex-wrap: wrap; overflow: visible; }
+      .commodity-btn { height: 36px; }
+      .period-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        width: 100%;
+      }
+      .period-btn { height: 36px; padding: 0 8px; }
+      .month-btn { height: 34px; min-width: 44px; }
+      .link-btn { padding: 7px 0; }
+      .range-track { height: 24px; margin-top: 6px; }
+      .range-track::before,
+      .range-fill { top: 10px; }
+      .range-track input { height: 24px; }
+      .range-track input::-webkit-slider-thumb { width: 18px; height: 18px; margin-top: -7px; }
+      .data-table th,
+      .data-table td { padding: 10px 12px; }
+      .market-table .col-loc { display: none; }
+      .market-table .col-price { width: 132px; }
+      .market-table .col-check { width: 34px; }
+      .chart-actions .btn { width: 40px; min-height: 40px; padding: 0; }
+      .chart-actions .btn-label { display: none; }
+      .data-quality { white-space: normal; }
+      .summary-table th,
+      .summary-table td { padding: 9px 12px; }
+      .summary-table,
+      .summary-table tbody { display: block; min-width: 0; }
+      .summary-table thead { display: none; }
+      .summary-table tbody tr {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 9px 16px;
+        padding: 14px 16px;
+        border-top: 1px solid var(--line);
+      }
+      .summary-table tbody tr:first-child { border-top: 0; }
+      .summary-table tbody tr:hover { background: var(--surface-2); }
+      .summary-table tbody tr:hover td { background: transparent; }
+      .summary-table td {
+        min-width: 0;
+        padding: 0;
+        border: 0;
+      }
+      .summary-table td:first-child {
+        grid-column: 1 / -1;
+        font-size: 14px;
+      }
+      .summary-table td::before {
+        content: attr(data-label);
+        display: block;
+        margin-bottom: 2px;
+        color: var(--faint);
+        font-size: 10px;
+        font-weight: 600;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+      }
+      .summary-table td:first-child::before,
+      .summary-table td[colspan]::before { display: none; }
+      .summary-table td.num { text-align: left; }
+      .summary-table td[colspan] { grid-column: 1 / -1; }
+      .analisa-card { padding: 16px; }
+      .heatmap-cell { height: 27px; font-size: 10px; }
+      .ym-cell { height: 22px; font-size: 9px; }
+    }
+
+    @media (max-width: 420px) {
+      .page-intro h1 { font-size: 28px; }
+      .meta-sep { display: none; }
+      .view-tabs { gap: 18px; }
+      .core { overflow-x: auto; }
+      .period-btn { padding: 0 8px; font-size: 12px; }
+      .month-btn { min-width: 38px; }
+      .chart-box { height: 300px; }
+      .stat-card-price { font-size: 27px; }
+      .heatmap-cell { height: 25px; font-size: 9.5px; }
+      .heatmap-labels span { font-size: 9px; }
+    }
   </style>
 </head>
 <body>
+<a class="skip-link" href="#main">Lewati ke konten</a>
 
-<div class="toast-container" id="toastContainer"></div>
-<div class="mobile-overlay" id="mobileOverlay"></div>
-<button class="mobile-toggle" id="mobileToggle">☰</button>
+<div class="toast-container" id="toastContainer" role="status" aria-live="polite"></div>
 
-<div class="app">
-  <!-- SIDEBAR -->
-  <aside class="sidebar" id="sidebar">
-    <div class="sidebar-header">
-      <div class="sidebar-title">Harga Produsen Jatim</div>
-      <button class="sidebar-close" id="sidebarClose">✕</button>
+<header class="site-header">
+  <div class="container header-inner">
+    <a class="brand" href="index.html" aria-label="Harga Pangan Jawa Timur — beranda">
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 20 20" fill="none">
+          <path d="M3 14.2 7.4 9.2l3.1 3.1 6.4-7" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="16.9" cy="5.3" r="1.7" fill="currentColor"/>
+        </svg>
+      </span>
+      <span class="brand-text">
+        <span class="brand-name">Harga Pangan</span>
+        <span class="brand-sub">Jawa Timur</span>
+      </span>
+    </a>
+
+    <nav class="site-nav" aria-label="Navigasi utama">
+      <a href="index.html" aria-current="page">Dashboard</a>
+      <a href="tanam.html">Kalkulator tanam</a>
+      <a href="kartu.html">Kartu insight</a>
+      <a href="tentang.html">Tentang &amp; metode</a>
+    </nav>
+
+    <div class="header-meta">
+      <span id="dataFreshBadge">Memuat data…</span>
     </div>
-    <div class="sidebar-body">
-      <!-- View Toggle -->
-      <div class="section">
-        <div class="view-toggle">
-          <button class="view-btn active" data-view="grafik">Grafik</button>
-          <button class="view-btn" data-view="analisa">Analisa</button>
+
+    <details class="nav-menu">
+      <summary>Menu</summary>
+      <nav aria-label="Navigasi utama (seluler)">
+        <a href="index.html" aria-current="page">Dashboard</a>
+        <a href="tanam.html">Kalkulator tanam</a>
+        <a href="kartu.html">Kartu insight</a>
+        <a href="tentang.html">Tentang &amp; metode</a>
+      </nav>
+    </details>
+  </div>
+</header>
+
+<main class="container page" id="main">
+  <section class="page-intro" aria-labelledby="pageTitle">
+    <p class="eyebrow">Data terbuka · SISKAPERBAPO Jawa Timur</p>
+    <h1 id="pageTitle">Harga produsen pangan Jawa Timur</h1>
+    <p class="lede">Pantau pergerakan harga harian delapan komoditas pangan dari titik pantau di Jawa Timur. Bandingkan pasar, lihat pola musiman, dan unduh data untuk analisis Anda sendiri.</p>
+    <div class="meta-row">
+      <span><span class="meta-label">Diperbarui</span> <span id="introUpdated">—</span></span>
+      <span class="meta-sep" aria-hidden="true"></span>
+      <span><span class="meta-label">Cakupan data</span> <span id="introRange">—</span></span>
+      <span class="meta-sep" aria-hidden="true"></span>
+      <span id="commodityBadge">—</span>
+      <a class="meta-link" href="tentang.html">Sumber &amp; metode</a>
+    </div>
+  </section>
+
+  <div class="view-tabs" role="tablist" aria-label="Tampilan data">
+    <button class="view-btn active" id="tab-grafik" data-view="grafik" role="tab" aria-selected="true" aria-controls="grafikView">Grafik harga</button>
+    <button class="view-btn" id="tab-analisa" data-view="analisa" role="tab" aria-selected="false" aria-controls="analisaView">Analisa musiman</button>
+  </div>
+
+  <div class="view-panel active" id="grafikView" role="tabpanel" aria-labelledby="tab-grafik">
+    <section class="filters" aria-label="Filter data">
+      <div class="filter-block">
+        <div class="filter-label-row">
+          <span class="filter-label" id="commodityFilterLabel">Komoditas</span>
         </div>
-        <a class="nav-link" href="tanam.html">Kalkulator Waktu Tanam</a>
-        <a class="nav-link" href="kartu.html">Kartu Insight Bulanan</a>
+        <div class="commodity-list" id="commodityList" role="group" aria-labelledby="commodityFilterLabel"></div>
       </div>
 
-      <!-- Komoditas -->
-      <div class="section" id="commoditySection">
-        <div class="section-title">Komoditas</div>
-        <div class="commodity-list" id="commodityList"></div>
-      </div>
-
-      <!-- Pasar -->
-      <div class="section" id="pasarSection">
-        <div class="section-title">Pilih Pasar <span id="pasarCount"></span></div>
-        <div class="select-row">
-          <button class="select-sm" id="selectAllBtn">Semua</button>
-          <button class="select-sm" id="deselectAllBtn">Hapus</button>
+      <div class="filter-grid">
+        <div class="filter-block" id="periodSection">
+          <div class="filter-label-row">
+            <span class="filter-label">Periode</span>
+          </div>
+          <div class="period-grid" role="group" aria-label="Periode grafik">
+            <button class="period-btn" data-period="1w">1 minggu</button>
+            <button class="period-btn" data-period="1m">1 bulan</button>
+            <button class="period-btn" data-period="3m">3 bulan</button>
+            <button class="period-btn" data-period="6m">6 bulan</button>
+            <button class="period-btn" data-period="1y">1 tahun</button>
+            <button class="period-btn active" data-period="all">Semua</button>
+          </div>
         </div>
-        <div class="pasar-list" id="pasarList"></div>
-      </div>
 
-      <!-- Periode -->
-      <div class="section" id="periodSection">
-        <div class="section-title">Periode</div>
-        <div class="period-grid">
-          <button class="period-btn" data-period="1w">1 Minggu</button>
-          <button class="period-btn" data-period="1m">1 Bulan</button>
-          <button class="period-btn" data-period="3m">3 Bulan</button>
-          <button class="period-btn" data-period="6m">6 Bulan</button>
-          <button class="period-btn" data-period="1y">1 Tahun</button>
-          <button class="period-btn active" data-period="all">Semua</button>
-        </div>
-        <div class="range-picker">
-          <div class="range-picker-head"><span>Rentang bebas</span><span id="rangeSummary">Semua data</span></div>
+        <div class="filter-block">
+          <div class="range-head">
+            <span class="filter-label">Rentang bebas</span>
+            <span class="filter-hint" id="rangeSummary">Semua data</span>
+          </div>
           <div class="range-track">
             <div class="range-fill" id="rangeFill"></div>
             <input id="rangeStart" type="range" min="0" max="1" value="0" aria-label="Tanggal mulai">
             <input id="rangeEnd" type="range" min="0" max="1" value="1" aria-label="Tanggal akhir">
           </div>
-          <div class="range-values"><span id="rangeStartLabel">-</span><span id="rangeEndLabel">-</span></div>
-        </div>
-      </div>
-
-      <!-- Filter Bulan -->
-      <div class="section" id="monthSection">
-        <div class="section-title">Bulan <span id="monthCount"></span></div>
-        <div class="month-grid" id="monthGrid"></div>
-        <div class="select-row" style="margin-top:0.4rem;">
-          <button class="select-sm" id="resetMonthBtn">Semua bulan</button>
-        </div>
-        <div class="month-hint">Klik bulan untuk memfilter chart. Tanpa pilihan = semua bulan.</div>
-      </div>
-
-      <!-- Info -->
-      <div class="section">
-        <div class="section-title">Info</div>
-        <div id="infoBadges" style="display:flex;flex-direction:column;gap:0.3rem;">
-          <div class="badge" id="updateBadge" style="text-align:left;width:fit-content;">Memuat...</div>
-          <div class="badge" id="commodityBadge" style="text-align:left;width:fit-content;"></div>
-          <div class="badge" id="rangeBadge" style="text-align:left;width:fit-content;"></div>
-          <div class="badge" id="qualityBadge" style="text-align:left;width:fit-content;"></div>
-          <div class="badge" style="text-align:left;width:fit-content;">siskaperbapo.jatimprov.go.id</div>
-          <a class="badge info-link" href="tentang.html" style="text-align:left;width:fit-content;">Tentang & metode →</a>
-        </div>
-      </div>
-    </div>
-    <div class="sidebar-footer">
-      <small>Data diperbarui manual dari SISKAPERBAPO</small>
-    </div>
-  </aside>
-
-  <!-- MAIN -->
-  <div class="main">
-    <div class="main-header">
-      <button class="menu-btn" id="menuBtn">☰</button>
-      <div class="header-info">
-        <div class="header-title" id="headerTitle">Harga Produsen Pangan Jawa Timur</div>
-        <div class="header-sub" id="headerSub">Data dari SISKAPERBAPO</div>
-      </div>
-      <div class="header-badges">
-        <span class="badge" id="dataFreshBadge"></span>
-        <span class="badge" id="headerBadge"></span>
-      </div>
-      <div class="zoom-actions" id="zoomActions">
-        <button class="icon-btn" id="exportPngBtn" title="Unduh chart sebagai gambar PNG">PNG</button>
-        <button class="icon-btn" id="exportCsvBtn" title="Unduh data rentang yang tampil sebagai CSV">CSV</button>
-        <button class="icon-btn" id="shareWaBtn" title="Bagikan harga terkini via WhatsApp">WA</button>
-        <button class="icon-btn" id="resetZoomBtn" title="Reset zoom">↺</button>
-      </div>
-    </div>
-
-    <!-- Grafik View -->
-    <div class="chart-area" id="grafikView">
-      <div class="chart-sticky">
-        <div class="chart-bar">
-          <div>
-            <div class="chart-bar-title" id="chartTitle">Tren Harga</div>
-            <div class="chart-bar-sub" id="chartSub">Harga produsen per kg (Rp)</div>
+          <div class="range-values">
+            <span id="rangeStartLabel">—</span>
+            <span id="rangeEndLabel">—</span>
           </div>
         </div>
-        <div class="stat-cards" id="statCards"></div>
+
+        <div class="filter-block filter-months" id="monthSection">
+          <div class="filter-label-row">
+            <span class="filter-label">Bulan</span>
+            <div class="filter-actions">
+              <span class="filter-hint" id="monthCount"></span>
+              <button class="link-btn" id="resetMonthBtn">Semua bulan</button>
+            </div>
+          </div>
+          <div class="month-grid" id="monthGrid" role="group" aria-label="Filter bulan"></div>
+          <p class="filter-note">Tanpa pilihan berarti semua bulan ditampilkan.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="summaryTitle">
+      <div class="section-head">
+        <div>
+          <h2 id="summaryTitle">Harga terkini</h2>
+          <p class="section-sub" id="summarySub">Harga produsen per kilogram di titik pantau terpilih.</p>
+        </div>
+      </div>
+      <div class="stat-cards" id="statCards"></div>
+    </section>
+
+    <section class="chart-panel" aria-labelledby="chartTitle">
+      <div class="panel-head">
+        <div class="panel-title">
+          <p class="section-kicker">Tren harga</p>
+          <h2 id="chartTitle">Memuat…</h2>
+          <p class="section-sub" id="chartSub">Harga produsen per kilogram</p>
+        </div>
+        <div class="chart-actions" id="zoomActions">
+          <button class="btn btn-quiet" id="exportPngBtn" title="Unduh grafik sebagai gambar PNG" aria-label="Unduh grafik sebagai gambar PNG">
+            <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 2v8m0 0 3-3M8 10 5 7M3 12.5h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span class="btn-label">PNG</span>
+          </button>
+          <button class="btn btn-quiet" id="exportCsvBtn" title="Unduh data pada rentang yang tampil sebagai CSV" aria-label="Unduh data CSV">
+            <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 3h10v10H3z" stroke="currentColor" stroke-width="1.4"/><path d="M3 6.5h10M3 9.5h10M6.5 3v10M9.5 3v10" stroke="currentColor" stroke-width="1.1"/></svg>
+            <span class="btn-label">CSV</span>
+          </button>
+          <button class="btn btn-quiet" id="shareWaBtn" title="Bagikan harga terkini via WhatsApp" aria-label="Bagikan harga terkini via WhatsApp">
+            <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="12" cy="3.5" r="1.8" stroke="currentColor" stroke-width="1.4"/><circle cx="4" cy="8" r="1.8" stroke="currentColor" stroke-width="1.4"/><circle cx="12" cy="12.5" r="1.8" stroke="currentColor" stroke-width="1.4"/><path d="m5.6 7.1 4.8-2.7M5.6 8.9l4.8 2.7" stroke="currentColor" stroke-width="1.3"/></svg>
+            <span class="btn-label">Bagikan</span>
+          </button>
+          <button class="btn btn-quiet" id="resetZoomBtn" title="Reset zoom grafik" aria-label="Reset zoom grafik">
+            <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M13 8a5 5 0 1 1-1.6-3.7M13 2.8V5.5h-2.7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span class="btn-label">Reset</span>
+          </button>
+        </div>
       </div>
       <div class="chart-box">
-        <canvas id="priceChart"></canvas>
+        <canvas id="priceChart" role="img" aria-label="Grafik garis tren harga komoditas terpilih"></canvas>
+        <div class="chart-state" id="chartState" role="status">
+          <div class="chart-state-inner">
+            <strong>Memuat data</strong>
+            <p>Mengambil data harga terbaru dari arsip dashboard.</p>
+          </div>
+        </div>
       </div>
-      <div class="chart-note">Garis putus-putus dan label "Estimasi" berarti harga diisi dari hari sebelumnya karena sumber belum menyediakan nilai aktual.</div>
-    </div>
+      <div class="chart-foot">
+        <p class="chart-note"><span class="dash-sample" aria-hidden="true"></span>Garis putus-putus dan label “Estimasi” berarti harga diisi dari hari sebelumnya karena sumber belum menyediakan nilai aktual.</p>
+        <span class="data-quality" id="qualityBadge"></span>
+      </div>
+    </section>
 
-    <!-- Analisa View -->
-    <div class="analisa-overlay" id="analisaView">
-      <div class="analisa-header">
-        <h2>Analisa Tren & Rekomendasi</h2>
-        <p>Berdasarkan data historis untuk membantu petani menentukan waktu jual terbaik</p>
+    <section class="section" id="pasarSection" aria-labelledby="pasarTitle">
+      <div class="section-head">
+        <div>
+          <h2 id="pasarTitle">Pasar yang dipantau <span class="count" id="pasarCount"></span></h2>
+          <p class="section-sub">Centang pasar untuk menampilkan atau menyembunyikan serinya pada grafik. Harga dan status di bawah adalah data terbaru.</p>
+        </div>
+        <div class="inline-actions">
+          <button class="link-btn" id="selectAllBtn">Pilih semua</button>
+          <span class="inline-sep" aria-hidden="true"></span>
+          <button class="link-btn" id="deselectAllBtn">Sisakan satu</button>
+        </div>
       </div>
+      <div class="table-wrap">
+        <div class="table-scroll">
+          <table class="data-table market-table">
+            <thead>
+              <tr>
+                <th class="col-check"><span class="sr-only">Tampilkan di grafik</span></th>
+                <th>Pasar</th>
+                <th class="col-loc">Wilayah</th>
+                <th class="col-price">Harga terakhir</th>
+              </tr>
+            </thead>
+            <tbody id="pasarList"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <section class="view-panel" id="analisaView" role="tabpanel" aria-labelledby="tab-analisa">
+    <div class="section-head analisa-head">
+      <div>
+        <p class="section-kicker">Analisa musiman</p>
+        <h2>Pola harga &amp; waktu jual</h2>
+        <p class="section-sub">Dihitung dari median harga historis tiap komoditas. Pola masa lalu membantu menyusun rencana, bukan menjamin harga berikutnya.</p>
+      </div>
+    </div>
+    <div class="table-panel">
       <div class="table-scroll">
         <table class="summary-table" id="summaryTable">
-          <thead><tr><th>Komoditas</th><th>Jual: Harga Tertinggi</th><th>Harga Terendah</th><th>Momentum Naik</th><th>Konsistensi Pola</th><th>Data Aktual</th></tr></thead>
+          <caption class="sr-only">Ringkasan pola harga bulanan per komoditas</caption>
+          <thead>
+            <tr>
+              <th>Komoditas</th>
+              <th>Harga tertinggi</th>
+              <th>Harga terendah</th>
+              <th>Momentum naik</th>
+              <th>Konsistensi pola</th>
+              <th class="num">Data aktual</th>
+            </tr>
+          </thead>
           <tbody id="summaryBody"></tbody>
         </table>
       </div>
-      <div class="analisa-grid" id="analisaGrid"></div>
+    </div>
+    <div class="analisa-grid" id="analisaGrid"></div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="container footer-inner">
+    <div>
+      <p class="footer-title">Harga Produsen Pangan Jawa Timur</p>
+      <p class="footer-text">Sumber data: <a href="https://siskaperbapo.jatimprov.go.id/harga/views/layanankomoditashargaprodusen/tabel/hargaprodusen/" target="_blank" rel="noopener">SISKAPERBAPO — Dinas Ketahanan Pangan Provinsi Jawa Timur</a>. Data harga milik Pemerintah Provinsi Jawa Timur, disalin ulang dengan atribusi. Dashboard ini proyek mandiri dan bukan kanal resmi pemerintah. Pembaruan data dijadwalkan setiap Senin pukul 10.00 WIB.</p>
+      <p class="footer-meta">Terakhir diperbarui <span id="footerUpdated">—</span> · Kode sumber berlisensi MIT</p>
+    </div>
+    <div>
+      <nav class="footer-links" aria-label="Tautan kaki">
+        <a href="index.html">Dashboard</a>
+        <a href="tanam.html">Kalkulator tanam</a>
+        <a href="kartu.html">Kartu insight</a>
+        <a href="tentang.html">Tentang &amp; metode</a>
+        <a href="https://github.com/zeinzulaziz/harga-pangan" target="_blank" rel="noopener">GitHub</a>
+      </nav>
+      <p class="footer-meta">Untuk angka yang mengikat, rujuk publikasi resmi SISKAPERBAPO.</p>
     </div>
   </div>
-</div>
+</footer>
+
+<noscript>
+  <p style="max-width:72ch;margin:24px auto;padding:0 16px;color:#5F6C66;font-size:14px;">Dashboard ini membutuhkan JavaScript untuk memuat grafik dan tabel harga. Data mentah tetap dapat dibaca di repositori proyek.</p>
+</noscript>
 
 <script>
-const R = n => n ? 'Rp' + n.toLocaleString('id-ID') : '-';
-const COLORS = ['#d8a579','#e8b88a','#c49a6c','#b8864a','#a87235','#e0c49e','#d0a878','#9a6b3e'];
-const BULAN = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Ags','Sep','Okt','Nov','Des'];
-const BULAN_FULL = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+const R = n => n != null ? 'Rp' + n.toLocaleString('id-ID') : '-';
+const COLORS = ['#246B4A', '#B4653F', '#3E6A8A', '#9A7B2F', '#6B5B95', '#2F7E7A', '#8A5A6A', '#5C6B3C'];
+const BULAN = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Ags', 'Sep', 'Okt', 'Nov', 'Des'];
+const BULAN_FULL = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+const CHECK_ICON = '<svg viewBox="0 0 10 8" aria-hidden="true"><path d="M1 4.2 3.6 6.8 9 1.2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
 let data = null, analisaData = null, currentCommodity = null, currentPeriod = 'all';
 let customRange = { start: null, end: null };
 let selectedPasars = new Set(), selectedMonths = new Set(), chart = null;
 
-function showToast(msg, type='info') {
-  const c = document.getElementById('toastContainer'), t = document.createElement('div');
-  t.className = `toast ${type}`; t.textContent = msg; c.appendChild(t);
-  setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 300); }, 3500);
+const fmtPct = p => Math.abs(p).toLocaleString('id-ID', { maximumFractionDigits: 1 });
+
+function changeInfo(pct) {
+  if (pct > 0.05) return { cls: 'up', text: 'Naik ' + fmtPct(pct) + '%' };
+  if (pct < -0.05) return { cls: 'down', text: 'Turun ' + fmtPct(pct) + '%' };
+  return { cls: 'flat', text: 'Tetap' };
 }
 
-// SIDEBAR
-const sidebar = document.getElementById('sidebar');
-const mobileOverlay = document.getElementById('mobileOverlay');
-function toggleSidebar(force) {
-  const open = force !== undefined ? force : sidebar.classList.contains('collapsed');
-  sidebar.classList.toggle('collapsed', !open);
-  sidebar.classList.toggle('open', open);
-  mobileOverlay.classList.toggle('active', open && window.innerWidth <= 768);
+function showToast(msg, type = 'info') {
+  const container = document.getElementById('toastContainer');
+  const toast = document.createElement('div');
+  toast.className = `toast ${type}`;
+  toast.textContent = msg;
+  toast.style.transition = 'opacity 0.25s';
+  container.appendChild(toast);
+  setTimeout(() => {
+    toast.style.opacity = '0';
+    setTimeout(() => toast.remove(), 260);
+  }, 3500);
 }
-document.getElementById('menuBtn').addEventListener('click', () => toggleSidebar());
-document.getElementById('sidebarClose').addEventListener('click', () => toggleSidebar(false));
-document.getElementById('mobileToggle').addEventListener('click', () => toggleSidebar(true));
-mobileOverlay.addEventListener('click', () => toggleSidebar(false));
 
-// VIEW TOGGLE
-document.querySelectorAll('.view-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    const v = btn.dataset.view;
-    document.getElementById('grafikView').style.display = v === 'grafik' ? 'flex' : 'none';
-    document.getElementById('analisaView').classList.toggle('active', v === 'analisa');
-    document.getElementById('periodSection').style.display = v === 'grafik' ? 'block' : 'none';
-    document.getElementById('monthSection').style.display = v === 'grafik' ? 'block' : 'none';
-    document.getElementById('pasarSection').style.display = v === 'grafik' ? 'block' : 'none';
-    document.getElementById('zoomActions').style.display = v === 'grafik' ? 'flex' : 'none';
-    if (v === 'grafik' && chart) chart.resize();
+function setChartState(message, isError = false, withReload = false) {
+  const box = document.getElementById('chartState');
+  if (!box) return;
+  if (!message) {
+    box.hidden = true;
+    box.classList.remove('error');
+    box.innerHTML = '';
+    return;
+  }
+  box.hidden = false;
+  box.classList.toggle('error', isError);
+  box.innerHTML = `<div class="chart-state-inner">${message}</div>`;
+  if (withReload) {
+    const button = document.createElement('button');
+    button.className = 'btn';
+    button.type = 'button';
+    button.textContent = 'Muat ulang halaman';
+    button.addEventListener('click', () => location.reload());
+    box.querySelector('.chart-state-inner').appendChild(button);
+  }
+}
+
+// VIEW
+document.querySelectorAll('.view-btn').forEach(button => {
+  button.addEventListener('click', () => {
+    const view = button.dataset.view;
+    document.querySelectorAll('.view-btn').forEach(item => {
+      const active = item === button;
+      item.classList.toggle('active', active);
+      item.setAttribute('aria-selected', String(active));
+    });
+    document.getElementById('grafikView').classList.toggle('active', view === 'grafik');
+    document.getElementById('analisaView').classList.toggle('active', view === 'analisa');
+    if (view === 'grafik' && chart) requestAnimationFrame(() => chart.resize());
   });
 });
 
@@ -455,7 +1569,7 @@ function updateRangeUI() {
   document.getElementById('rangeFill').style.right = `${right}%`;
   document.getElementById('rangeStartLabel').textContent = displayDate(dates[startIndex]);
   document.getElementById('rangeEndLabel').textContent = displayDate(dates[endIndex]);
-  document.getElementById('rangeSummary').textContent = `${endIndex - startIndex + 1} hari`;
+  document.getElementById('rangeSummary').textContent = `${(endIndex - startIndex + 1).toLocaleString('id-ID')} hari`;
 }
 
 function initRangePicker(period = 'all') {
@@ -501,7 +1615,7 @@ function shiftDate(dateStr, days) {
 
 function marketParts(column) {
   const parts = (column || '').split(' ');
-  const multiWord = ['Pasar','UD','UD.','PS','RPH','Peternak','Distributor','Kawasan','Kec.'].includes(parts[0]);
+  const multiWord = ['Pasar', 'UD', 'UD.', 'PS', 'RPH', 'Peternak', 'Distributor', 'Kawasan', 'Kec.'].includes(parts[0]);
   return {
     name: multiWord ? parts.slice(0, 2).join(' ') : parts[0],
     loc: parts.slice(multiWord ? 2 : 1).join(' ')
@@ -526,37 +1640,60 @@ function renderStatCards() {
   const dates = Object.keys(c.prices).sort();
   const latest = dates[dates.length - 1];
   const flags = c.imputed?.[latest] || [];
+  const container = document.getElementById('statCards');
+  const summarySub = document.getElementById('summarySub');
+  if (summarySub) {
+    summarySub.textContent = latest
+      ? `Harga produsen per kilogram pada ${displayDate(latest)}. Perubahan dibandingkan dengan harga aktual 7 dan 30 hari sebelumnya.`
+      : 'Harga produsen per kilogram di titik pantau terpilih.';
+  }
 
-  document.getElementById('statCards').innerHTML = [...selectedPasars].sort((a, b) => a - b).map(i => {
+  const cards = [...selectedPasars].sort((a, b) => a - b).map(i => {
     const price = c.prices[latest]?.[i];
     if (price == null) return '';
     const color = COLORS[i % COLORS.length];
     const { name } = marketParts(c.columns[i]);
-    const chips = [];
-    if (flags[i]) chips.push('<span class="stat-chip">estimasi</span>');
-    // Harga aktif bisa jadi carry-forward panjang (sumber berhenti mengisi);
-    // kalau aktual terakhir >45 hari, tampilkan umurnya alih-alih delta yang menyesatkan.
+    const isImputed = Boolean(flags[i]);
     const newestActual = lastActualPrice(c, i, latest, 0);
-    const staleDays = newestActual ? Math.round((new Date(latest + 'T00:00:00') - new Date(newestActual.date + 'T00:00:00')) / 86400000) : 0;
-    if (staleDays > 45) {
-      chips.push(`<span class="stat-chip" title="Data aktual terakhir ${displayDate(newestActual.date)}">berhenti ${new Date(newestActual.date + 'T00:00:00').toLocaleDateString('id-ID', { month: 'short', year: 'numeric' })}</span>`);
-    } else {
-      for (const days of [7, 30]) {
-        const base = lastActualPrice(c, i, latest, days);
-        if (!base) { chips.push(`<span class="stat-chip">${days} hr -</span>`); continue; }
-        const pct = (price - base.value) / base.value * 100;
-        const cls = pct > 0.05 ? 'up' : pct < -0.05 ? 'down' : '';
-        const sign = pct > 0.05 ? '+' : '';
-        const pctText = sign + pct.toLocaleString('id-ID', { maximumFractionDigits: 1 }) + '%';
-        chips.push(`<span class="stat-chip ${cls}" title="Dibanding ${displayDate(base.date)} ${R(base.value)}">${days} hr ${pctText}</span>`);
+    const staleDays = newestActual
+      ? Math.round((new Date(latest + 'T00:00:00') - new Date(newestActual.date + 'T00:00:00')) / 86400000)
+      : 0;
+    const isStale = !newestActual || staleDays > 45;
+
+    const changeRow = days => {
+      const base = lastActualPrice(c, i, latest, days);
+      if (!base) {
+        return `<div class="change-row"><span class="change-period">${days} hari</span><span class="change flat">Tanpa pembanding</span></div>`;
       }
-    }
-    return `<div class="stat-card" style="border-top:2px solid ${color}">
-      <div class="stat-card-name" title="${c.columns[i]}">${name}</div>
-      <div class="stat-card-price" style="color:${color}">${R(price)}<small>/kg</small></div>
-      <div class="stat-chips">${chips.join('')}</div>
-    </div>`;
-  }).join('');
+      const pct = (price - base.value) / base.value * 100;
+      const info = changeInfo(pct);
+      return `<div class="change-row"><span class="change-period">${days} hari</span><span class="change ${info.cls}" title="Dibanding ${displayDate(base.date)} (${R(base.value)}/kg)">${info.text}</span></div>`;
+    };
+
+    const detail = isStale
+      ? `<p class="stat-note">${newestActual
+        ? `Data aktual terakhir ${displayDate(newestActual.date)}. Nilai di atas adalah estimasi berlanjut.`
+        : 'Tidak ada data aktual untuk pasar ini.'}</p>`
+      : `<div class="stat-changes">${changeRow(7)}${changeRow(30)}</div>`;
+
+    return `<article class="stat-card">
+      <div class="stat-card-head">
+        <span class="commodity-dot" style="background:${color}" aria-hidden="true"></span>
+        <span class="stat-card-name" title="${c.columns[i]}">${name}</span>
+        ${isImputed ? '<span class="tag-est">Estimasi</span>' : ''}
+      </div>
+      <p class="stat-card-price">${R(price)}<span class="unit">/kg</span></p>
+      ${detail}
+    </article>`;
+  }).filter(Boolean);
+
+  if (!cards.length) {
+    container.classList.add('is-empty');
+    container.innerHTML = '<p class="empty-inline">Harga terkini untuk pasar terpilih belum tersedia.</p>';
+    return;
+  }
+  container.classList.remove('is-empty');
+  container.innerHTML = cards.join('');
 }
 
 function renderFreshness() {
@@ -565,15 +1702,16 @@ function renderFreshness() {
   const today = toJakarta(new Date());
   const days = Math.round((new Date(today + 'T00:00:00Z') - new Date(updated + 'T00:00:00Z')) / 86400000);
   const stale = days >= 3;
-  const text = days <= 0 ? 'Data diperbarui hari ini' : days === 1 ? 'Diperbarui kemarin' : `Diperbarui ${days} hari lalu`;
+  const text = days <= 0 ? 'Diperbarui hari ini' : days === 1 ? 'Diperbarui kemarin' : `Diperbarui ${days} hari lalu`;
   const freshBadge = document.getElementById('dataFreshBadge');
   freshBadge.textContent = text;
   freshBadge.classList.toggle('warn', stale);
-  const updateBadge = document.getElementById('updateBadge');
-  const tanggal = new Date(data.lastUpdate).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
-  updateBadge.textContent = days <= 0 ? `Update: ${tanggal}` : `Update: ${tanggal} · ${days} hari lalu`;
-  updateBadge.classList.toggle('warn', stale);
-  if (stale) showToast(text + ' — mungkin perlu pembaruan data', 'error');
+
+  const tanggal = new Date(updated + 'T00:00:00').toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+  document.getElementById('introUpdated').textContent = tanggal;
+  document.getElementById('footerUpdated').textContent = tanggal;
+
+  if (stale) showToast(text + ' — data mungkin perlu pembaruan', 'error');
 }
 
 function downloadBlob(blob, filename) {
@@ -618,7 +1756,7 @@ function exportCsv() {
   }
   const blob = new Blob(['\uFEFF' + lines.join('\r\n')], { type: 'text/csv;charset=utf-8' });
   downloadBlob(blob, `harga-${slugify(currentCommodity)}_${dates[0]}_${dates[dates.length - 1]}.csv`);
-  showToast(`CSV diunduh: ${dates.length} hari`, 'success');
+  showToast(`CSV diunduh: ${dates.length.toLocaleString('id-ID')} hari`, 'success');
 }
 
 function exportPng() {
@@ -626,38 +1764,40 @@ function exportPng() {
   if (!source || !chart) return;
   const unit = source.width / 1200;
   const pad = Math.round(24 * unit);
-  const head = Math.round(84 * unit);
-  const foot = Math.round(40 * unit);
+  const head = Math.round(92 * unit);
+  const foot = Math.round(44 * unit);
   const output = document.createElement('canvas');
   output.width = source.width;
   output.height = head + source.height + foot;
   const ctx = output.getContext('2d');
-  ctx.fillStyle = '#080d16';
+  ctx.fillStyle = '#F7F8FA';
   ctx.fillRect(0, 0, output.width, output.height);
-  ctx.fillStyle = '#ede6d9';
-  ctx.font = `700 ${Math.round(26 * unit)}px "Space Grotesk", "IBM Plex Sans", system-ui, sans-serif`;
-  ctx.fillText(document.getElementById('chartTitle').textContent, pad, Math.round(42 * unit));
-  ctx.fillStyle = '#b9b9af';
-  ctx.font = `500 ${Math.round(14 * unit)}px "IBM Plex Sans", -apple-system, sans-serif`;
-  ctx.fillText(document.getElementById('chartSub').textContent, pad, Math.round(68 * unit));
+  ctx.fillStyle = '#FFFFFF';
+  ctx.fillRect(pad, head - Math.round(12 * unit), output.width - pad * 2, source.height + Math.round(24 * unit));
+  ctx.fillStyle = '#172B24';
+  ctx.font = `700 ${Math.round(25 * unit)}px Inter, -apple-system, sans-serif`;
+  ctx.fillText('Tren harga ' + document.getElementById('chartTitle').textContent, pad, Math.round(42 * unit));
+  ctx.fillStyle = '#66736D';
+  ctx.font = `500 ${Math.round(13 * unit)}px Inter, -apple-system, sans-serif`;
+  ctx.fillText(document.getElementById('chartSub').textContent, pad, Math.round(66 * unit));
   ctx.drawImage(source, 0, head);
-  ctx.fillStyle = '#64748b';
+  ctx.fillStyle = '#66736D';
   ctx.font = `500 ${Math.round(12 * unit)}px Inter, -apple-system, sans-serif`;
   ctx.fillText('Sumber: SISKAPERBAPO Jatim · Dashboard Harga Pangan', pad, head + source.height + Math.round(24 * unit));
   output.toBlob(blob => {
     if (!blob) { showToast('Gagal membuat PNG', 'error'); return; }
     downloadBlob(blob, `chart-${slugify(currentCommodity)}.png`);
-    showToast('Gambar chart diunduh', 'success');
+    showToast('Gambar grafik diunduh', 'success');
   }, 'image/png');
 }
 
-// COMMODITIES
+// KOMODITAS
 function renderCommodities() {
   const list = document.getElementById('commodityList');
   const commodities = Object.keys(data.commodities);
   list.innerHTML = commodities.map((c, i) =>
-    `<button class="commodity-btn ${c === currentCommodity ? 'active' : ''}" data-commodity="${c}">
-      <span class="commodity-dot" style="background:${COLORS[i % COLORS.length]}"></span>${c}
+    `<button class="commodity-btn ${c === currentCommodity ? 'active' : ''}" data-commodity="${c}" aria-pressed="${c === currentCommodity}">
+      <span class="commodity-dot" style="background:${COLORS[i % COLORS.length]}" aria-hidden="true"></span>${c}
     </button>`
   ).join('');
   list.querySelectorAll('.commodity-btn').forEach(btn => {
@@ -667,7 +1807,10 @@ function renderCommodities() {
       currentPeriod = 'all';
       initRangePicker();
       document.querySelectorAll('.period-btn').forEach(button => button.classList.toggle('active', button.dataset.period === 'all'));
-      renderCommodities(); renderPasarList(); renderQuality(); renderChart();
+      renderCommodities();
+      renderPasarList();
+      renderQuality();
+      renderChart();
     });
   });
 }
@@ -683,28 +1826,48 @@ function renderPasarList() {
   if (!c) return;
   const cols = c.columns || [];
   const dates = Object.keys(c.prices).sort();
-  const latest = c.prices[dates[dates.length - 1]] || [];
-  document.getElementById('pasarCount').textContent = `(${selectedPasars.size}/${cols.length})`;
+  const latest = dates[dates.length - 1];
+  const prices = c.prices[latest] || [];
+  const flags = c.imputed?.[latest] || [];
+  document.getElementById('pasarCount').textContent = `${selectedPasars.size} dari ${cols.length}`;
 
   document.getElementById('pasarList').innerHTML = cols.map((col, i) => {
     const active = selectedPasars.has(i);
-      const color = COLORS[i % COLORS.length];
-      const price = latest[i];
-      const estimated = Boolean(c.imputed?.[latest]?.[i]);
+    const color = COLORS[i % COLORS.length];
+    const price = prices[i];
+    const estimated = Boolean(flags[i]);
     const { name, loc } = marketParts(col);
-    return `<div class="pasar-item ${active ? 'active' : 'inactive'}" data-index="${i}" style="--pasar-color:${color}">
-      <div class="pasar-check">${active ? '✓' : ''}</div>
-      <div class="pasar-dot" style="background:${active ? color : 'var(--border)'}"></div>
-      <div class="pasar-info"><div class="pasar-name">${name}</div><div class="pasar-loc">${loc}</div></div>
-      <div class="pasar-val" style="color:${active ? color : 'var(--text-dim)'}">${price != null ? R(price) : '-'}<span class="pasar-status">${estimated ? 'estimasi' : 'aktual'}</span></div>
-    </div>`;
+    const statusText = price == null ? 'Tidak tersedia' : estimated ? 'Estimasi' : 'Aktual';
+    const statusClass = price == null ? 'none' : estimated ? 'est' : '';
+    const aria = `${name}${loc ? ', ' + loc : ''} — ${price != null ? R(price) + ' per kilogram, ' + statusText : 'harga tidak tersedia'}. ${active ? 'Tampil di grafik' : 'Tidak tampil di grafik'}.`;
+    return `<tr class="pasar-item ${active ? 'active' : 'inactive'}" data-index="${i}" tabindex="0" role="checkbox" aria-checked="${active}" aria-label="${aria}" style="--c:${color}">
+      <td class="col-check"><span class="check" aria-hidden="true">${active ? CHECK_ICON : ''}</span></td>
+      <td><span class="market-name-wrap"><span class="market-dot" style="background:${active ? color : 'var(--line-strong)'}" aria-hidden="true"></span><span class="market-name" title="${col}">${name}</span></span></td>
+      <td class="col-loc" title="${loc}">${loc || '—'}</td>
+      <td class="col-price">
+        <span class="price-line"><span class="price">${price != null ? R(price) : '—'}</span>${price != null ? '<span class="unit">/kg</span>' : ''}</span>
+        <span class="price-status ${statusClass}">${statusText}</span>
+      </td>
+    </tr>`;
   }).join('');
 
   document.querySelectorAll('.pasar-item').forEach(el => {
-    el.addEventListener('click', () => {
-      const idx = parseInt(el.dataset.index);
-      if (selectedPasars.has(idx)) { if (selectedPasars.size > 1) selectedPasars.delete(idx); } else selectedPasars.add(idx);
-      renderPasarList(); renderChart();
+    const toggle = () => {
+      const idx = parseInt(el.dataset.index, 10);
+      if (selectedPasars.has(idx)) {
+        if (selectedPasars.size > 1) selectedPasars.delete(idx);
+      } else {
+        selectedPasars.add(idx);
+      }
+      renderPasarList();
+      renderChart();
+    };
+    el.addEventListener('click', toggle);
+    el.addEventListener('keydown', event => {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        toggle();
+      }
     });
   });
 }
@@ -714,11 +1877,13 @@ document.getElementById('selectAllBtn').addEventListener('click', () => {
   selectedPasars = new Set((c.columns || []).map((_, i) => i));
   renderPasarList(); renderChart();
 });
+
 document.getElementById('deselectAllBtn').addEventListener('click', () => {
-  selectedPasars = new Set([0]); renderPasarList(); renderChart();
+  selectedPasars = new Set([0]);
+  renderPasarList(); renderChart();
 });
 
-// PERIOD
+// PERIODE
 document.querySelectorAll('.period-btn').forEach(btn => {
   btn.addEventListener('click', () => setPeriod(btn.dataset.period));
 });
@@ -745,29 +1910,48 @@ function renderMonthFilter() {
   const grid = document.getElementById('monthGrid');
   grid.innerHTML = BULAN.map((b, i) => {
     const m = i + 1;
-    return `<button class="month-btn ${selectedMonths.has(m) ? 'active' : ''}" data-month="${m}">${b}</button>`;
+    return `<button class="month-btn ${selectedMonths.has(m) ? 'active' : ''}" data-month="${m}" aria-pressed="${selectedMonths.has(m)}">${b}</button>`;
   }).join('');
   grid.querySelectorAll('.month-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       const m = Number(btn.dataset.month);
       if (selectedMonths.has(m)) selectedMonths.delete(m); else selectedMonths.add(m);
-      renderMonthFilter(); renderChart();
+      renderMonthFilter();
+      renderChart();
     });
   });
-  document.getElementById('monthCount').textContent = selectedMonths.size ? `(${selectedMonths.size})` : '';
+  document.getElementById('monthCount').textContent = selectedMonths.size ? `${selectedMonths.size} dipilih` : '';
 }
 
 document.getElementById('resetMonthBtn').addEventListener('click', () => {
   selectedMonths = new Set();
-  renderMonthFilter(); renderChart();
+  renderMonthFilter();
+  renderChart();
 });
 
-// CHART
+// GRAFIK
 function renderChart() {
+  if (typeof Chart === 'undefined') throw new Error('Pustaka grafik gagal dimuat. Periksa koneksi internet lalu muat ulang halaman.');
   const c = data.commodities[currentCommodity];
   if (!c) return;
   const allDates = Object.keys(c.prices).sort();
   const dates = getFilteredDates(allDates);
+  const chartTitle = document.getElementById('chartTitle');
+  const chartSub = document.getElementById('chartSub');
+
+  chartTitle.textContent = currentCommodity;
+
+  if (!dates.length) {
+    if (chart) { chart.destroy(); chart = null; }
+    document.getElementById('resetZoomBtn').classList.remove('active');
+    setChartState('<strong>Tidak ada data pada rentang ini</strong><p>Ubah periode, rentang tanggal, atau filter bulan untuk menampilkan data harga.</p>');
+    const monthInfo = selectedMonths.size ? ` · ${selectedMonths.size} bulan dipilih` : '';
+    chartSub.textContent = `Harga produsen Rp/kg · 0 hari · ${selectedPasars.size} pasar${monthInfo}`;
+    renderStatCards();
+    return;
+  }
+
+  setChartState(null);
   const labels = dates.map(d => displayDate(d));
   const numCols = c.columns ? c.columns.length : 0;
   const datasets = [];
@@ -777,70 +1961,162 @@ function renderChart() {
       if (!selectedPasars.has(i)) continue;
       const imputedFlags = dates.map(date => Boolean(c.imputed?.[date]?.[i]));
       datasets.push({
-        label: c.columns[i], data: dates.map(d => { const a = c.prices[d]; return a && a[i] != null ? a[i] : null; }),
-        borderColor: COLORS[i % COLORS.length], backgroundColor: 'transparent', tension: 0.3,
-        pointRadius: dates.length < 100 ? 2 : 0, pointHoverRadius: 5, borderWidth: 2, marketIndex: i,
+        label: c.columns[i],
+        data: dates.map(d => { const a = c.prices[d]; return a && a[i] != null ? a[i] : null; }),
+        borderColor: COLORS[i % COLORS.length],
+        backgroundColor: 'transparent',
+        tension: 0.25,
+        pointRadius: dates.length < 120 ? 2 : 0,
+        pointHoverRadius: 4,
+        borderWidth: 2,
+        marketIndex: i,
         segment: { borderDash: context => imputedFlags[context.p0DataIndex] || imputedFlags[context.p1DataIndex] ? [5, 4] : undefined }
       });
     }
   } else {
     datasets.push({
-      label: currentCommodity, data: dates.map(d => { const a = c.prices[d]; return a && a[0] != null ? a[0] : null; }),
-      borderColor: COLORS[0], backgroundColor: 'transparent', tension: 0.3,
-      pointRadius: dates.length < 100 ? 2 : 0, pointHoverRadius: 5, borderWidth: 2
+      label: currentCommodity,
+      data: dates.map(d => { const a = c.prices[d]; return a && a[0] != null ? a[0] : null; }),
+      borderColor: COLORS[0],
+      backgroundColor: 'transparent',
+      tension: 0.25,
+      pointRadius: dates.length < 120 ? 2 : 0,
+      pointHoverRadius: 4,
+      borderWidth: 2
     });
   }
 
+  const first = new Date(dates[0] + 'T00:00:00');
+  const last = new Date(dates[dates.length - 1] + 'T00:00:00');
+  const longRange = (last - first) / 86400000 > 400;
+  const xTick = (_, index) => {
+    if (!dates[index]) return '';
+    const date = new Date(dates[index] + 'T00:00:00');
+    return longRange
+      ? date.toLocaleDateString('id-ID', { month: 'short', year: '2-digit' })
+      : displayDate(dates[index], false);
+  };
+
+  const fontFamily = '"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
   const ctx = document.getElementById('priceChart').getContext('2d');
   if (chart) chart.destroy();
   chart = new Chart(ctx, {
-    type: 'line', data: { labels, datasets },
+    type: 'line',
+    data: { labels, datasets },
     options: {
-      responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false },
+      responsive: true,
+      maintainAspectRatio: false,
+      animation: false,
+      interaction: { mode: 'index', intersect: false },
+      layout: { padding: { top: 4, right: 6 } },
       plugins: {
-        legend: { display: datasets.length > 1, position: 'bottom', labels: { color: '#b9b9af', font: { size: 10 } } },
+        legend: {
+          display: datasets.length > 1,
+          position: 'bottom',
+          align: 'start',
+          labels: {
+            color: '#5F6C66',
+            font: { size: 11, family: fontFamily },
+            usePointStyle: true,
+            pointStyle: 'line',
+            boxWidth: 18,
+            boxHeight: 2,
+            padding: 16
+          }
+        },
         tooltip: {
-          backgroundColor: '#0d131f', titleColor: '#ede6d9', bodyColor: '#b9b9af', borderColor: 'rgba(209, 194, 170, 0.18)', borderWidth: 1,
+          backgroundColor: '#FFFFFF',
+          titleColor: '#172B24',
+          bodyColor: '#5F6C66',
+          borderColor: '#E5E9E6',
+          borderWidth: 1,
+          padding: 10,
+          cornerRadius: 8,
+          displayColors: true,
+          usePointStyle: true,
+          boxPadding: 4,
+          titleFont: { size: 12, weight: '600', family: fontFamily },
+          bodyFont: { size: 12, family: fontFamily },
           callbacks: {
-            title: items => items.length ? `Tanggal: ${displayDate(dates[items[0].dataIndex])}` : '',
-            label: ctx => `${c.imputed?.[dates[ctx.dataIndex]]?.[ctx.dataset.marketIndex] ? 'Estimasi' : 'Aktual'} · ${ctx.dataset.label}: ${R(ctx.parsed.y)}`
+            title: items => items.length ? displayDate(dates[items[0].dataIndex]) : '',
+            label: item => {
+              const idx = item.dataset.marketIndex ?? 0;
+              const status = c.imputed?.[dates[item.dataIndex]]?.[idx] ? 'Estimasi' : 'Aktual';
+              const { name } = marketParts(item.dataset.label);
+              return `${name}: ${R(item.parsed.y)}/kg · ${status}`;
+            }
           }
         },
         zoom: {
           pan: { enabled: true, mode: 'x' },
-          zoom: { wheel: { enabled: true }, pinch: { enabled: true }, drag: { enabled: true, backgroundColor: 'rgba(56,189,248,0.1)', borderColor: 'rgba(56,189,248,0.5)', borderWidth: 1 }, mode: 'x',
+          zoom: {
+            wheel: { enabled: true },
+            pinch: { enabled: true },
+            drag: { enabled: true, backgroundColor: 'rgba(36,107,74,0.08)', borderColor: 'rgba(36,107,74,0.4)', borderWidth: 1 },
+            mode: 'x',
             onZoomComplete: () => document.getElementById('resetZoomBtn').classList.add('active'),
             onPanComplete: () => document.getElementById('resetZoomBtn').classList.add('active')
-          }, limits: { x: { minRange: 3 } }
+          },
+          limits: { x: { minRange: 3 } }
         }
       },
       scales: {
-        x: { grid: { color: 'rgba(51,65,85,0.3)' }, ticks: { color: '#64748b', font: { size: 10 }, maxRotation: 45, autoSkip: true, maxTicksLimit: 12, callback: (_, index) => displayDate(dates[index], false) } },
-        y: { grid: { color: 'rgba(51,65,85,0.3)' }, ticks: { color: '#64748b', font: { size: 10 }, callback: v => v >= 1000000 ? (v/1000000).toFixed(1)+'jt' : v >= 1000 ? (v/1000).toFixed(0)+'rb' : v } }
+        x: {
+          grid: { display: false },
+          border: { color: '#E5E9E6' },
+          ticks: {
+            color: '#66736D',
+            font: { size: 10.5, family: fontFamily },
+            maxRotation: 0,
+            autoSkip: true,
+            maxTicksLimit: window.innerWidth <= 640 ? 5 : (longRange ? 10 : 8),
+            callback: xTick
+          }
+        },
+        y: {
+          grid: { color: '#EEF1EF', drawTicks: false },
+          border: { display: false },
+          ticks: {
+            color: '#66736D',
+            font: { size: 10.5, family: fontFamily },
+            padding: 8,
+            maxTicksLimit: 6,
+            callback: value => Number(value).toLocaleString('id-ID')
+          }
+        }
       }
     }
   });
-  document.getElementById('chartTitle').textContent = currentCommodity;
-  const monthInfo = selectedMonths.size ? ` · ${selectedMonths.size} bulan` : '';
-  const rangeInfo = dates.length ? ` · ${displayDate(dates[0])} - ${displayDate(dates[dates.length - 1])}` : '';
-  document.getElementById('chartSub').textContent = `${dates.length} hari · ${selectedPasars.size} pasar${monthInfo}${rangeInfo}`;
+
+  const monthInfo = selectedMonths.size ? ` · ${selectedMonths.size} bulan dipilih` : '';
+  chartSub.textContent = `Harga produsen Rp/kg · ${dates.length.toLocaleString('id-ID')} hari · ${selectedPasars.size} pasar${monthInfo} · ${displayDate(dates[0])} – ${displayDate(dates[dates.length - 1])}`;
   renderStatCards();
 }
 
 function renderQuality() {
   const c = data.commodities[currentCommodity];
   const dates = Object.keys(c.prices).sort();
+  if (!dates.length) {
+    document.getElementById('introRange').textContent = '—';
+    document.getElementById('qualityBadge').textContent = '';
+    return;
+  }
   const imputedDates = dates.filter(date => (c.imputed?.[date] || []).some(Boolean)).length;
   const actualDates = dates.length - imputedDates;
-  document.getElementById('rangeBadge').textContent = `${displayDate(dates[0])} - ${displayDate(dates[dates.length - 1])}`;
-  document.getElementById('qualityBadge').textContent = `Aktual ${actualDates} · Estimasi ${imputedDates}`;
+  document.getElementById('introRange').textContent = `${displayDate(dates[0])} – ${displayDate(dates[dates.length - 1])}`;
+  document.getElementById('qualityBadge').textContent = `Aktual ${actualDates.toLocaleString('id-ID')} hari · Estimasi ${imputedDates.toLocaleString('id-ID')} hari`;
 }
 
 document.getElementById('resetZoomBtn').addEventListener('click', () => {
-  if (chart) { chart.resetZoom(); document.getElementById('resetZoomBtn').classList.remove('active'); }
+  if (chart) {
+    chart.resetZoom();
+    document.getElementById('resetZoomBtn').classList.remove('active');
+  }
 });
+
 document.getElementById('exportCsvBtn').addEventListener('click', exportCsv);
 document.getElementById('exportPngBtn').addEventListener('click', exportPng);
+
 document.getElementById('shareWaBtn').addEventListener('click', () => {
   let text = 'Dashboard harga produsen pangan Jawa Timur: ' + location.href.split('#')[0];
   const c = data.commodities[currentCommodity];
@@ -851,8 +2127,7 @@ document.getElementById('shareWaBtn').addEventListener('click', () => {
     const price = c.prices[latest]?.[i];
     if (price != null) {
       const { name } = marketParts(c.columns[i]);
-      // Carry-forward yang sudah lama (mis. sumber berhenti mengisi) jangan
-      // dibagikan seolah harga terkini — sebutkan tanggal aktual terakhirnya.
+      // Carry-forward yang sudah lama tidak boleh dibagikan seolah harga terkini.
       const newestActual = lastActualPrice(c, i, latest, 0);
       const gapDays = newestActual ? Math.round((new Date(latest + 'T00:00:00') - new Date(newestActual.date + 'T00:00:00')) / 86400000) : 0;
       let detail;
@@ -861,7 +2136,7 @@ document.getElementById('shareWaBtn').addEventListener('click', () => {
       } else {
         const base = lastActualPrice(c, i, latest, 7);
         const pct = base ? (price - base.value) / base.value * 100 : null;
-        const pctText = pct == null ? '' : ` (${pct >= 0 ? '+' : ''}${pct.toLocaleString('id-ID', { maximumFractionDigits: 1 })}% vs 7 hr)`;
+        const pctText = pct == null ? '' : ` (${pct >= 0 ? '+' : ''}${pct.toLocaleString('id-ID', { maximumFractionDigits: 1 })}% vs 7 hari)`;
         detail = pctText + ((c.imputed?.[latest] || [])[i] ? ' (estimasi)' : '');
       }
       text = `Harga ${currentCommodity} di ${name} per ${displayDate(latest)}: ${R(price)}/kg${detail}. Grafik lengkap: ${location.href.split('#')[0]}`;
@@ -872,18 +2147,30 @@ document.getElementById('shareWaBtn').addEventListener('click', () => {
 
 // ANALISA
 function getHeatColor(pct) {
-  if (pct == null) return 'rgba(51,65,85,0.4)';
-  const v = Math.max(-30, Math.min(30, pct));
-  return v > 0 ? `rgba(239,68,68,${0.15 + v/30*0.5})` : v < 0 ? `rgba(34,197,94,${0.15 + Math.abs(v)/30*0.5})` : 'rgba(51,65,85,0.4)';
+  if (pct == null || Number.isNaN(pct)) return '#F2F5F3';
+  const value = Math.max(-30, Math.min(30, pct));
+  if (value === 0) return 'rgba(138, 148, 144, 0.10)';
+  const alpha = (0.10 + Math.abs(value) / 30 * 0.30).toFixed(2);
+  return value > 0 ? `rgba(194, 65, 59, ${alpha})` : `rgba(22, 128, 93, ${alpha})`;
 }
 
-const CARD_RGB = [30, 41, 59];
+const CARD_RGB = [255, 255, 255];
+
 function seasonalColor(t) {
   let r, g, b;
-  if (t < 0.5) { const u = t / 0.5; r = 34 + (234 - 34) * u; g = 197 + (179 - 197) * u; b = 94 + (8 - 94) * u; }
-  else { const u = (t - 0.5) / 0.5; r = 234 + (239 - 234) * u; g = 179 + (68 - 179) * u; b = 8 + (68 - 8) * u; }
-  const a = 0.22 + 0.33 * t;
-  const blend = [r, g, b].map((c, i) => Math.round(c * a + CARD_RGB[i] * (1 - a)));
+  if (t < 0.5) {
+    const u = t / 0.5;
+    r = 22 + (181 - 22) * u;
+    g = 128 + (138 - 128) * u;
+    b = 93 + (43 - 93) * u;
+  } else {
+    const u = (t - 0.5) / 0.5;
+    r = 181 + (194 - 181) * u;
+    g = 138 + (65 - 138) * u;
+    b = 43 + (59 - 43) * u;
+  }
+  const alpha = 0.16 + 0.30 * t;
+  const blend = [r, g, b].map((c, i) => Math.round(c * alpha + CARD_RGB[i] * (1 - alpha)));
   return `rgb(${blend[0]},${blend[1]},${blend[2]})`;
 }
 
@@ -893,97 +2180,157 @@ function seasonalHeatmap(info) {
   const keys = Object.keys(ym).sort();
   if (!keys.length) return '';
   const years = [...new Set(keys.map(k => k.slice(0, 4)))].sort();
-  const vals = keys.map(k => ym[k]).filter(v => v != null);
-  const vmin = Math.min(...vals), vmax = Math.max(...vals);
-  const head = `<div class="ym-corner"></div>` + BULAN.map(b => `<div class="ym-mhead">${b}</div>`).join('');
+  const values = keys.map(k => ym[k]).filter(v => v != null);
+  const vmin = Math.min(...values);
+  const vmax = Math.max(...values);
+  const head = '<div class="ym-corner"></div>' + BULAN.map(b => `<div class="ym-mhead">${b}</div>`).join('');
   const rows = years.map(y => {
     const cells = Array.from({ length: 12 }, (_, i) => {
-      const v = ym[`${y}-${String(i + 1).padStart(2, '0')}`];
-      if (v == null) return `<div class="ym-cell empty" title="${BULAN_FULL[i]} ${y}: tidak ada data">-</div>`;
-      const t = vmax > vmin ? (v - vmin) / (vmax - vmin) : 0.5;
-      return `<div class="ym-cell" style="background:${seasonalColor(t)}" title="${BULAN_FULL[i]} ${y}: ${R(v)}">${(v / 1000).toFixed(0)}</div>`;
+      const value = ym[`${y}-${String(i + 1).padStart(2, '0')}`];
+      if (value == null) return `<div class="ym-cell empty" title="${BULAN_FULL[i]} ${y}: tidak ada data">–</div>`;
+      const t = vmax > vmin ? (value - vmin) / (vmax - vmin) : 0.5;
+      return `<div class="ym-cell" style="background:${seasonalColor(t)}" title="${BULAN_FULL[i]} ${y}: ${R(value)}/kg">${(value / 1000).toFixed(0)}</div>`;
     }).join('');
     return `<div class="ym-year">${y}</div>${cells}`;
   }).join('');
-  return `<div style="font-size:0.75rem;color:var(--text-dim);margin-bottom:0.35rem;">Peta Musiman Bulan x Tahun (Ribu Rp)</div>
+  return `<p class="heatmap-caption" style="margin-top:16px;">Peta musiman bulan × tahun <span>ribu rupiah per kg</span></p>
     <div class="ym-grid">${head}${rows}</div>
-    <div class="heatmap-legend" style="margin-top:0.4rem;"><span>Murah</span><div class="heatmap-legend-bar"></div><span>Mahal</span></div>`;
+    <div class="heatmap-legend"><span>Harga rendah</span><div class="heatmap-legend-bar"></div><span>Harga tinggi</span></div>`;
 }
 
 function renderAnalisa() {
-  if (!analisaData) return;
-  const sb = document.getElementById('summaryBody');
-  sb.innerHTML = Object.entries(analisaData.summary).map(([c, info]) => {
+  const summaryBody = document.getElementById('summaryBody');
+  const grid = document.getElementById('analisaGrid');
+  if (!analisaData) {
+    summaryBody.innerHTML = '<tr><td colspan="6" class="table-empty">Data analisa belum tersedia. Grafik harga tetap dapat digunakan.</td></tr>';
+    grid.innerHTML = '<div class="empty-state"><strong>Analisa belum tersedia</strong><p>Berkas data/analisa.json belum bisa dimuat. Muat ulang halaman atau periksa koneksi.</p></div>';
+    return;
+  }
+
+  const summary = analisaData.summary || {};
+  const commodities = analisaData.commodities || {};
+
+  summaryBody.innerHTML = Object.entries(summary).map(([c, info]) => {
     if (!info.tertinggi || !info.terendah) {
-      return `<tr><td><strong>${c}</strong></td><td colspan="5" style="color:var(--text-dim)">Data belum cukup untuk dianalisa</td></tr>`;
+      return `<tr><td>${c}</td><td colspan="5" class="table-empty">Data belum cukup untuk dianalisa</td></tr>`;
     }
-    const bestMonth = info.bestMonth ? BULAN_FULL[info.bestMonth - 1] : '-';
-    const worstMonth = info.worstMonth ? BULAN_FULL[info.worstMonth - 1] : '-';
-    const momentum = info.momentumUpMonth ? BULAN_FULL[info.momentumUpMonth - 1] : '-';
-    const actual = info.dataDays ? `${info.observedDays}/${info.dataDays} hari` : '-';
-    return `<tr><td><strong>${c}</strong></td><td><span class="month-badge good">${bestMonth} · ${R(info.tertinggi.harga)}</span></td><td><span class="month-badge bad">${worstMonth} · ${R(info.terendah.harga)}</span></td><td>${momentum}</td><td>${info.patternConsistency == null ? '-' : info.patternConsistency + '% tahun naik'}</td><td>${actual}</td></tr>`;
+    const bestMonth = info.bestMonth ? BULAN_FULL[info.bestMonth - 1] : '—';
+    const worstMonth = info.worstMonth ? BULAN_FULL[info.worstMonth - 1] : '—';
+    const momentum = info.momentumUpMonth ? BULAN_FULL[info.momentumUpMonth - 1] : '—';
+    const actual = info.dataDays ? `${info.observedDays.toLocaleString('id-ID')} / ${info.dataDays.toLocaleString('id-ID')} hari` : '—';
+    return `<tr>
+      <td>${c}</td>
+      <td data-label="Harga tertinggi"><span class="month-badge high">${bestMonth} · ${R(info.tertinggi.harga)}</span></td>
+      <td data-label="Harga terendah"><span class="month-badge low">${worstMonth} · ${R(info.terendah.harga)}</span></td>
+      <td data-label="Momentum naik">${momentum}</td>
+      <td data-label="Konsistensi pola" class="num">${info.patternConsistency == null ? '—' : info.patternConsistency + '% tahun naik'}</td>
+      <td data-label="Data aktual" class="num">${actual}</td>
+    </tr>`;
   }).join('');
 
-  document.getElementById('analisaGrid').innerHTML = Object.entries(analisaData.commodities).map(([c, info], ci) => {
+  if (!summaryBody.innerHTML) {
+    summaryBody.innerHTML = '<tr><td colspan="6" class="table-empty">Belum ada komoditas yang bisa dianalisa.</td></tr>';
+  }
+
+  grid.innerHTML = Object.entries(commodities).map(([c, info], ci) => {
     const color = COLORS[ci % COLORS.length];
+    const columns = (info.columns || []).join(' · ');
     if (!info.tertinggi || !info.terendah) {
-      return `<div class="analisa-card"><div class="analisa-card-title" style="color:${color}">${c}</div><div style="color:var(--text-dim);font-size:0.75rem;">Data belum cukup untuk dianalisa.</div></div>`;
+      return `<div class="analisa-card">
+        <div class="analisa-card-title"><span class="market-dot" style="background:${color}" aria-hidden="true"></span>${c}</div>
+        <p class="analisa-card-cols">${columns || 'Titik pantau belum tersedia'}</p>
+        <div class="empty-state"><strong>Data belum cukup</strong><p>Komoditas ini belum memiliki riwayat harga yang memadai untuk dianalisa.</p></div>
+      </div>`;
     }
-    const hm = BULAN.map((b, i) => { const p = info.perubahan[i+1]; return `<div class="heatmap-cell" style="background:${getHeatColor(p ? parseFloat(p) : null)}">${p ? (parseFloat(p) > 0 ? '+' : '') + parseFloat(p).toFixed(0) : '-'}</div>`; }).join('');
-    const best = info.recommendation?.momentumUp, worst = info.recommendation?.momentumDown;
-    const sel = info.tertinggi.harga - info.terendah.harga;
+
+    const perubahan = info.perubahan || {};
+    const heatmap = BULAN.map((b, i) => {
+      const raw = perubahan[i + 1];
+      const pct = raw == null ? null : parseFloat(raw);
+      const text = pct == null ? '–' : (pct > 0 ? '+' : '') + pct.toFixed(0);
+      return `<div class="heatmap-cell" style="background:${getHeatColor(pct)}" title="${BULAN_FULL[i]}: ${pct == null ? 'tidak ada data' : text + '%'}">${text}</div>`;
+    }).join('');
+    const momentumUp = info.recommendation?.momentumUp;
+    const momentumDown = info.recommendation?.momentumDown;
+    const difference = info.tertinggi.harga - info.terendah.harga;
+    const coverage = info.recommendation?.coverage;
+    const risingRate = info.recommendation?.consistency?.risingRate;
+    const legend = '<span class="legend-inline"><span class="swatch up"></span>Naik <span class="swatch down"></span>Turun</span>';
+
     return `<div class="analisa-card">
-      <div class="analisa-card-title" style="color:${color}">${c}</div>
-      <div class="analisa-card-cols">${info.columns.join(' vs ')}</div>
+      <div class="analisa-card-title"><span class="market-dot" style="background:${color}" aria-hidden="true"></span>${c}</div>
+      <p class="analisa-card-cols" title="${columns}">${columns || '—'}</p>
       <div class="rec-box">
-        <div class="rec-title">Rekomendasi</div>
-        <div class="rec-row"><span class="rec-label">Jual harga tertinggi:</span><span class="rec-val good">${BULAN_FULL[info.tertinggi.bulan-1]} (${R(info.tertinggi.harga)})</span></div>
-        <div class="rec-row"><span class="rec-label">Harga terendah:</span><span class="rec-val bad">${BULAN_FULL[info.terendah.bulan-1]} (${R(info.terendah.harga)})</span></div>
-        <div class="rec-row"><span class="rec-label">Momentum naik:</span><span class="rec-val good">${best ? BULAN_FULL[best.bulan-1] + ' (+' + best.pct + '%)' : '-'}</span></div>
-        <div class="rec-row"><span class="rec-label">Konsistensi pola:</span><span class="rec-val">${info.recommendation?.consistency?.risingRate == null ? '-' : info.recommendation.consistency.risingRate + '% tahun naik'}</span></div>
-        <div class="rec-row"><span class="rec-label">Coverage data:</span><span class="rec-val">${info.recommendation?.coverage || 0}%</span></div>
-        <div class="rec-row"><span class="rec-label">Selisih:</span><span class="rec-val">${R(sel)} (${((sel/info.terendah.harga)*100).toFixed(1)}%)</span></div>
+        <p class="rec-title">Rekomendasi waktu jual</p>
+        <div class="rec-row"><span class="rec-label">Harga tertinggi</span><span class="rec-val">${BULAN_FULL[info.tertinggi.bulan - 1]} · ${R(info.tertinggi.harga)}</span></div>
+        <div class="rec-row"><span class="rec-label">Harga terendah</span><span class="rec-val">${BULAN_FULL[info.terendah.bulan - 1]} · ${R(info.terendah.harga)}</span></div>
+        <div class="rec-row"><span class="rec-label">Momentum naik</span><span class="rec-val">${momentumUp ? BULAN_FULL[momentumUp.bulan - 1] + ' (+' + momentumUp.pct + '%)' : '—'}</span></div>
+        <div class="rec-row"><span class="rec-label">Momentum turun</span><span class="rec-val">${momentumDown ? BULAN_FULL[momentumDown.bulan - 1] + ' (' + momentumDown.pct + '%)' : '—'}</span></div>
+        <div class="rec-row"><span class="rec-label">Konsistensi pola</span><span class="rec-val">${risingRate == null ? '—' : risingRate + '% tahun naik'}</span></div>
+        <div class="rec-row"><span class="rec-label">Coverage data</span><span class="rec-val">${coverage == null ? '—' : coverage + '%'}</span></div>
+        <div class="rec-row"><span class="rec-label">Selisih tertinggi–terendah</span><span class="rec-val">${R(difference)} (${((difference / info.terendah.harga) * 100).toFixed(1)}%)</span></div>
       </div>
-      <div style="font-size:0.75rem;color:var(--text-dim);margin-bottom:0.2rem;">Tren Perubahan Bulanan (%)</div>
-      <div class="heatmap-row">${hm}</div>
+      <p class="heatmap-caption">Perubahan bulanan (%) ${legend}</p>
+      <div class="heatmap-row">${heatmap}</div>
       <div class="heatmap-labels">${BULAN.map(b => `<span>${b}</span>`).join('')}</div>
       ${seasonalHeatmap(info)}
-      <div class="stats-mini">
-        <div class="stat-mini"><div class="stat-mini-label">Terendah</div><div class="stat-mini-val" style="color:var(--green)">${BULAN[info.terendah.bulan-1]} ${R(info.terendah.harga)}</div></div>
-        <div class="stat-mini"><div class="stat-mini-label">Tertinggi</div><div class="stat-mini-val" style="color:var(--red)">${BULAN[info.tertinggi.bulan-1]} ${R(info.tertinggi.harga)}</div></div>
-      </div>
     </div>`;
   }).join('');
+
+  if (!grid.innerHTML) {
+    grid.innerHTML = '<div class="empty-state"><strong>Belum ada analisa</strong><p>Data historis belum cukup untuk menampilkan pola musiman.</p></div>';
+  }
 }
 
 async function init() {
+  if (typeof Chart !== 'undefined') {
+    Chart.defaults.font.family = '"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+    Chart.defaults.color = '#66736D';
+  }
   try {
     const [pr, ar] = await Promise.all([fetch('data/produsen.json'), fetch('data/analisa.json')]);
-    if (!pr.ok) throw new Error('produsen.json tidak ada');
+    if (!pr.ok) throw new Error(`Data harga tidak ditemukan (HTTP ${pr.status}).`);
     data = await pr.json();
     if (ar.ok) analisaData = await ar.json();
 
     const commodities = Object.keys(data.commodities);
+    if (!commodities.length) throw new Error('Data harga masih kosong.');
     currentCommodity = commodities[0];
 
     renderFreshness();
     document.getElementById('commodityBadge').textContent = `${commodities.length} komoditas`;
-    document.getElementById('headerBadge').textContent = `${commodities.length} komoditas`;
 
     initPasarSelection();
     initRangePicker();
-    renderCommodities(); renderPasarList(); renderMonthFilter(); renderQuality(); renderChart(); renderAnalisa();
-    showToast(`${commodities.length} komoditas dimuat`, 'success');
+    renderCommodities();
+    renderPasarList();
+    renderMonthFilter();
+    renderQuality();
+    renderChart();
+    renderAnalisa();
 
-    // Start collapsed on mobile
-    if (window.innerWidth <= 768) toggleSidebar(false);
-  } catch (e) {
-    showToast('Gagal: ' + e.message, 'error');
+    if (document.fonts?.ready) {
+      document.fonts.ready.then(() => { if (chart) chart.update('none'); });
+    }
+  } catch (error) {
+    const badge = document.getElementById('dataFreshBadge');
+    badge.textContent = 'Data tidak tersedia';
+    badge.classList.add('warn');
+    document.getElementById('introUpdated').textContent = 'Tidak tersedia';
+    document.getElementById('introRange').textContent = 'Tidak tersedia';
+    document.getElementById('commodityBadge').textContent = '—';
+    const statCards = document.getElementById('statCards');
+    statCards.classList.add('is-empty');
+    statCards.innerHTML = '<p class="empty-inline">Data harga belum bisa dimuat.</p>';
+    setChartState(`<strong>Dashboard gagal dimuat</strong><p>${error.message}</p><p>Periksa koneksi internet, lalu muat ulang halaman.</p>`, true, true);
+    document.getElementById('summaryBody').innerHTML = '<tr><td colspan="6" class="table-empty">Data analisa belum bisa dimuat.</td></tr>';
+    document.getElementById('analisaGrid').innerHTML = '<div class="empty-state"><strong>Analisa belum tersedia</strong><p>Data harga belum berhasil dimuat.</p></div>';
+    showToast('Gagal memuat data: ' + error.message, 'error');
   }
 }
-init();
 
 window.addEventListener('resize', () => { if (chart) chart.resize(); });
+init();
 </script>
 </body>
 </html>

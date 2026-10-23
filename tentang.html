@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="color-scheme" content="dark">
   <title>Tentang & Metode | Harga Pangan Jatim</title>
   <meta name="description" content="Dari mana data harga produsen pangan Jawa Timur berasal, bagaimana diolah, apa keterbatasannya, dan cara memakainya dengan benar.">
   <meta name="author" content="zeinzulaziz">
   <meta name="robots" content="index, follow">
-  <meta name="theme-color" content="#0f172a">
+  <meta name="color-scheme" content="light">
+  <meta name="theme-color" content="#F7F8FA">
   <link rel="canonical" href="https://zeinzulaziz.github.io/harga-pangan/tentang.html">
 
   <!-- Ikon -->
@@ -32,132 +32,304 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400..700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/site.css">
+
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    :root {
-      --bg: #0f172a; --surface: #1e293b; --surface-2: #273549;
-      --line: #334155; --border: #64748b;
-      --text: #f1f5f9; --muted: #cbd5e1; --dim: #94a3b8;
-      --accent: #34d399; --accent-ink: #0f172a;
-      --r-sm: 8px; --r-md: 12px; --maxw: 820px;
+    .doc {
+      max-width: 820px;
+      margin-inline: auto;
+      padding-top: 40px;
     }
-    html { color-scheme: dark; }
-    body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      background: var(--bg); color: var(--text); line-height: 1.6;
-      -webkit-font-smoothing: antialiased; min-height: 100vh;
+
+    .eyebrow {
+      margin-bottom: 10px;
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
     }
-    :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
-    .skip { position: absolute; left: -9999px; top: 0; }
-    .skip:focus { left: 1rem; top: 1rem; z-index: 60; background: var(--accent); color: var(--accent-ink); padding: 0.6rem 0.9rem; border-radius: var(--r-sm); font-size: 0.9rem; font-weight: 600; }
+    .doc h1 {
+      font-size: clamp(28px, 3vw, 32px);
+      letter-spacing: -0.025em;
+    }
 
-    .topbar { position: sticky; top: 0; z-index: 10; display: flex; align-items: center; gap: 0.75rem; padding: 0.7rem 1rem; background: var(--bg); border-bottom: 1px solid var(--line); }
-    .back { display: inline-flex; align-items: center; gap: 0.4rem; min-height: 44px; padding: 0.4rem 0.85rem; border: 1px solid var(--border); border-radius: var(--r-sm); color: var(--muted); text-decoration: none; font-size: 0.9rem; font-weight: 500; transition: color 0.15s, border-color 0.15s; }
-    .back:hover { color: var(--text); border-color: var(--accent); }
-    .page-title { font-size: clamp(1rem, 1.4vw + 0.7rem, 1.2rem); font-weight: 700; letter-spacing: -0.01em; }
+    .lede {
+      max-width: 68ch;
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 15.5px;
+      line-height: 1.7;
+    }
 
-    main { max-width: var(--maxw); margin: 0 auto; padding: 1.25rem 1rem 3rem; }
-    .lead { color: var(--muted); font-size: 0.95rem; max-width: 62ch; margin-bottom: 1.25rem; }
+    .doc-section {
+      padding: 28px 0;
+      border-top: 1px solid var(--line);
+    }
 
-    .panel { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-md); padding: 1.25rem; margin-bottom: 1.25rem; }
-    .panel > h2 { font-size: 1rem; font-weight: 700; margin-bottom: 0.6rem; }
-    .panel p { font-size: 0.9rem; color: var(--muted); margin-top: 0.5rem; }
-    .panel p:first-of-type { margin-top: 0; }
-    .panel strong { color: var(--text); }
-    .panel a { color: var(--accent); }
-    .panel ul { margin: 0.5rem 0 0 1.1rem; }
-    .panel li { font-size: 0.9rem; color: var(--muted); }
-    .panel li + li { margin-top: 0.3rem; }
-    .panel li strong { color: var(--text); }
+    .doc-body > .doc-section:first-of-type {
+      margin-top: 28px;
+    }
 
-    .note { border-left: 3px solid var(--accent); background: color-mix(in srgb, var(--accent) 7%, transparent); padding: 0.7rem 0.9rem; border-radius: 0 var(--r-sm) var(--r-sm) 0; margin-top: 0.8rem; }
-    .note p { margin: 0; font-size: 0.88rem; }
+    .doc-section h2 {
+      margin-bottom: 10px;
+      font-size: 20px;
+      letter-spacing: -0.02em;
+    }
+
+    .doc-section p {
+      color: var(--muted);
+      font-size: 14.5px;
+      line-height: 1.75;
+    }
+
+    .doc-section p + p { margin-top: 10px; }
+
+    .doc-section strong { color: var(--ink); font-weight: 600; }
+
+    .doc-section a {
+      color: var(--accent);
+      text-decoration: none;
+      border-bottom: 1px solid var(--accent-line);
+    }
+
+    .doc-section a:hover { border-bottom-color: var(--accent); }
+
+    .doc-section ul {
+      margin: 10px 0 0 18px;
+      padding: 0;
+    }
+
+    .doc-section li {
+      padding-left: 2px;
+      color: var(--muted);
+      font-size: 14.5px;
+      line-height: 1.7;
+    }
+
+    .doc-section li + li { margin-top: 7px; }
+
+    .doc-section li strong { color: var(--ink); }
+
+    .datafacts {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1px;
+      overflow: hidden;
+      margin: 16px 0 0;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--line);
+    }
+
+    .datafacts > div {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 4px 14px;
+      padding: 10px 14px;
+      background: var(--surface);
+    }
+
+    .datafacts dt {
+      color: var(--muted);
+      font-size: 12.5px;
+    }
+
+    .datafacts dd {
+      margin: 0;
+      color: var(--ink);
+      font-size: 13px;
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+      text-align: right;
+    }
+
+    .datafacts > div:last-child:nth-child(odd) { grid-column: 1 / -1; }
+
+    .note {
+      margin-top: 16px;
+      padding: 11px 14px;
+      border-left: 2px solid var(--accent);
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      background: var(--accent-soft);
+    }
+
+    .note p {
+      margin: 0;
+      color: var(--ink);
+      font-size: 13.5px;
+      line-height: 1.65;
+    }
+
     .note strong { color: var(--accent); }
 
-    dl.datafacts { margin-top: 0.6rem; display: grid; gap: 0.45rem; }
-    dl.datafacts div { display: flex; justify-content: space-between; gap: 1rem; align-items: baseline; background: var(--surface-2); border-radius: var(--r-sm); padding: 0.5rem 0.75rem; }
-    dl.datafacts dt { font-size: 0.85rem; color: var(--muted); }
-    dl.datafacts dd { font-size: 0.9rem; font-weight: 600; text-align: right; font-variant-numeric: tabular-nums; }
+    .contact {
+      display: inline-flex;
+      align-items: center;
+      min-height: 40px;
+      margin-top: 14px;
+    }
 
-    .contact { display: inline-flex; align-items: center; min-height: 44px; margin-top: 0.7rem; padding: 0.4rem 0.9rem; border-radius: var(--r-sm); border: 1px solid var(--border); background: transparent; color: var(--text); font-family: inherit; font-size: 0.875rem; font-weight: 600; text-decoration: none; transition: border-color 0.15s, background-color 0.15s; }
-    .contact:hover { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, transparent); }
-    .hint { font-size: 0.8rem; color: var(--dim); margin-top: 0.5rem; }
+    .hint {
+      margin-top: 10px !important;
+      color: var(--faint) !important;
+      font-size: 12.5px !important;
+    }
 
-    .foot { font-size: 0.8rem; color: var(--dim); margin-top: 1.25rem; max-width: 70ch; }
-    .foot a { color: var(--dim); }
+    .doc-foot {
+      padding: 24px 0 0;
+      border-top: 1px solid var(--line);
+      color: var(--faint);
+      font-size: 12.5px;
+      line-height: 1.7;
+    }
 
-    @media (min-width: 640px) { main { padding-left: 1.5rem; padding-right: 1.5rem; } }
-    @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+    .doc-foot a {
+      color: var(--muted);
+      text-decoration: none;
+      border-bottom: 1px solid var(--line-strong);
+    }
+
+    .doc-foot a:hover { color: var(--accent); border-bottom-color: var(--accent); }
+
+    @media (max-width: 640px) {
+      .doc { padding-top: 28px; }
+      .lede { font-size: 15px; }
+      .doc-section { padding: 22px 0; }
+      .doc-section h2 { font-size: 18px; }
+      .doc-section p,
+      .doc-section li { font-size: 14px; }
+      .datafacts { grid-template-columns: 1fr; }
+      .datafacts > div:last-child:nth-child(odd) { grid-column: auto; }
+      .datafacts dd { text-align: left; }
+    }
   </style>
 </head>
 <body>
-  <a class="skip" href="#main">Lewati ke konten</a>
+  <a class="skip-link" href="#main">Lewati ke konten</a>
 
-  <header class="topbar">
-    <a class="back" href="index.html"><span aria-hidden="true">←</span> Dashboard</a>
-    <h1 class="page-title">Tentang & Metode</h1>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="index.html" aria-label="Harga Pangan Jawa Timur — beranda">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 20 20" fill="none">
+            <path d="M3 14.2 7.4 9.2l3.1 3.1 6.4-7" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="16.9" cy="5.3" r="1.7" fill="currentColor"/>
+          </svg>
+        </span>
+        <span class="brand-text">
+          <span class="brand-name">Harga Pangan</span>
+          <span class="brand-sub">Jawa Timur</span>
+        </span>
+      </a>
+
+      <nav class="site-nav" aria-label="Navigasi utama">
+        <a href="index.html">Dashboard</a>
+        <a href="tanam.html">Kalkulator tanam</a>
+        <a href="kartu.html">Kartu insight</a>
+        <a href="tentang.html" aria-current="page">Tentang &amp; metode</a>
+      </nav>
+
+      <details class="nav-menu">
+        <summary>Menu</summary>
+        <nav aria-label="Navigasi utama (seluler)">
+          <a href="index.html">Dashboard</a>
+          <a href="tanam.html">Kalkulator tanam</a>
+          <a href="kartu.html">Kartu insight</a>
+          <a href="tentang.html" aria-current="page">Tentang &amp; metode</a>
+        </nav>
+      </details>
+    </div>
   </header>
 
-  <main id="main">
-    <p class="lead">Penjelasan singkat: dari mana data situs ini berasal, bagaimana diolah, apa yang tidak bisa dijawab oleh data ini, dan siapa yang layak (dan tidak layak) memakainya.</p>
+  <main class="container" id="main">
+    <article class="doc">
+      <p class="eyebrow">Tentang proyek</p>
+      <h1>Tentang &amp; metode</h1>
+      <p class="lede">Dari mana data situs ini berasal, bagaimana diolah, apa yang tidak bisa dijawab oleh data ini, dan siapa yang layak (dan tidak layak) memakainya.</p>
 
-    <section class="panel">
-      <h2>Sumber data</h2>
-      <p>Semua harga di situs ini adalah <strong>harga produsen</strong> yang dipublikasikan <a href="https://siskaperbapo.jatimprov.go.id/harga/views/layanankomoditashargaprodusen/tabel/hargaprodusen/" target="_blank" rel="noopener">SISKAPERBAPO — Dinas Ketahanan Pangan Provinsi Jawa Timur</a>. Harga produsen dihimpun dari pemantauan di pasar, lelang, distributor, atau peternak tertentu di Jawa Timur, satu kali sehari untuk tiap komoditas.</p>
-      <p>Situs ini <strong>menyalin ulang data publik tersebut secara otomatis</strong> (scraping), merapikan, lalu menyajikannya agar lebih mudah dibaca. Situs ini <strong>bukan kanal resmi</strong> pemerintah dan tidak mengubah satupun nilai yang dipublikasikan sumber; untuk angka yang mengikat, selalu rujuk publikasi resmi SISKAPERBAPO.</p>
-      <dl class="datafacts">
-        <div><dt>Jumlah komoditas</dt><dd id="factCommodities">—</dd></div>
-        <div><dt>Titik pantau (pasar/lelang/peternak)</dt><dd id="factMarkets">—</dd></div>
-        <div><dt>Hari dengan data</dt><dd id="factDays">—</dd></div>
-        <div><dt>Cakupan tanggal</dt><dd id="factRange">—</dd></div>
-        <div><dt>Terakhir diperbarui</dt><dd id="factUpdated">—</dd></div>
-      </dl>
-    </section>
+      <div class="doc-body">
+        <section class="doc-section">
+          <h2>Sumber data</h2>
+          <p>Semua harga di situs ini adalah <strong>harga produsen</strong> yang dipublikasikan <a href="https://siskaperbapo.jatimprov.go.id/harga/views/layanankomoditashargaprodusen/tabel/hargaprodusen/" target="_blank" rel="noopener">SISKAPERBAPO — Dinas Ketahanan Pangan Provinsi Jawa Timur</a>. Harga produsen dihimpun dari pemantauan di pasar, lelang, distributor, atau peternak tertentu di Jawa Timur, satu kali sehari untuk tiap komoditas.</p>
+          <p>Situs ini <strong>menyalin ulang data publik tersebut secara otomatis</strong> (scraping), merapikan, lalu menyajikannya agar lebih mudah dibaca. Situs ini <strong>bukan kanal resmi</strong> pemerintah dan tidak mengubah satu pun nilai yang dipublikasikan sumber; untuk angka yang mengikat, selalu rujuk publikasi resmi SISKAPERBAPO.</p>
+          <dl class="datafacts">
+            <div><dt>Jumlah komoditas</dt><dd id="factCommodities">—</dd></div>
+            <div><dt>Titik pantau (pasar/lelang/peternak)</dt><dd id="factMarkets">—</dd></div>
+            <div><dt>Hari dengan data</dt><dd id="factDays">—</dd></div>
+            <div><dt>Cakupan tanggal</dt><dd id="factRange">—</dd></div>
+            <div><dt>Terakhir diperbarui</dt><dd id="factUpdated">—</dd></div>
+          </dl>
+        </section>
 
-    <section class="panel">
-      <h2>Bagaimana data diolah</h2>
-      <p>Setiap hari, data baru disalin dari SISKAPERBAPO lalu diproses tiga langkah sebelum tampil:</p>
-      <ul>
-        <li><strong>Scrape</strong> — menyalin harga terbaru per komoditas dan titik pantau ke arsip harian.</li>
-        <li><strong>Pembersihan</strong> — salah input mencolok (mis. harga yang lompat 4× lipat sendirinya) dihapus atau dikoreksi dengan harga sekitarnya; koreksi manual hanya dilakukan bila nilai yang salah masih teridentifikasi jelas.</li>
-        <li><strong>Analisa</strong> — menghitung tren, median harga per bulan, dan pola musiman yang dipakai kalkulator tanam.</li>
-      </ul>
-      <p>Kadang sumber belum mengisi harga hari terbaru untuk suatu pasar. Agar chart tetap nyambung, nilai hari sebelumnya dipakai sementara (carry-forward) dan selalu ditandai <strong>“estimasi”</strong>. Nilai bertanda estimasi tidak ikut dihitung sebagai data aktual.</p>
-      <div class="note"><p><strong>Selalu bisa diperiksa:</strong> hasil mentah, arsip harian, dan kode pemrosesnya tersimpan terbuka dalam <a href="https://github.com/zeinzulaziz/harga-pangan" target="_blank" rel="noopener">repositori proyek ini</a>.</p></div>
-    </section>
+        <section class="doc-section">
+          <h2>Bagaimana data diolah</h2>
+          <p>Setiap hari, data baru disalin dari SISKAPERBAPO lalu diproses tiga langkah sebelum tampil:</p>
+          <ul>
+            <li><strong>Scrape</strong> — menyalin harga terbaru per komoditas dan titik pantau ke arsip harian.</li>
+            <li><strong>Pembersihan</strong> — salah input mencolok (mis. harga yang lompat 4× lipat sendirinya) dihapus atau dikoreksi dengan harga sekitarnya; koreksi manual hanya dilakukan bila nilai yang salah masih teridentifikasi jelas.</li>
+            <li><strong>Analisa</strong> — menghitung tren, median harga per bulan, dan pola musiman yang dipakai kalkulator tanam.</li>
+          </ul>
+          <p>Kadang sumber belum mengisi harga hari terbaru untuk suatu pasar. Agar grafik tetap tersambung, nilai hari sebelumnya dipakai sementara (carry-forward) dan selalu ditandai <strong>“estimasi”</strong>. Nilai bertanda estimasi tidak ikut dihitung sebagai data aktual.</p>
+          <div class="note"><p><strong>Selalu bisa diperiksa:</strong> hasil mentah, arsip harian, dan kode pemrosesnya tersimpan terbuka dalam <a href="https://github.com/zeinzulaziz/harga-pangan" target="_blank" rel="noopener">repositori proyek ini</a>.</p></div>
+        </section>
 
-    <section class="panel">
-      <h2>Batasan yang perlu dipahami</h2>
-      <ul>
-        <li><strong>Harga produsen bukan dompet petani.</strong> Harganya diambil di titik tertentu (pasar induk, lelang, distributor) — harga yang benar-benar diterima petani di desa bisa berbeda, tergantung tengkulak, kualitas, jarak, dan volume.</li>
-        <li><strong>Satu titik per wilayah, bukan rata-rata kabupaten.</strong> Dua harga di komoditas yang sama menunjukkan dua titik pantau berbeda, bukan rentang resmi.</li>
-        <li><strong>Angka nominal lintas tahun.</strong> Harga tahun 2016 dan 2026 tidak boleh dibandingkan langsung tanpa memperhitungkan inflasi. Pola musiman (jatuh-nya di bulan apa) lebih bisa diandalkan daripada level harganya.</li>
-        <li><strong>Perkiraan bukan jaminan.</strong> Kalkulator tanam dibaca dari tren historis; variasi cuaca, hama, dan keputusan petani lain bisa menggeser hasilnya.</li>
-      </ul>
-    </section>
+        <section class="doc-section">
+          <h2>Batasan yang perlu dipahami</h2>
+          <ul>
+            <li><strong>Harga produsen bukan dompet petani.</strong> Harganya diambil di titik tertentu (pasar induk, lelang, distributor) — harga yang benar-benar diterima petani di desa bisa berbeda, tergantung tengkulak, kualitas, jarak, dan volume.</li>
+            <li><strong>Satu titik per wilayah, bukan rata-rata kabupaten.</strong> Dua harga di komoditas yang sama menunjukkan dua titik pantau berbeda, bukan rentang resmi.</li>
+            <li><strong>Angka nominal lintas tahun.</strong> Harga tahun 2016 dan 2026 tidak boleh dibandingkan langsung tanpa memperhitungkan inflasi. Pola musiman (jatuhnya di bulan apa) lebih bisa diandalkan daripada level harganya.</li>
+            <li><strong>Perkiraan bukan jaminan.</strong> Kalkulator tanam dibaca dari tren historis; variasi cuaca, hama, dan keputusan petani lain bisa menggeser hasilnya.</li>
+          </ul>
+        </section>
 
-    <section class="panel">
-      <h2>Cocok dipakai untuk</h2>
-      <ul>
-        <li><strong>Petani & penyuluh</strong> — gambaran tren dan pola musiman sebagai bahan diskusi waktu tanam/panen, bukan sebagai acuan jual tunggal.</li>
-        <li><strong>UMKM, katering, warung</strong> — perkiraan perputaran biaya bahan baku mingguan.</li>
-        <li><strong>Pelajar, peneliti, jurnalis</strong> — urutan panjang data harian 10+ tahun yang bisa diunduh CSV-nya per komoditas.</li>
-        <li><strong>Pemerintah daerah/gapoktan</strong> — pembanding cepat, bukan pengganti data internal.</li>
-      </ul>
-      <div class="note"><p><strong>Untuk penyuluh &amp; kelompok tani:</strong> tersedia <a href="kartu.html">Kartu Insight Bulanan</a> — gambar ringkasan harga semua komoditas beserta teks WhatsApp siap dibagikan ke grup.</p></div>
-    </section>
+        <section class="doc-section">
+          <h2>Cocok dipakai untuk</h2>
+          <ul>
+            <li><strong>Petani &amp; penyuluh</strong> — gambaran tren dan pola musiman sebagai bahan diskusi waktu tanam/panen, bukan sebagai acuan jual tunggal.</li>
+            <li><strong>UMKM, katering, warung</strong> — perkiraan perputaran biaya bahan baku mingguan.</li>
+            <li><strong>Pelajar, peneliti, jurnalis</strong> — urutan panjang data harian 10+ tahun yang bisa diunduh CSV-nya per komoditas.</li>
+            <li><strong>Pemerintah daerah/gapoktan</strong> — pembanding cepat, bukan pengganti data internal.</li>
+          </ul>
+          <div class="note"><p><strong>Untuk penyuluh &amp; kelompok tani:</strong> tersedia <a href="kartu.html">Kartu Insight Bulanan</a> — gambar ringkasan harga semua komoditas beserta teks WhatsApp siap dibagikan ke grup.</p></div>
+        </section>
 
-    <section class="panel">
-      <h2>Koreksi & kontribusi</h2>
-      <p>Menemukan angka janggal, ada titik pantau yang sebaiknya ditambahkan, atau mau memakai data ini untuk keperluan tertentu? Beri tahu kami — koreksi terhadap data sumber diproses di jalur yang sama seperti pembersihan otomatis.</p>
-      <a class="contact" href="https://github.com/zeinzulaziz/harga-pangan/issues" target="_blank" rel="noopener">Kirim via GitHub Issues ↗</a>
-      <p class="hint">Tanpa akun GitHub? Hubungi pemilik proyek lewat sosial media yang sama dengan tautan proyek di atas.</p>
-    </section>
+        <section class="doc-section">
+          <h2>Koreksi &amp; kontribusi</h2>
+          <p>Menemukan angka janggal, ada titik pantau yang sebaiknya ditambahkan, atau mau memakai data ini untuk keperluan tertentu? Beri tahu kami — koreksi terhadap data sumber diproses di jalur yang sama seperti pembersihan otomatis.</p>
+          <a class="btn btn-primary contact" href="https://github.com/zeinzulaziz/harga-pangan/issues" target="_blank" rel="noopener">Kirim via GitHub Issues ↗</a>
+          <p class="hint">Tanpa akun GitHub? Hubungi pemilik proyek lewat sosial media yang sama dengan tautan proyek di atas.</p>
+        </section>
+      </div>
 
-    <p class="foot">Data harga milik SISKAPERBAPO Pemprov Jawa Timur, disalin ulang dengan atribusi. Dashboard ini proyek mandiri dan bukan kanal resmi. Kode situs open source (MIT): <a href="https://github.com/zeinzulaziz/harga-pangan" target="_blank" rel="noopener">github.com/zeinzulaziz/harga-pangan</a>.</p>
+      <p class="doc-foot">Data harga milik SISKAPERBAPO Pemprov Jawa Timur, disalin ulang dengan atribusi. Dashboard ini proyek mandiri dan bukan kanal resmi. Kode situs open source (MIT): <a href="https://github.com/zeinzulaziz/harga-pangan" target="_blank" rel="noopener">github.com/zeinzulaziz/harga-pangan</a>.</p>
+    </article>
   </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <div>
+        <p class="footer-title">Harga Produsen Pangan Jawa Timur</p>
+        <p class="footer-text">Sumber data: <a href="https://siskaperbapo.jatimprov.go.id/harga/views/layanankomoditashargaprodusen/tabel/hargaprodusen/" target="_blank" rel="noopener">SISKAPERBAPO — Dinas Ketahanan Pangan Provinsi Jawa Timur</a>. Data harga milik Pemerintah Provinsi Jawa Timur, disalin ulang dengan atribusi. Dashboard ini proyek mandiri dan bukan kanal resmi pemerintah.</p>
+        <p class="footer-meta">Kode sumber berlisensi MIT</p>
+      </div>
+      <div>
+        <nav class="footer-links" aria-label="Tautan kaki">
+          <a href="index.html">Dashboard</a>
+          <a href="tanam.html">Kalkulator tanam</a>
+          <a href="kartu.html">Kartu insight</a>
+          <a href="tentang.html">Tentang &amp; metode</a>
+          <a href="https://github.com/zeinzulaziz/harga-pangan" target="_blank" rel="noopener">GitHub</a>
+        </nav>
+        <p class="footer-meta">Untuk angka yang mengikat, rujuk publikasi resmi SISKAPERBAPO.</p>
+      </div>
+    </div>
+  </footer>
 
   <script>
     // Angka fakta di halaman ini dihitung langsung dari data/produsen.json

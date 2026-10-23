@@ -23,7 +23,7 @@ membantu petani memahami waktu harga tinggi, rendah, dan momentum kenaikan.
 - Histori harga harian dari sekitar Agustus 2016 sampai sekarang.
 - Chart interaktif dengan zoom, pan, dan drag selection.
 - Filter periode preset dan rentang tanggal bebas.
-- Pemilihan pasar pada sidebar.
+- Pemilihan pasar lewat tabel pasar di bawah grafik.
 - Pembaruan data dilakukan otomatis setiap Senin jam 10:00 WIB dari SISKAPERBAPO
   (launchd), atau secara manual kapan pun diperlukan.
 - Penanda data aktual dan data estimasi carry-forward.
@@ -38,7 +38,7 @@ membantu petani memahami waktu harga tinggi, rendah, dan momentum kenaikan.
   beserta teks WhatsApp siap dibagikan ke grup.
 - Kalkulator waktu tanam: memperkirakan waktu panen dari tanggal tanam beserta
   rata-rata umur tanaman sampai panen.
-- Layout desktop dengan sidebar dan toggle sidebar pada mobile.
+- Tata letak dokumen satu kolom yang responsif dari ponsel sampai desktop.
 
 ## Sumber Data
 
@@ -77,6 +77,7 @@ harga-pangan/
 ├── sitemap.xml
 ├── LICENSE
 ├── assets/
+│   ├── site.css
 │   ├── screenshot-dashboard.png
 │   └── screenshot-tanam.png
 ├── package.json

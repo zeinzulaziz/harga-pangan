@@ -25,8 +25,13 @@ sumber data tanpa konfirmasi user.
 ## Arsitektur
 
 - `index.html` — dashboard utama (vanilla JS; Chart.js, hammerjs, chartjs-plugin-zoom
-  dari jsdelivr). Membaca `data/produsen.json` dan `data/analisa.json`. Pasar di
-  sidebar diikat lewat **indeks** kolom `commodities[nama].columns`.
+  dari jsdelivr). Membaca `data/produsen.json` dan `data/analisa.json`. Pasar
+  dipilih lewat tabel pasar di bawah grafik; checkbox diikat lewat **indeks**
+  kolom `commodities[nama].columns`.
+- `assets/site.css` — fondasi tampilan bersama (token warna, tipografi, header,
+  footer, tombol). Dipakai `index.html`, `tanam.html`, `tentang.html`, dan
+  `kartu.html`; halaman 404 memakai salinan token inline agar tetap tampil saat
+  URL yang diminta tidak ada.
 - `tanam.html` — kalkulator waktu tanam; membaca `data/analisa.json`. Daftar
   komoditas + umur panen di-hardcode di objek `CROPS` — kalau scraper menambah
   komoditas baru, update juga di sini.
@@ -96,9 +101,10 @@ Scrape dijalankan otomatis setiap Senin 10:00 WIB via launchd (`com.zeinzulaziz.
 
 - Vanilla HTML/CSS/JS. Tanpa framework, bundler, atau build step.
 - Tanggal dan angka diformat ke `id-ID`.
-- Palet: bg `#0f172a`, surface `#1e293b`, garis `#334155`, teks `#f1f5f9` /
-  `#94a3b8`, aksen hijau `#34d399` (brand), warna seri chart di array `COLORS`
-  (`index.html`).
+- Palet terang: bg `#F7F8FA`, surface `#FFFFFF`, garis `#E5E9E6`, teks `#172B24`,
+  sekunder `#5F6C66`, aksen hijau `#246B4A` (brand), naik `#C2413B`, turun
+  `#16805D`, warna seri chart di array `COLORS` (`index.html`). Token lengkap
+  ada di `assets/site.css`; jangan menulis ulang nilai warna di halaman.
 - Harga disimpan sebagai rupiah per kg (integer).
 - Script Node gaya CommonJS, diawali `#!/usr/bin/env node`, output console
   berbahasa Indonesia dengan emoji status.

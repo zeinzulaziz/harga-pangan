@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="color-scheme" content="dark">
+  <meta name="color-scheme" content="light">
   <title>Kalkulator Waktu Tanam | Harga Pangan Jatim</title>
   <meta name="description" content="Perkirakan waktu panen bawang merah, beras, cabe, dan kentang dari tanggal tanam: rentang panen, umur tanaman, dan estimasi pendapatan kasar.">
   <meta name="author" content="zeinzulaziz">
   <meta name="robots" content="index, follow">
-  <meta name="theme-color" content="#0f172a">
+  <meta name="theme-color" content="#F7F8FA">
   <link rel="canonical" href="https://zeinzulaziz.github.io/harga-pangan/tanam.html">
 
   <!-- Ikon -->
@@ -40,210 +40,661 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-  <!-- impeccable-disable overused-font: Inter dipertahankan agar konsisten dengan sistem desain dashboard index.html yang sudah ada; menambah font kedua akan memecah identitas produk -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400..700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/site.css">
+
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    :root {
-      --bg: #0f172a; --surface: #1e293b; --surface-2: #273549;
-      --line: #334155; --border: #64748b;
-      --text: #f1f5f9; --muted: #cbd5e1; --dim: #94a3b8;
-      --accent: #34d399; --accent-ink: #0f172a; --amber: #fbbf24; --danger: #fca5a5;
-      --r-sm: 8px; --r-md: 12px; --maxw: 820px;
+    .tool {
+      max-width: 1120px;
+      margin-inline: auto;
+      padding-top: 40px;
     }
-    html { color-scheme: dark; }
-    body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      background: var(--bg); color: var(--text); line-height: 1.55;
-      -webkit-font-smoothing: antialiased; min-height: 100vh;
+
+    .page-head {
+      max-width: 720px;
+      padding-bottom: 28px;
     }
-    :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
-    .skip { position: absolute; left: -9999px; top: 0; }
-    .skip:focus { left: 1rem; top: 1rem; z-index: 60; background: var(--accent); color: var(--accent-ink); padding: 0.6rem 0.9rem; border-radius: var(--r-sm); font-size: 0.9rem; font-weight: 600; }
+    .eyebrow {
+      margin-bottom: 10px;
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+    }
 
-    .topbar { position: sticky; top: 0; z-index: 10; display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; padding: 0.7rem 1rem; background: var(--bg); border-bottom: 1px solid var(--line); }
-    .back { display: inline-flex; align-items: center; gap: 0.4rem; min-height: 44px; padding: 0.4rem 0.85rem; border: 1px solid var(--border); border-radius: var(--r-sm); color: var(--muted); text-decoration: none; font-size: 0.9rem; font-weight: 500; transition: color 0.15s, border-color 0.15s; }
-    .back:hover { color: var(--text); border-color: var(--accent); }
-    .page-title { font-size: clamp(1rem, 1.4vw + 0.7rem, 1.2rem); font-weight: 700; letter-spacing: -0.01em; }
+    .page-head h1 {
+      font-size: clamp(28px, 3vw, 32px);
+      letter-spacing: -0.025em;
+    }
 
-    main { max-width: var(--maxw); margin: 0 auto; padding: 1.25rem 1rem 3rem; }
-    .lead { color: var(--muted); font-size: 0.95rem; max-width: 62ch; margin-bottom: 1.25rem; }
+    .lead {
+      max-width: 66ch;
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 15.5px;
+      line-height: 1.7;
+    }
 
-    .panel { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-md); padding: 1.25rem; margin-bottom: 1.25rem; }
-    .panel > h2 { font-size: 1rem; font-weight: 700; margin-bottom: 0.75rem; }
+    .layout {
+      display: grid;
+      gap: 20px;
+      align-items: start;
+    }
 
-    .layout { display: grid; gap: 1rem; }
-    .col-main, .col-side { display: grid; gap: 1rem; align-content: start; min-width: 0; }
-    .layout .panel, .layout .result { margin-bottom: 0; }
+    .col-main,
+    .col-side {
+      display: grid;
+      gap: 20px;
+      align-content: start;
+      min-width: 0;
+    }
 
-    .field { border: 0; margin-bottom: 1.15rem; }
+    .panel,
+    .result {
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      background: var(--surface);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .panel { padding: 24px; }
+
+    .panel > h2 {
+      margin-bottom: 12px;
+      font-size: 16px;
+      letter-spacing: -0.01em;
+    }
+
+    .field {
+      margin: 0 0 22px;
+      padding: 0;
+      border: 0;
+    }
+
     .field:last-child { margin-bottom: 0; }
-    .field-label { display: block; font-size: 0.85rem; font-weight: 600; color: var(--muted); margin-bottom: 0.5rem; }
 
-    .crop-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 0.5rem; }
-    .crop-option { position: relative; display: flex; }
-    .crop-option input { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: pointer; }
-    .crop-option span { flex: 1; display: flex; align-items: center; min-height: 44px; padding: 0.5rem 0.75rem; border: 1px solid var(--border); border-radius: var(--r-sm); color: var(--muted); font-size: 0.9rem; font-weight: 500; transition: background-color 0.15s, border-color 0.15s, color 0.15s; }
-    .crop-option span:hover { border-color: var(--accent); color: var(--text); }
-    .crop-option input:checked + span { background: color-mix(in srgb, var(--accent) 16%, transparent); border-color: var(--accent); color: var(--accent); font-weight: 600; }
-    .crop-option input:focus-visible + span { outline: 2px solid var(--accent); outline-offset: 2px; }
+    .field-label {
+      display: block;
+      margin-bottom: 10px;
+      color: var(--faint);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+    }
 
-    input[type="date"], input[type="number"] { width: 100%; min-height: 44px; padding: 0.5rem 0.75rem; border: 1px solid var(--border); border-radius: var(--r-sm); background: var(--surface-2); color: var(--text); font-family: inherit; font-size: 0.95rem; }
-    input[type="date"]:hover, input[type="number"]:hover { border-color: var(--accent); }
-    .hint { font-size: 0.8rem; color: var(--dim); margin-top: 0.5rem; }
-    .money-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 0.75rem; }
+    .crop-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(138px, 1fr));
+      gap: 8px;
+    }
+
+    .crop-option {
+      position: relative;
+      display: flex;
+    }
+
+    .crop-option input {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      opacity: 0;
+      cursor: pointer;
+    }
+
+    .crop-option span {
+      display: flex;
+      flex: 1;
+      align-items: center;
+      min-height: 44px;
+      padding: 8px 12px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      background: var(--surface);
+      color: var(--muted);
+      font-size: 13.5px;
+      font-weight: 500;
+      transition: background-color 0.15s, border-color 0.15s, color 0.15s;
+    }
+
+    .crop-option span:hover {
+      border-color: var(--line-strong);
+      background: var(--surface-2);
+      color: var(--ink);
+    }
+
+    .crop-option input:checked + span {
+      border-color: var(--accent-line);
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    .crop-option input:focus-visible + span {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+
+    input[type="date"],
+    input[type="number"] {
+      width: 100%;
+      min-height: 44px;
+      padding: 8px 12px;
+      border: 1px solid var(--line-strong);
+      border-radius: var(--radius-sm);
+      background: var(--surface);
+      color: var(--ink);
+      font-family: inherit;
+      font-size: 14.5px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    input[type="date"]:hover,
+    input[type="number"]:hover { border-color: var(--accent); }
+
+    .hint {
+      margin-top: 8px;
+      color: var(--faint);
+      font-size: 12.5px;
+      line-height: 1.6;
+    }
+
+    .money-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 12px;
+    }
+
     .money-field { display: block; }
-    .money-field span { display: block; font-size: 0.8rem; color: var(--muted); margin-bottom: 0.35rem; }
 
-    /* Result: satu titik fokus halaman, ditandai garis aksen */
-    .result { background: var(--surface); border: 1px solid var(--accent); border-radius: var(--r-md); padding: 1.25rem; margin-bottom: 1.25rem; }
-    .result-head { font-size: 0.85rem; font-weight: 600; color: var(--dim); }
-    .result-range { font-size: clamp(1.5rem, 5vw, 2.1rem); font-weight: 800; color: var(--accent); line-height: 1.2; letter-spacing: -0.02em; margin-top: 0.15rem; }
-    .result-avg { font-size: 0.95rem; color: var(--muted); margin-top: 0.4rem; }
-    .result-avg strong { color: var(--text); }
+    .money-field span {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--muted);
+      font-size: 12.5px;
+    }
 
-    .growth { position: relative; height: 40px; margin-top: 1.1rem; }
-    .growth-track { position: absolute; left: 0; right: 0; top: 17px; height: 6px; background: var(--line); border-radius: 3px; }
-    .growth-window { position: absolute; top: 17px; height: 6px; background: var(--accent); border-radius: 3px; }
-    .growth-avg { position: absolute; top: 9px; width: 2px; height: 22px; background: var(--text); }
-    .growth-foot { display: flex; justify-content: space-between; gap: 1rem; font-size: 0.85rem; color: var(--dim); }
+    .result {
+      padding: 24px;
+      border-top: 3px solid var(--accent);
+    }
+
+    .result-head {
+      color: var(--faint);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+    }
+
+    .result-range {
+      margin-top: 6px;
+      color: var(--ink);
+      font-size: clamp(22px, 2.6vw, 28px);
+      font-weight: 650;
+      line-height: 1.3;
+      letter-spacing: -0.02em;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .result-avg {
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.65;
+    }
+
+    .result-avg strong {
+      color: var(--ink);
+      font-weight: 600;
+    }
+
+    .growth {
+      position: relative;
+      height: 40px;
+      margin-top: 20px;
+    }
+
+    .growth-track {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 17px;
+      height: 6px;
+      border-radius: 3px;
+      background: var(--surface-3);
+    }
+
+    .growth-window {
+      position: absolute;
+      top: 17px;
+      height: 6px;
+      border-radius: 3px;
+      background: var(--accent);
+    }
+
+    .growth-avg {
+      position: absolute;
+      top: 9px;
+      width: 2px;
+      height: 22px;
+      background: var(--ink);
+    }
+
+    .growth-foot {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      color: var(--faint);
+      font-size: 12.5px;
+      font-variant-numeric: tabular-nums;
+    }
+
     .growth-foot span:last-child { text-align: right; }
 
-    .stats { list-style: none; margin: 1.1rem 0 0; display: grid; gap: 0.5rem; }
-    .stat { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; padding: 0.65rem 0.85rem; background: var(--surface-2); border-radius: var(--r-sm); }
-    .stat-label { font-size: 0.875rem; color: var(--muted); }
-    .stat-value { font-weight: 700; font-variant-numeric: tabular-nums; text-align: right; }
-    .stat-value small { display: block; font-size: 0.8rem; font-weight: 500; color: var(--dim); }
+    .stats {
+      list-style: none;
+      margin: 20px 0 0;
+      padding: 0;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface);
+    }
+
+    .stat {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 10px 14px;
+      border-top: 1px solid var(--line);
+    }
+
+    .stat:first-child { border-top: 0; }
+
+    .stat-label {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .stat-value {
+      color: var(--ink);
+      font-size: 13.5px;
+      font-weight: 600;
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .stat-value small {
+      display: block;
+      color: var(--faint);
+      font-size: 12px;
+      font-weight: 500;
+    }
+
     .s-fast .stat-value { color: var(--accent); }
     .s-slow .stat-value { color: var(--amber); }
 
-    .block { border-top: 1px solid var(--line); margin-top: 1.1rem; padding-top: 1rem; }
-    .block h3 { font-size: 0.85rem; font-weight: 700; color: var(--muted); margin-bottom: 0.4rem; }
-    .block p { font-size: 0.9rem; color: var(--muted); }
-    .varieties { list-style: none; margin-top: 0.6rem; display: grid; gap: 0.3rem; }
-    .varieties li { display: flex; justify-content: space-between; gap: 1rem; font-size: 0.875rem; }
+    .block {
+      margin-top: 20px;
+      padding-top: 16px;
+      border-top: 1px solid var(--line);
+    }
+
+    .block h3 {
+      margin-bottom: 8px;
+      color: var(--faint);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+    }
+
+    .block p {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    .varieties {
+      display: grid;
+      gap: 0;
+      margin: 10px 0 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .varieties li {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 7px 0;
+      border-top: 1px solid var(--line);
+      font-size: 13.5px;
+    }
+
     .varieties li span:first-child { color: var(--muted); }
-    .varieties li span:last-child { font-weight: 600; white-space: nowrap; font-variant-numeric: tabular-nums; }
 
-    .insight { margin-top: 1.1rem; padding: 0.85rem; border-radius: var(--r-sm); background: color-mix(in srgb, var(--accent) 9%, transparent); border: 1px solid color-mix(in srgb, var(--accent) 32%, var(--line)); }
-    .insight h3 { font-size: 0.85rem; font-weight: 700; color: var(--accent); margin-bottom: 0.3rem; }
-    .insight p { font-size: 0.9rem; color: var(--muted); }
-    .insight p + p { margin-top: 0.4rem; }
-    .insight strong { color: var(--text); }
-    .insight-warn { color: var(--amber); font-weight: 600; }
-    .insight-error { color: var(--danger); }
-    .insight-note { font-size: 0.78rem; color: var(--dim); margin-top: 0.35rem; }
-    .btn { display: inline-flex; align-items: center; min-height: 44px; margin-top: 0.6rem; padding: 0.4rem 0.9rem; border-radius: var(--r-sm); border: 1px solid var(--border); background: transparent; color: var(--text); font-family: inherit; font-size: 0.875rem; font-weight: 600; cursor: pointer; transition: border-color 0.15s, background-color 0.15s; }
-    .btn:hover { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, transparent); }
-
-    .empty, .result-error { padding: 0.5rem 0; }
-    .empty-title, .result-error-title { font-size: 1rem; font-weight: 700; color: var(--text); }
-    .empty p, .result-error p { font-size: 0.9rem; color: var(--muted); margin-top: 0.25rem; }
-    .result-error-title { color: var(--danger); }
-
-    .ref { list-style: none; margin-top: 0.25rem; }
-    .ref-row { padding: 0.7rem 0; border-top: 1px solid var(--line); }
-    .ref-row:first-child { border-top: 0; }
-    .ref-main { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; flex-wrap: wrap; }
-    .ref-name { font-size: 0.95rem; font-weight: 700; }
-    .ref-age { font-size: 0.875rem; color: var(--accent); font-weight: 600; font-variant-numeric: tabular-nums; }
-    .ref-bar { position: relative; height: 14px; margin: 0.5rem 0 0.35rem; }
-    .ref-bar .growth-track, .ref-bar .growth-window { top: 4px; }
-    .ref-bar .growth-track { background: var(--line); }
-    .ref-bar .growth-avg { top: 1px; height: 12px; width: 2px; }
-    .ref-note { font-size: 0.82rem; color: var(--dim); }
-    .scale-note { font-size: 0.78rem; color: var(--dim); margin-top: 0.5rem; }
-
-    .tag { display: inline-block; margin-left: 0.4rem; padding: 0.05rem 0.45rem; border-radius: 999px; font-size: 0.72rem; font-weight: 700; background: color-mix(in srgb, var(--accent) 18%, transparent); border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent); color: var(--accent); vertical-align: 1px; white-space: nowrap; }
-    .sched-row { padding: 0.6rem 0.6rem; }
-    .sched-row.now { background: color-mix(in srgb, var(--accent) 8%, transparent); border-radius: var(--r-sm); }
-    .sched-delta { margin-left: 0.4rem; font-size: 0.8rem; font-weight: 600; color: var(--dim); }
-
-    .foot { font-size: 0.8rem; color: var(--dim); max-width: 70ch; margin-top: 1.25rem; }
-
-    @media (min-width: 640px) {
-      main { padding-left: 1.5rem; padding-right: 1.5rem; }
+    .varieties li span:last-child {
+      color: var(--ink);
+      font-weight: 600;
+      text-align: right;
+      white-space: nowrap;
+      font-variant-numeric: tabular-nums;
     }
-    @media (min-width: 880px) {
-      :root { --maxw: 1120px; }
-      .layout { grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: 1.25rem; }
+
+    .insight {
+      margin-top: 20px;
+      padding: 14px 16px;
+      border: 1px solid var(--accent-line);
+      border-left: 3px solid var(--accent);
+      border-radius: 0 var(--radius) var(--radius) 0;
+      background: var(--accent-soft);
     }
+
+    .insight h3 {
+      margin-bottom: 5px;
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+    }
+
+    .insight p {
+      color: var(--muted);
+      font-size: 13.5px;
+      line-height: 1.7;
+    }
+
+    .insight p + p { margin-top: 7px; }
+
+    .insight strong {
+      color: var(--ink);
+      font-weight: 600;
+    }
+
+    .insight-warn {
+      color: var(--amber);
+      font-weight: 600;
+    }
+
+    .insight .insight-error {
+      color: var(--up);
+      font-size: 13px;
+    }
+
+    .insight-note {
+      color: var(--faint) !important;
+      font-size: 12px !important;
+    }
+
+    .insight .btn { margin-top: 10px; }
+
+    .empty,
+    .result-error { padding: 4px 0; }
+
+    .empty-title,
+    .result-error-title {
+      color: var(--ink);
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    .empty p,
+    .result-error p {
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    .result-error-title { color: var(--up); }
+
+    .ref {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .ref-row {
+      padding: 12px 0;
+      border-top: 1px solid var(--line);
+    }
+
+    .ref-row:first-child {
+      padding-top: 0;
+      border-top: 0;
+    }
+
+    .ref-main {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 6px 16px;
+    }
+
+    .ref-name {
+      color: var(--ink);
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .ref-age {
+      color: var(--accent);
+      font-size: 13px;
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .ref-bar {
+      position: relative;
+      height: 14px;
+      margin: 8px 0 6px;
+    }
+
+    .ref-bar .growth-track,
+    .ref-bar .growth-window { top: 5px; height: 4px; }
+
+    .ref-bar .growth-avg {
+      top: 2px;
+      width: 2px;
+      height: 10px;
+    }
+
+    .ref-note {
+      color: var(--faint);
+      font-size: 12.5px;
+      line-height: 1.6;
+    }
+
+    .scale-note {
+      margin-top: 10px;
+      color: var(--faint);
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    .tag {
+      display: inline-block;
+      margin-left: 8px;
+      padding: 1px 7px;
+      border: 1px solid var(--accent-line);
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 10.5px;
+      font-weight: 600;
+      white-space: nowrap;
+      vertical-align: 1px;
+    }
+
+    .sched-row { padding: 11px 12px; }
+
+    .sched-row.now {
+      border-radius: var(--radius-sm);
+      background: var(--accent-soft);
+    }
+
+    .sched-delta {
+      margin-left: 6px;
+      color: var(--faint);
+      font-size: 12px;
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .foot {
+      max-width: 74ch;
+      margin-top: 28px;
+      padding-top: 18px;
+      border-top: 1px solid var(--line);
+      color: var(--faint);
+      font-size: 12.5px;
+      line-height: 1.7;
+    }
+
+    @media (min-width: 920px) {
+      .layout {
+        grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+        gap: 24px;
+      }
+    }
+
     @media (max-width: 640px) {
-      main { padding: 1rem 0.85rem 2.5rem; }
-      .lead { font-size: 0.9rem; margin-bottom: 1rem; }
-      .panel, .result { padding: 1rem; }
-      .panel > h2 { font-size: 0.95rem; }
-      .ref-row { padding: 0.6rem 0; }
-      .sched-row { padding: 0.5rem 0.45rem; }
-      .ref-note { font-size: 0.78rem; }
-      .stat { padding: 0.55rem 0.7rem; }
-      .stat-value small { display: inline; margin-left: 0.35rem; }
+      .tool { padding-top: 28px; }
+      .page-head { padding-bottom: 22px; }
+      .lead { font-size: 15px; }
+      .panel,
+      .result { padding: 18px; }
+      .panel > h2 { font-size: 15px; }
+      .crop-grid { grid-template-columns: repeat(auto-fit, minmax(118px, 1fr)); }
+      .ref-row { padding: 10px 0; }
+      .sched-row { padding: 9px 10px; }
+      .stat { padding: 9px 12px; }
+      .stat-value small {
+        display: inline;
+        margin-left: 4px;
+      }
       .stat-value small::before { content: "· "; }
-      .growth { margin-top: 0.9rem; }
-      .block { margin-top: 0.9rem; padding-top: 0.85rem; }
-      .insight { margin-top: 0.9rem; padding: 0.75rem; }
-      .foot { margin-top: 1rem; }
-    }
-    @media (prefers-reduced-motion: reduce) {
-      * { transition: none !important; }
+      .foot { margin-top: 22px; }
     }
   </style>
 </head>
 <body>
-  <a class="skip" href="#main">Lewati ke konten</a>
+  <a class="skip-link" href="#main">Lewati ke konten</a>
 
-  <header class="topbar">
-    <a class="back" href="index.html"><span aria-hidden="true">←</span> Dashboard</a>
-    <h1 class="page-title">Kalkulator Waktu Tanam</h1>
-    <a class="back" href="tentang.html" style="margin-left:auto;">Tentang</a>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="index.html" aria-label="Harga Pangan Jawa Timur — beranda">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 20 20" fill="none">
+            <path d="M3 14.2 7.4 9.2l3.1 3.1 6.4-7" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="16.9" cy="5.3" r="1.7" fill="currentColor"/>
+          </svg>
+        </span>
+        <span class="brand-text">
+          <span class="brand-name">Harga Pangan</span>
+          <span class="brand-sub">Jawa Timur</span>
+        </span>
+      </a>
+
+      <nav class="site-nav" aria-label="Navigasi utama">
+        <a href="index.html">Dashboard</a>
+        <a href="tanam.html" aria-current="page">Kalkulator tanam</a>
+        <a href="kartu.html">Kartu insight</a>
+        <a href="tentang.html">Tentang &amp; metode</a>
+      </nav>
+
+      <details class="nav-menu">
+        <summary>Menu</summary>
+        <nav aria-label="Navigasi utama (seluler)">
+          <a href="index.html">Dashboard</a>
+          <a href="tanam.html" aria-current="page">Kalkulator tanam</a>
+          <a href="kartu.html">Kartu insight</a>
+          <a href="tentang.html">Tentang &amp; metode</a>
+        </nav>
+      </details>
+    </div>
   </header>
 
-  <main id="main">
-    <p class="lead">Masukkan tanggal tanam untuk memperkirakan waktu panen, umur tanaman, dan bulan harga tertinggi secara historis.</p>
-
-    <div class="layout">
-      <div class="col-main">
-        <form class="panel" id="form" novalidate>
-          <fieldset class="field">
-            <legend class="field-label">Komoditas</legend>
-            <div class="crop-grid" id="cropGrid" role="radiogroup" aria-label="Pilih komoditas"></div>
-          </fieldset>
-          <div class="field">
-            <label class="field-label" for="tanggalTanam">Tanggal tanam (pindah tanam ke lahan)</label>
-            <input type="date" id="tanggalTanam" name="tanggalTanam">
-            <p class="hint" id="seedlingHint"></p>
-          </div>
-          <fieldset class="field">
-            <legend class="field-label">Estimasi pendapatan (opsional)</legend>
-            <div class="money-grid">
-              <label class="money-field" for="luas"><span>Luas lahan (hektar)</span><input type="number" id="luas" name="luas" min="0" step="0.1" inputmode="decimal" placeholder="mis. 0.5"></label>
-              <label class="money-field" for="produktivitas"><span>Produktivitas (ton/hektar)</span><input type="number" id="produktivitas" name="produktivitas" min="0" step="0.1" inputmode="decimal" aria-describedby="prodHint"></label>
-            </div>
-            <p class="hint" id="prodHint">Kosongkan produktivitas untuk memakai angka umum sesuai komoditas.</p>
-          </fieldset>
-        </form>
-
-        <section class="result" id="result" aria-live="polite" aria-atomic="true"></section>
+  <main class="container" id="main">
+    <div class="tool">
+      <div class="page-head">
+        <p class="eyebrow">Alat bantu tanam</p>
+        <h1>Kalkulator waktu tanam</h1>
+        <p class="lead">Masukkan tanggal tanam untuk memperkirakan waktu panen, umur tanaman, dan bulan harga tertinggi secara historis.</p>
       </div>
 
-      <div class="col-side">
-        <section class="panel" aria-labelledby="schedTitle">
-          <h2 id="schedTitle">Jadwal tanam terbaik</h2>
-          <p class="scale-note" id="schedNote">Dihitung dari median harga historis bulan panen tiap opsi tanam.</p>
-          <ul class="ref" id="schedList"></ul>
-        </section>
+      <div class="layout">
+        <div class="col-main">
+          <form class="panel" id="form" novalidate>
+            <fieldset class="field">
+              <legend class="field-label">Komoditas</legend>
+              <div class="crop-grid" id="cropGrid" role="radiogroup" aria-label="Pilih komoditas"></div>
+            </fieldset>
+            <div class="field">
+              <label class="field-label" for="tanggalTanam">Tanggal tanam (pindah tanam ke lahan)</label>
+              <input type="date" id="tanggalTanam" name="tanggalTanam">
+              <p class="hint" id="seedlingHint"></p>
+            </div>
+            <fieldset class="field">
+              <legend class="field-label">Estimasi pendapatan (opsional)</legend>
+              <div class="money-grid">
+                <label class="money-field" for="luas"><span>Luas lahan (hektar)</span><input type="number" id="luas" name="luas" min="0" step="0.1" inputmode="decimal" placeholder="mis. 0.5"></label>
+                <label class="money-field" for="produktivitas"><span>Produktivitas (ton/hektar)</span><input type="number" id="produktivitas" name="produktivitas" min="0" step="0.1" inputmode="decimal" aria-describedby="prodHint"></label>
+              </div>
+              <p class="hint" id="prodHint">Kosongkan produktivitas untuk memakai angka umum sesuai komoditas.</p>
+            </fieldset>
+          </form>
 
-        <section class="panel" aria-labelledby="refTitle">
-          <h2 id="refTitle">Rata-rata umur tanaman sampai panen</h2>
-          <ul class="ref" id="refList"></ul>
-          <p class="scale-note">Skala bar: 0 sampai 130 hari sejak tanam.</p>
-        </section>
+          <section class="result" id="result" aria-live="polite" aria-atomic="true"></section>
+        </div>
+
+        <div class="col-side">
+          <section class="panel" aria-labelledby="schedTitle">
+            <h2 id="schedTitle">Jadwal tanam terbaik</h2>
+            <p class="scale-note" id="schedNote">Dihitung dari median harga historis bulan panen tiap opsi tanam.</p>
+            <ul class="ref" id="schedList"></ul>
+          </section>
+
+          <section class="panel" aria-labelledby="refTitle">
+            <h2 id="refTitle">Rata-rata umur tanaman sampai panen</h2>
+            <ul class="ref" id="refList"></ul>
+            <p class="scale-note">Skala bar: 0 sampai 130 hari sejak tanam.</p>
+          </section>
+        </div>
+      </div>
+
+      <p class="foot">Umur tanaman adalah perkiraan umum, bukan jaminan hasil. Panen sebenarnya dipengaruhi varietas, ketinggian tempat, musim, kesuburan tanah, dan perawatan. Untuk cabe, tanggal yang ditampilkan adalah panen pertama, sedangkan panen berikutnya berlanjut berkala.</p>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <div>
+        <p class="footer-title">Harga Produsen Pangan Jawa Timur</p>
+        <p class="footer-text">Sumber data: <a href="https://siskaperbapo.jatimprov.go.id/harga/views/layanankomoditashargaprodusen/tabel/hargaprodusen/" target="_blank" rel="noopener">SISKAPERBAPO — Dinas Ketahanan Pangan Provinsi Jawa Timur</a>. Data harga milik Pemerintah Provinsi Jawa Timur, disalin ulang dengan atribusi. Dashboard ini proyek mandiri dan bukan kanal resmi pemerintah.</p>
+        <p class="footer-meta">Kode sumber berlisensi MIT</p>
+      </div>
+      <div>
+        <nav class="footer-links" aria-label="Tautan kaki">
+          <a href="index.html">Dashboard</a>
+          <a href="tanam.html">Kalkulator tanam</a>
+          <a href="kartu.html">Kartu insight</a>
+          <a href="tentang.html">Tentang &amp; metode</a>
+          <a href="https://github.com/zeinzulaziz/harga-pangan" target="_blank" rel="noopener">GitHub</a>
+        </nav>
+        <p class="footer-meta">Untuk angka yang mengikat, rujuk publikasi resmi SISKAPERBAPO.</p>
       </div>
     </div>
-
-    <p class="foot">Umur tanaman adalah perkiraan umum, bukan jaminan hasil. Panen sebenarnya dipengaruhi varietas, ketinggian tempat, musim, kesuburan tanah, dan perawatan. Untuk cabe, tanggal yang ditampilkan adalah panen pertama, sedangkan panen berikutnya berlanjut berkala.</p>
-  </main>
+  </footer>
 
   <script>
     const CROPS = {

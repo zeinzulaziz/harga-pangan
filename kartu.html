@@ -3,85 +3,222 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="color-scheme" content="dark">
+  <meta name="color-scheme" content="light">
   <title>Kartu Insight Bulanan | Harga Pangan Jatim</title>
   <meta name="description" content="Buat kartu gambar ringkasan harga produsen pangan Jawa Timur untuk dibagikan ke WhatsApp atau sosial media.">
   <meta name="robots" content="noindex, follow">
-  <meta name="theme-color" content="#0f172a">
+  <meta name="theme-color" content="#F7F8FA">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400..700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/site.css">
+
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    :root {
-      --bg: #0f172a; --surface: #1e293b; --surface-2: #273549;
-      --line: #334155; --border: #64748b;
-      --text: #f1f5f9; --muted: #cbd5e1; --dim: #94a3b8;
-      --accent: #34d399; --accent-ink: #0f172a; --red: #f87171;
-      --r-sm: 8px; --r-md: 12px; --maxw: 820px;
+    .tool {
+      max-width: 860px;
+      margin-inline: auto;
+      padding-top: 40px;
     }
-    html { color-scheme: dark; }
-    body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; background: var(--bg); color: var(--text); line-height: 1.55; -webkit-font-smoothing: antialiased; min-height: 100vh; }
-    .topbar { position: sticky; top: 0; z-index: 10; display: flex; align-items: center; gap: 0.75rem; padding: 0.7rem 1rem; background: var(--bg); border-bottom: 1px solid var(--line); }
-    .back { display: inline-flex; align-items: center; gap: 0.4rem; min-height: 44px; padding: 0.4rem 0.85rem; border: 1px solid var(--border); border-radius: var(--r-sm); color: var(--muted); text-decoration: none; font-size: 0.9rem; font-weight: 500; }
-    .back:hover { color: var(--text); border-color: var(--accent); }
-    .page-title { font-size: clamp(1rem, 1.4vw + 0.7rem, 1.2rem); font-weight: 700; }
-    main { max-width: var(--maxw); margin: 0 auto; padding: 1.25rem 1rem 3rem; }
-    .lead { color: var(--muted); font-size: 0.95rem; max-width: 62ch; margin-bottom: 1.25rem; }
-    .panel { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-md); padding: 1.25rem; margin-bottom: 1.25rem; }
-    .panel > h2 { font-size: 1rem; font-weight: 700; margin-bottom: 0.6rem; }
-    .card-wrap { max-width: 540px; margin: 0 auto; }
-    canvas#card { width: 100%; height: auto; border-radius: var(--r-md); display: block; border: 1px solid var(--line); }
-    .actions { display: flex; gap: 0.6rem; flex-wrap: wrap; margin-top: 0.9rem; justify-content: center; }
-    .btn { display: inline-flex; align-items: center; min-height: 44px; padding: 0.4rem 0.95rem; border-radius: var(--r-sm); border: 1px solid var(--border); background: transparent; color: var(--text); font-family: inherit; font-size: 0.875rem; font-weight: 600; cursor: pointer; text-decoration: none; transition: border-color 0.15s, background-color 0.15s; }
-    .btn:hover { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, transparent); }
-    .btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
-    .btn.primary:hover { background: color-mix(in srgb, var(--accent) 85%, white); }
-    textarea#waText { width: 100%; min-height: 120px; padding: 0.6rem 0.75rem; border: 1px solid var(--border); border-radius: var(--r-sm); background: var(--surface-2); color: var(--text); font-family: inherit; font-size: 0.9rem; resize: vertical; }
-    .hint { font-size: 0.8rem; color: var(--dim); margin-top: 0.5rem; }
-    .state { color: var(--muted); font-size: 0.9rem; padding: 2rem 0; text-align: center; }
-    .state.error { color: #f87171; }
-    @media (min-width: 640px) { main { padding-left: 1.5rem; padding-right: 1.5rem; } }
+
+    .page-head {
+      max-width: 680px;
+      padding-bottom: 28px;
+    }
+
+    .eyebrow {
+      margin-bottom: 10px;
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+    }
+
+    .page-head h1 {
+      font-size: clamp(28px, 3vw, 32px);
+      letter-spacing: -0.025em;
+    }
+
+    .lead {
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 15.5px;
+      line-height: 1.7;
+    }
+
+    .panel {
+      margin-bottom: 20px;
+      padding: 24px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      background: var(--surface);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .panel > h2 {
+      margin-bottom: 14px;
+      font-size: 16px;
+      letter-spacing: -0.01em;
+    }
+
+    .card-wrap {
+      max-width: 520px;
+      margin-inline: auto;
+    }
+
+    canvas#card {
+      width: 100%;
+      height: auto;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface-2);
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 16px;
+    }
+
+    textarea#waText {
+      width: 100%;
+      min-height: 132px;
+      padding: 10px 12px;
+      border: 1px solid var(--line-strong);
+      border-radius: var(--radius-sm);
+      background: var(--surface-2);
+      color: var(--ink);
+      font-family: inherit;
+      font-size: 13.5px;
+      line-height: 1.7;
+      resize: vertical;
+    }
+
+    textarea#waText:focus { border-color: var(--accent); }
+
+    .hint {
+      margin-top: 8px;
+      color: var(--faint);
+      font-size: 12.5px;
+      line-height: 1.6;
+    }
+
+    .state {
+      padding: 28px 0;
+      color: var(--muted);
+      font-size: 13.5px;
+      text-align: center;
+    }
+
+    .state.error { color: var(--up); }
+
+    @media (max-width: 640px) {
+      .tool { padding-top: 28px; }
+      .page-head { padding-bottom: 22px; }
+      .lead { font-size: 15px; }
+      .panel { padding: 18px; }
+      .actions { justify-content: stretch; }
+      .actions .btn { flex: 1 1 auto; }
+    }
   </style>
 </head>
 <body>
-  <header class="topbar">
-    <a class="back" href="index.html"><span aria-hidden="true">←</span> Dashboard</a>
-    <h1 class="page-title">Kartu Insight Bulanan</h1>
+  <a class="skip-link" href="#main">Lewati ke konten</a>
+
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="index.html" aria-label="Harga Pangan Jawa Timur — beranda">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 20 20" fill="none">
+            <path d="M3 14.2 7.4 9.2l3.1 3.1 6.4-7" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="16.9" cy="5.3" r="1.7" fill="currentColor"/>
+          </svg>
+        </span>
+        <span class="brand-text">
+          <span class="brand-name">Harga Pangan</span>
+          <span class="brand-sub">Jawa Timur</span>
+        </span>
+      </a>
+
+      <nav class="site-nav" aria-label="Navigasi utama">
+        <a href="index.html">Dashboard</a>
+        <a href="tanam.html">Kalkulator tanam</a>
+        <a href="kartu.html" aria-current="page">Kartu insight</a>
+        <a href="tentang.html">Tentang &amp; metode</a>
+      </nav>
+
+      <details class="nav-menu">
+        <summary>Menu</summary>
+        <nav aria-label="Navigasi utama (seluler)">
+          <a href="index.html">Dashboard</a>
+          <a href="tanam.html">Kalkulator tanam</a>
+          <a href="kartu.html" aria-current="page">Kartu insight</a>
+          <a href="tentang.html">Tentang &amp; metode</a>
+        </nav>
+      </details>
+    </div>
   </header>
 
-  <main>
-    <p class="lead">Gambar siap-posting berisi harga terkini semua komoditas. Unduh PNG-nya, lalu bagikan bersama teks WhatsApp di bawah — pasangan keduanya biar penerima langsung bisa cek situsnya.</p>
+  <main class="container" id="main">
+    <div class="tool">
+      <div class="page-head">
+        <p class="eyebrow">Bagikan data</p>
+        <h1>Kartu insight bulanan</h1>
+        <p class="lead">Gambar siap-posting berisi harga terkini semua komoditas. Unduh PNG-nya, lalu bagikan bersama teks WhatsApp di bawah — pasangan keduanya biar penerima langsung bisa cek situsnya.</p>
+      </div>
 
-    <section class="panel">
-      <h2>Pratinjau kartu</h2>
-      <div class="card-wrap">
-        <canvas id="card" width="1080" height="1080" aria-label="Kartu harga produsen"></canvas>
-        <div class="state" id="cardState">Memuat data harga…</div>
-      </div>
-      <div class="actions">
-        <button class="btn primary" id="downloadBtn" disabled>Unduh PNG</button>
-        <a class="btn" href="index.html">Buka dashboard</a>
-      </div>
-      <p class="hint">Ukuran kartu 1080×1080 — pas untuk WhatsApp, Instagram, dan X.</p>
-    </section>
+      <section class="panel">
+        <h2>Pratinjau kartu</h2>
+        <div class="card-wrap">
+          <canvas id="card" width="1080" height="1080" aria-label="Kartu harga produsen"></canvas>
+          <div class="state" id="cardState">Memuat data harga…</div>
+        </div>
+        <div class="actions">
+          <button class="btn btn-primary" id="downloadBtn" disabled>Unduh PNG</button>
+          <a class="btn" href="index.html">Buka dashboard</a>
+        </div>
+        <p class="hint">Ukuran kartu 1080×1080 — pas untuk WhatsApp, Instagram, dan X.</p>
+      </section>
 
-    <section class="panel">
-      <h2>Teks WhatsApp pendamping</h2>
-      <textarea id="waText" rows="8" readonly></textarea>
-      <div class="actions">
-        <button class="btn" id="copyBtn">Salin teks</button>
-        <a class="btn primary" id="waLink" href="#" target="_blank" rel="noopener">Buka WhatsApp</a>
-      </div>
-      <p class="hint">Salin dulu teksnya, lalu buka WhatsApp — tautan hanya membuka aplikasinya.</p>
-    </section>
+      <section class="panel">
+        <h2>Teks WhatsApp pendamping</h2>
+        <textarea id="waText" rows="8" readonly></textarea>
+        <div class="actions">
+          <button class="btn" id="copyBtn">Salin teks</button>
+          <a class="btn btn-primary" id="waLink" href="#" target="_blank" rel="noopener">Buka WhatsApp</a>
+        </div>
+        <p class="hint">Salin dulu teksnya, lalu buka WhatsApp — tautan hanya membuka aplikasinya.</p>
+      </section>
+    </div>
   </main>
 
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <div>
+        <p class="footer-title">Harga Produsen Pangan Jawa Timur</p>
+        <p class="footer-text">Sumber data: <a href="https://siskaperbapo.jatimprov.go.id/harga/views/layanankomoditashargaprodusen/tabel/hargaprodusen/" target="_blank" rel="noopener">SISKAPERBAPO — Dinas Ketahanan Pangan Provinsi Jawa Timur</a>. Data harga milik Pemerintah Provinsi Jawa Timur, disalin ulang dengan atribusi. Dashboard ini proyek mandiri dan bukan kanal resmi pemerintah.</p>
+        <p class="footer-meta">Kode sumber berlisensi MIT</p>
+      </div>
+      <div>
+        <nav class="footer-links" aria-label="Tautan kaki">
+          <a href="index.html">Dashboard</a>
+          <a href="tanam.html">Kalkulator tanam</a>
+          <a href="kartu.html">Kartu insight</a>
+          <a href="tentang.html">Tentang &amp; metode</a>
+          <a href="https://github.com/zeinzulaziz/harga-pangan" target="_blank" rel="noopener">GitHub</a>
+        </nav>
+        <p class="footer-meta">Untuk angka yang mengikat, rujuk publikasi resmi SISKAPERBAPO.</p>
+      </div>
+    </div>
+  </footer>
+
   <script>
-    const BG = '#0f172a', SURFACE = '#1e293b', LINE = '#334155',
-          TEXT = '#f1f5f9', MUTED = '#cbd5e1', DIM = '#94a3b8',
-          ACCENT = '#34d399', RED = '#f87171', AMBER = '#fbbf24';
+    const BG = '#F7F8FA', SURFACE = '#FFFFFF', LINE = '#DDE4DF',
+          TEXT = '#172B24', MUTED = '#5F6C66', DIM = '#66736D',
+          ACCENT = '#246B4A', GREEN = '#16805D', RED = '#C2413B', AMBER = '#7C5E1B';
     const BULAN = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
     const rp = n => 'Rp' + Math.round(n).toLocaleString('id-ID');
     const pctText = p => (p >= 0 ? '+' : '') + p.toLocaleString('id-ID', { maximumFractionDigits: 1 }) + '%';
@@ -135,7 +272,9 @@
       // Header
       ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
       ctx.fillStyle = ACCENT;
-      ctx.font = '800 46px Inter, sans-serif';
+      ctx.fillRect(pad, pad - 26, 56, 4);
+      ctx.fillStyle = TEXT;
+      ctx.font = '700 46px Inter, sans-serif';
       ctx.fillText('Harga Produsen Pangan', pad, pad + 38);
       ctx.fillText('Jawa Timur', pad, pad + 94);
       const t = new Date(lastUpdate);
@@ -147,27 +286,27 @@
       ctx.fillStyle = SURFACE; roundRect(ctx, pad, boxY, W - pad * 2, boxH, 20); ctx.fill();
       ctx.strokeStyle = LINE; ctx.lineWidth = 2; ctx.stroke();
 
-      const n = rows.length, rowH = boxH / n;
+      const innerPad = 26, listH = boxH - innerPad * 2, n = rows.length, rowH = listH / n;
       rows.forEach((r, i) => {
-        const cy = boxY + rowH * i;
+        const cy = boxY + innerPad + rowH * i;
         if (i > 0) { ctx.strokeStyle = LINE; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(pad + 28, cy); ctx.lineTo(W - pad - 28, cy); ctx.stroke(); }
         ctx.textBaseline = 'middle';
         ctx.fillStyle = TEXT; ctx.font = '600 34px Inter, sans-serif';
-        ctx.fillText(r.name, pad + 32, cy + rowH / 2 - 16);
+        ctx.fillText(r.name, pad + 32, cy + rowH / 2 - 14);
         ctx.textAlign = 'left';
         if (r.stale) {
           const tgl = new Date(r.stale + 'T00:00:00');
           ctx.font = '500 24px Inter, sans-serif';
           ctx.fillStyle = AMBER;
-          ctx.fillText('data berhenti ' + tgl.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' }), pad + 34, cy + rowH / 2 + 24);
+          ctx.fillText('data berhenti ' + tgl.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' }), pad + 34, cy + rowH / 2 + 22);
         } else {
           ctx.font = '500 24px Inter, sans-serif';
-          ctx.fillStyle = r.delta == null ? DIM : (r.delta > 0.05 ? RED : r.delta < -0.05 ? ACCENT : DIM);
-          ctx.fillText(r.delta == null ? '−' : pctText(r.delta) + ' vs 7 hr', pad + 34, cy + rowH / 2 + 24);
+          ctx.fillStyle = r.delta == null ? DIM : (r.delta > 0.05 ? RED : r.delta < -0.05 ? GREEN : DIM);
+          ctx.fillText(r.delta == null ? '−' : pctText(r.delta) + ' vs 7 hr', pad + 34, cy + rowH / 2 + 22);
         }
         ctx.textAlign = 'right';
         ctx.fillStyle = TEXT; ctx.font = '700 40px Inter, sans-serif';
-        ctx.fillText(r.price == null ? '—' : rp(r.price) + '/kg', W - pad - 32, cy + rowH / 2 - 12);
+        ctx.fillText(r.price == null ? '—' : rp(r.price) + '/kg', W - pad - 32, cy + rowH / 2 - 10);
         if (r.estimated) {
           ctx.font = '500 22px Inter, sans-serif'; ctx.fillStyle = AMBER; ctx.textAlign = 'right';
           ctx.fillText('estimasi', W - pad - 32, cy + rowH / 2 + 26);
