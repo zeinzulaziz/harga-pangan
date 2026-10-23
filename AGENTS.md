@@ -90,8 +90,7 @@ sumber data tanpa konfirmasi user.
 ## Deployment
 
 GitHub Pages dari branch `master` folder root. Push ke `master` = live.
-Scrape dijalankan manual dari mesin lokal; tidak ada GitHub Actions atau workflow
-terjadwal yang memperbarui data.
+Scrape dijalankan otomatis setiap Senin 10:00 WIB via launchd (`com.zeinzulaziz.harga-pangan.scrape`); bisa juga dijalankan manual dari mesin lokal. Tidak ada GitHub Actions atau workflow terjadwal yang memperbarui data.
 
 ## Konvensi
 

@@ -24,7 +24,8 @@ membantu petani memahami waktu harga tinggi, rendah, dan momentum kenaikan.
 - Chart interaktif dengan zoom, pan, dan drag selection.
 - Filter periode preset dan rentang tanggal bebas.
 - Pemilihan pasar pada sidebar.
-- Pembaruan data dilakukan secara manual dari SISKAPERBAPO.
+- Pembaruan data dilakukan otomatis setiap Senin jam 10:00 WIB dari SISKAPERBAPO
+  (launchd), atau secara manual kapan pun diperlukan.
 - Penanda data aktual dan data estimasi carry-forward.
 - Analisa tren berdasarkan median harga historis.
 - Rekomendasi bulan dengan harga tertinggi, harga terendah, momentum kenaikan,
@@ -184,17 +185,18 @@ http://localhost:8000
 
 ## Scraper
 
-### Mode Harian
+### Mode Mingguan (Senin)
 
-Mode harian mengambil data terbaru, menggabungkannya dengan `produsen.json`,
+Mode ini mengambil data terbaru, menggabungkannya dengan `produsen.json`,
 dan menyimpan arsip ke `data/history/`.
 
 ```bash
 npm run scrape
 ```
 
-Mode ini dijalankan secara manual untuk memperbarui data terbaru dari
-SISKAPERBAPO.
+Mode ini dijalankan **otomatis setiap Senin jam 10:00 WIB** lewat launchd
+(`com.zeinzulaziz.harga-pangan.scrape`), atau secara manual kapan pun
+diperlukan. Pembaruan dilakukan dari SISKAPERBAPO.
 
 ### Backfill Historis
 
@@ -236,8 +238,9 @@ Hasil analisa meliputi:
 
 ## Update Data
 
-Pembaruan data dilakukan secara manual dari SISKAPERBAPO. Setiap kali ingin
-memperbarui data:
+Pembaruan data dilakukan **otomatis setiap Senin jam 10:00 WIB** lewat launchd
+(`com.zeinzulaziz.harga-pangan.scrape`). Untuk memperbarui data secara manual
+kapan pun diperlukan:
 
 ```bash
 npm run scrape && npm run cek && npm run bersihkan && npm run analisa
