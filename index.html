@@ -141,25 +141,101 @@
 
     .view-panel.active { display: block; }
 
-    /* ---------- Filter ---------- */
-    .filters {
+    /* Workspace adalah panel aktif berbentuk grid (sidebar + kolom utama). */
+    .view-panel.workspace.active { display: grid; }
+
+    /* ---------- Workspace: sidebar filter + kolom grafik ---------- */
+    .workspace {
       display: grid;
-      gap: 16px;
-      padding: 18px 20px;
+      gap: 20px;
+      align-items: start;
+    }
+
+    .workspace-main {
+      display: grid;
+      gap: 28px;
+      min-width: 0;
+    }
+
+    .filter-sidebar {
+      --sp: 16px;
+      --sp-x: 18px;
+      min-width: 0;
+      padding: var(--sp) var(--sp-x);
       border: 1px solid var(--line);
       border-radius: var(--radius-lg);
       background: var(--surface);
     }
 
-    .filter-grid {
+    .filter-disclosure { min-width: 0; }
+
+    /* Header disclosure: hanya tampil pada layout bertumpuk (mobile). */
+    .filter-summary-bar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-height: 40px;
+      margin: calc(-1 * var(--sp)) calc(-1 * var(--sp-x)) 0;
+      padding: 10px var(--sp-x);
+      border-bottom: 1px solid var(--line);
+      color: var(--ink);
+      font-size: 13px;
+      font-weight: 600;
+      list-style: none;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .filter-summary-bar::-webkit-details-marker { display: none; }
+
+    .filter-summary-value {
+      min-width: 0;
+      margin-left: auto;
+      overflow: hidden;
+      color: var(--faint);
+      font-size: 12px;
+      font-weight: 500;
+      text-align: right;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .summary-chevron {
+      width: 16px;
+      height: 16px;
+      flex-shrink: 0;
+      color: var(--faint);
+      transition: transform 0.15s;
+    }
+
+    .filter-disclosure[open] .summary-chevron { transform: rotate(180deg); }
+
+    .filter-body {
       display: grid;
-      grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
-      gap: 16px 28px;
-      padding-top: 16px;
+      gap: 14px;
+    }
+
+    .filter-group {
+      display: grid;
+      gap: 8px;
+      min-width: 0;
+      padding-top: 14px;
       border-top: 1px solid var(--line);
     }
 
-    .filter-block { min-width: 0; }
+    .filter-body > .filter-group:first-child {
+      padding-top: 0;
+      border-top: 0;
+    }
+
+    .filter-reset { padding-top: 12px; }
+
+    .reset-btn {
+      width: 100%;
+      min-height: 34px;
+      color: var(--muted);
+      font-size: 12.5px;
+    }
 
     .filter-label-row {
       display: flex;
@@ -198,13 +274,10 @@
 
     .commodity-list {
       display: flex;
+      flex-wrap: wrap;
       gap: 6px;
-      overflow-x: auto;
-      padding-bottom: 2px;
-      scrollbar-width: none;
+      min-width: 0;
     }
-
-    .commodity-list::-webkit-scrollbar { display: none; }
 
     .commodity-btn {
       display: inline-flex;
@@ -243,8 +316,8 @@
     }
 
     .period-grid {
-      display: inline-flex;
-      flex-wrap: wrap;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 2px;
       padding: 2px;
       border: 1px solid var(--line);
@@ -254,7 +327,7 @@
 
     .period-btn {
       height: 30px;
-      padding: 0 10px;
+      padding: 0 8px;
       border: 0;
       border-radius: 6px;
       background: transparent;
@@ -301,8 +374,6 @@
       color: var(--accent);
       font-weight: 600;
     }
-
-    .filter-months { grid-column: 1 / -1; }
 
     .range-head {
       display: flex;
@@ -389,6 +460,10 @@
     /* ---------- Bagian umum ---------- */
     .section { margin-top: 32px; }
 
+    /* Dalam workspace-main, jarak antarbagian diatur oleh gap grid. */
+    .workspace-main > .section,
+    .workspace-main > .chart-panel { margin-top: 0; }
+
     .section-head {
       display: flex;
       flex-wrap: wrap;
@@ -441,19 +516,22 @@
     }
 
     /* ---------- Ringkasan harga ---------- */
+    /* Grid garis rambut (gap 1px di atas warna garis): kartu mengikuti lebar
+       kolom berapa pun tanpa overflow, dan memisah diri saat wrap. */
     .stat-cards {
       display: grid;
-      grid-auto-flow: column;
-      grid-auto-columns: minmax(0, 1fr);
+      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+      gap: 1px;
       overflow: hidden;
       border: 1px solid var(--line);
       border-radius: var(--radius-lg);
-      background: var(--surface);
+      background: var(--line);
     }
 
     .stat-cards.is-empty {
       display: block;
       padding: 20px;
+      background: var(--surface);
     }
 
     .empty-inline {
@@ -461,9 +539,11 @@
       font-size: 13px;
     }
 
-    .stat-card { min-width: 0; padding: 18px 20px 16px; }
-
-    .stat-card + .stat-card { border-left: 1px solid var(--line); }
+    .stat-card {
+      min-width: 0;
+      padding: 16px 18px;
+      background: var(--surface);
+    }
 
     .stat-card-head {
       display: flex;
@@ -592,7 +672,7 @@
 
     .chart-box {
       position: relative;
-      height: clamp(320px, 36vw, 440px);
+      height: clamp(380px, 34vw, 460px);
     }
 
     .chart-box > canvas {
@@ -1109,25 +1189,30 @@
     .toast.error { border-left-color: var(--up); }
 
     /* ---------- Responsif ---------- */
-    @media (max-width: 1024px) {
-      .filter-grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+    /* ≥1024px: sidebar filter 280px berdampingan dengan kolom grafik. */
+    @media (min-width: 1024px) {
+      .workspace { grid-template-columns: 280px minmax(0, 1fr); gap: 24px; }
+      .filter-summary-bar { display: none; }
+    }
+
+    /* 768–1023px (tablet): dua kolom dipertahankan, sidebar lebih ramping. */
+    @media (min-width: 768px) and (max-width: 1023px) {
+      .workspace { grid-template-columns: 244px minmax(0, 1fr); gap: 18px; }
+      .filter-summary-bar { display: none; }
+    }
+
+    /* Sticky hanya pada layar yang cukup tinggi (tinggi sidebar + offset header)
+       agar seluruh kontrol tetap terlihat saat menempel. */
+    @media (min-width: 1024px) and (min-height: 840px) {
+      .filter-sidebar { position: sticky; top: 76px; }
     }
 
     @media (max-width: 820px) {
-      .filter-grid { grid-template-columns: minmax(0, 1fr); gap: 18px; }
       .analisa-grid { grid-template-columns: minmax(0, 1fr); }
-      .filter-months { grid-column: auto; }
     }
 
-    @media (max-width: 720px) {
-      .stat-cards {
-        grid-auto-flow: row;
-        grid-auto-columns: auto;
-      }
-      .stat-card + .stat-card {
-        border-top: 1px solid var(--line);
-        border-left: 0;
-      }
+    @media (max-width: 767px) {
+      .filter-body { padding-top: 14px; }
     }
 
     @media (max-width: 640px) {
@@ -1135,12 +1220,10 @@
       .lede { font-size: 15px; }
       .meta-row { font-size: 12px; }
       .view-btn { padding-top: 8px; padding-bottom: 12px; }
-      .filters { padding: 16px; }
+      .filter-sidebar { --sp: 14px; --sp-x: 16px; }
       .chart-panel { padding: 16px 16px 12px; }
       .chart-box { height: 320px; }
-      .section { margin-top: 26px; }
-      .chart-panel { margin-top: 26px; }
-      .commodity-list { flex-wrap: wrap; overflow: visible; }
+      .workspace-main { gap: 22px; }
       .commodity-btn { height: 36px; }
       .period-grid {
         display: grid;
@@ -1283,139 +1366,149 @@
     <button class="view-btn" id="tab-analisa" data-view="analisa" role="tab" aria-selected="false" aria-controls="analisaView">Analisa musiman</button>
   </div>
 
-  <div class="view-panel active" id="grafikView" role="tabpanel" aria-labelledby="tab-grafik">
-    <section class="filters" aria-label="Filter data">
-      <div class="filter-block">
-        <div class="filter-label-row">
-          <span class="filter-label" id="commodityFilterLabel">Komoditas</span>
-        </div>
-        <div class="commodity-list" id="commodityList" role="group" aria-labelledby="commodityFilterLabel"></div>
-      </div>
+  <div class="view-panel active workspace" id="grafikView" role="tabpanel" aria-labelledby="tab-grafik">
+    <aside class="filter-sidebar" aria-label="Filter data">
+      <details class="filter-disclosure" id="filterDisclosure" open>
+        <summary class="filter-summary-bar">
+          <span class="filter-summary-title">Filter data</span>
+          <span class="filter-summary-value" id="filterSummary">—</span>
+          <svg class="summary-chevron" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="m4 6.2 4 4 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </summary>
 
-      <div class="filter-grid">
-        <div class="filter-block" id="periodSection">
-          <div class="filter-label-row">
+        <div class="filter-body">
+          <div class="filter-group">
+            <span class="filter-label" id="commodityFilterLabel">Komoditas</span>
+            <div class="commodity-list" id="commodityList" role="group" aria-labelledby="commodityFilterLabel"></div>
+          </div>
+
+          <div class="filter-group" id="periodSection">
             <span class="filter-label">Periode</span>
-          </div>
-          <div class="period-grid" role="group" aria-label="Periode grafik">
-            <button class="period-btn" data-period="1w">1 minggu</button>
-            <button class="period-btn" data-period="1m">1 bulan</button>
-            <button class="period-btn" data-period="3m">3 bulan</button>
-            <button class="period-btn" data-period="6m">6 bulan</button>
-            <button class="period-btn" data-period="1y">1 tahun</button>
-            <button class="period-btn active" data-period="all">Semua</button>
-          </div>
-        </div>
-
-        <div class="filter-block">
-          <div class="range-head">
-            <span class="filter-label">Rentang bebas</span>
-            <span class="filter-hint" id="rangeSummary">Semua data</span>
-          </div>
-          <div class="range-track">
-            <div class="range-fill" id="rangeFill"></div>
-            <input id="rangeStart" type="range" min="0" max="1" value="0" aria-label="Tanggal mulai">
-            <input id="rangeEnd" type="range" min="0" max="1" value="1" aria-label="Tanggal akhir">
-          </div>
-          <div class="range-values">
-            <span id="rangeStartLabel">—</span>
-            <span id="rangeEndLabel">—</span>
-          </div>
-        </div>
-
-        <div class="filter-block filter-months" id="monthSection">
-          <div class="filter-label-row">
-            <span class="filter-label">Bulan</span>
-            <div class="filter-actions">
-              <span class="filter-hint" id="monthCount"></span>
-              <button class="link-btn" id="resetMonthBtn">Semua bulan</button>
+            <div class="period-grid" role="group" aria-label="Periode grafik">
+              <button class="period-btn" data-period="1w">1 minggu</button>
+              <button class="period-btn" data-period="1m">1 bulan</button>
+              <button class="period-btn" data-period="3m">3 bulan</button>
+              <button class="period-btn" data-period="6m">6 bulan</button>
+              <button class="period-btn" data-period="1y">1 tahun</button>
+              <button class="period-btn active" data-period="all">Semua</button>
             </div>
           </div>
-          <div class="month-grid" id="monthGrid" role="group" aria-label="Filter bulan"></div>
-          <p class="filter-note">Tanpa pilihan berarti semua bulan ditampilkan.</p>
-        </div>
-      </div>
-    </section>
 
-    <section class="section" aria-labelledby="summaryTitle">
-      <div class="section-head">
-        <div>
-          <h2 id="summaryTitle">Harga terkini</h2>
-          <p class="section-sub" id="summarySub">Harga produsen per kilogram di titik pantau terpilih.</p>
-        </div>
-      </div>
-      <div class="stat-cards" id="statCards"></div>
-    </section>
+          <div class="filter-group">
+            <div class="range-head">
+              <span class="filter-label">Rentang bebas</span>
+              <span class="filter-hint" id="rangeSummary">Semua data</span>
+            </div>
+            <div class="range-track">
+              <div class="range-fill" id="rangeFill"></div>
+              <input id="rangeStart" type="range" min="0" max="1" value="0" aria-label="Tanggal mulai">
+              <input id="rangeEnd" type="range" min="0" max="1" value="1" aria-label="Tanggal akhir">
+            </div>
+            <div class="range-values">
+              <span id="rangeStartLabel">—</span>
+              <span id="rangeEndLabel">—</span>
+            </div>
+          </div>
 
-    <section class="chart-panel" aria-labelledby="chartTitle">
-      <div class="panel-head">
-        <div class="panel-title">
-          <p class="section-kicker">Tren harga</p>
-          <h2 id="chartTitle">Memuat…</h2>
-          <p class="section-sub" id="chartSub">Harga produsen per kilogram</p>
-        </div>
-        <div class="chart-actions" id="zoomActions">
-          <button class="btn btn-quiet" id="exportPngBtn" title="Unduh grafik sebagai gambar PNG" aria-label="Unduh grafik sebagai gambar PNG">
-            <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 2v8m0 0 3-3M8 10 5 7M3 12.5h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            <span class="btn-label">PNG</span>
-          </button>
-          <button class="btn btn-quiet" id="exportCsvBtn" title="Unduh data pada rentang yang tampil sebagai CSV" aria-label="Unduh data CSV">
-            <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 3h10v10H3z" stroke="currentColor" stroke-width="1.4"/><path d="M3 6.5h10M3 9.5h10M6.5 3v10M9.5 3v10" stroke="currentColor" stroke-width="1.1"/></svg>
-            <span class="btn-label">CSV</span>
-          </button>
-          <button class="btn btn-quiet" id="shareWaBtn" title="Bagikan harga terkini via WhatsApp" aria-label="Bagikan harga terkini via WhatsApp">
-            <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="12" cy="3.5" r="1.8" stroke="currentColor" stroke-width="1.4"/><circle cx="4" cy="8" r="1.8" stroke="currentColor" stroke-width="1.4"/><circle cx="12" cy="12.5" r="1.8" stroke="currentColor" stroke-width="1.4"/><path d="m5.6 7.1 4.8-2.7M5.6 8.9l4.8 2.7" stroke="currentColor" stroke-width="1.3"/></svg>
-            <span class="btn-label">Bagikan</span>
-          </button>
-          <button class="btn btn-quiet" id="resetZoomBtn" title="Reset zoom grafik" aria-label="Reset zoom grafik">
-            <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M13 8a5 5 0 1 1-1.6-3.7M13 2.8V5.5h-2.7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            <span class="btn-label">Reset</span>
-          </button>
-        </div>
-      </div>
-      <div class="chart-box">
-        <canvas id="priceChart" role="img" aria-label="Grafik garis tren harga komoditas terpilih"></canvas>
-        <div class="chart-state" id="chartState" role="status">
-          <div class="chart-state-inner">
-            <strong>Memuat data</strong>
-            <p>Mengambil data harga terbaru dari arsip dashboard.</p>
+          <div class="filter-group" id="monthSection">
+            <div class="filter-label-row">
+              <span class="filter-label">Bulan</span>
+              <div class="filter-actions">
+                <span class="filter-hint" id="monthCount"></span>
+                <button class="link-btn" id="resetMonthBtn">Semua bulan</button>
+              </div>
+            </div>
+            <div class="month-grid" id="monthGrid" role="group" aria-label="Filter bulan"></div>
+            <p class="filter-note">Tanpa pilihan berarti semua bulan ditampilkan.</p>
+          </div>
+
+          <div class="filter-group filter-reset">
+            <button class="btn btn-quiet reset-btn" id="resetFiltersBtn" type="button">Reset filter</button>
           </div>
         </div>
-      </div>
-      <div class="chart-foot">
-        <p class="chart-note"><span class="dash-sample" aria-hidden="true"></span>Garis putus-putus dan label “Estimasi” berarti harga diisi dari hari sebelumnya karena sumber belum menyediakan nilai aktual.</p>
-        <span class="data-quality" id="qualityBadge"></span>
-      </div>
-    </section>
+      </details>
+    </aside>
 
-    <section class="section" id="pasarSection" aria-labelledby="pasarTitle">
-      <div class="section-head">
-        <div>
-          <h2 id="pasarTitle">Pasar yang dipantau <span class="count" id="pasarCount"></span></h2>
-          <p class="section-sub">Centang pasar untuk menampilkan atau menyembunyikan serinya pada grafik. Harga dan status di bawah adalah data terbaru.</p>
+    <div class="workspace-main">
+      <section class="section section-summary" aria-labelledby="summaryTitle">
+        <div class="section-head">
+          <div>
+            <h2 id="summaryTitle">Harga terkini</h2>
+            <p class="section-sub" id="summarySub">Harga produsen per kilogram di titik pantau terpilih.</p>
+          </div>
         </div>
-        <div class="inline-actions">
-          <button class="link-btn" id="selectAllBtn">Pilih semua</button>
-          <span class="inline-sep" aria-hidden="true"></span>
-          <button class="link-btn" id="deselectAllBtn">Sisakan satu</button>
+        <div class="stat-cards" id="statCards"></div>
+      </section>
+
+      <section class="chart-panel" aria-labelledby="chartTitle">
+        <div class="panel-head">
+          <div class="panel-title">
+            <p class="section-kicker">Tren harga</p>
+            <h2 id="chartTitle">Memuat…</h2>
+            <p class="section-sub" id="chartSub">Harga produsen per kilogram</p>
+          </div>
+          <div class="chart-actions" id="zoomActions">
+            <button class="btn btn-quiet" id="exportPngBtn" title="Unduh grafik sebagai gambar PNG" aria-label="Unduh grafik sebagai gambar PNG">
+              <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 2v8m0 0 3-3M8 10 5 7M3 12.5h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span class="btn-label">PNG</span>
+            </button>
+            <button class="btn btn-quiet" id="exportCsvBtn" title="Unduh data pada rentang yang tampil sebagai CSV" aria-label="Unduh data CSV">
+              <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 3h10v10H3z" stroke="currentColor" stroke-width="1.4"/><path d="M3 6.5h10M3 9.5h10M6.5 3v10M9.5 3v10" stroke="currentColor" stroke-width="1.1"/></svg>
+              <span class="btn-label">CSV</span>
+            </button>
+            <button class="btn btn-quiet" id="shareWaBtn" title="Bagikan harga terkini via WhatsApp" aria-label="Bagikan harga terkini via WhatsApp">
+              <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="12" cy="3.5" r="1.8" stroke="currentColor" stroke-width="1.4"/><circle cx="4" cy="8" r="1.8" stroke="currentColor" stroke-width="1.4"/><circle cx="12" cy="12.5" r="1.8" stroke="currentColor" stroke-width="1.4"/><path d="m5.6 7.1 4.8-2.7M5.6 8.9l4.8 2.7" stroke="currentColor" stroke-width="1.3"/></svg>
+              <span class="btn-label">Bagikan</span>
+            </button>
+            <button class="btn btn-quiet" id="resetZoomBtn" title="Reset zoom grafik" aria-label="Reset zoom grafik">
+              <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M13 8a5 5 0 1 1-1.6-3.7M13 2.8V5.5h-2.7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span class="btn-label">Reset</span>
+            </button>
+          </div>
         </div>
-      </div>
-      <div class="table-wrap">
-        <div class="table-scroll">
-          <table class="data-table market-table">
-            <thead>
-              <tr>
-                <th class="col-check"><span class="sr-only">Tampilkan di grafik</span></th>
-                <th>Pasar</th>
-                <th class="col-loc">Wilayah</th>
-                <th class="col-price">Harga terakhir</th>
-              </tr>
-            </thead>
-            <tbody id="pasarList"></tbody>
-          </table>
+        <div class="chart-box">
+          <canvas id="priceChart" role="img" aria-label="Grafik garis tren harga komoditas terpilih"></canvas>
+          <div class="chart-state" id="chartState" role="status">
+            <div class="chart-state-inner">
+              <strong>Memuat data</strong>
+              <p>Mengambil data harga terbaru dari arsip dashboard.</p>
+            </div>
+          </div>
         </div>
-      </div>
-    </section>
+        <div class="chart-foot">
+          <p class="chart-note"><span class="dash-sample" aria-hidden="true"></span>Garis putus-putus dan label “Estimasi” berarti harga diisi dari hari sebelumnya karena sumber belum menyediakan nilai aktual.</p>
+          <span class="data-quality" id="qualityBadge"></span>
+        </div>
+      </section>
+
+      <section class="section" id="pasarSection" aria-labelledby="pasarTitle">
+        <div class="section-head">
+          <div>
+            <h2 id="pasarTitle">Pasar yang dipantau <span class="count" id="pasarCount"></span></h2>
+            <p class="section-sub">Centang pasar untuk menampilkan atau menyembunyikan serinya pada grafik. Harga dan status di bawah adalah data terbaru.</p>
+          </div>
+          <div class="inline-actions">
+            <button class="link-btn" id="selectAllBtn">Pilih semua</button>
+            <span class="inline-sep" aria-hidden="true"></span>
+            <button class="link-btn" id="deselectAllBtn">Sisakan satu</button>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <div class="table-scroll">
+            <table class="data-table market-table">
+              <thead>
+                <tr>
+                  <th class="col-check"><span class="sr-only">Tampilkan di grafik</span></th>
+                  <th>Pasar</th>
+                  <th class="col-loc">Wilayah</th>
+                  <th class="col-price">Harga terakhir</th>
+                </tr>
+              </thead>
+              <tbody id="pasarList"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    </div>
   </div>
 
   <section class="view-panel" id="analisaView" role="tabpanel" aria-labelledby="tab-analisa">
@@ -1542,6 +1635,9 @@ document.querySelectorAll('.view-btn').forEach(button => {
     if (view === 'grafik' && chart) requestAnimationFrame(() => chart.resize());
   });
 });
+
+// Pada mobile, filter dimulai ringkas (tertutup) dengan ringkasan aktif di header.
+if (window.innerWidth < 768) document.getElementById('filterDisclosure').open = false;
 
 function getFilteredDates(allDates) {
   let dates;
@@ -1929,11 +2025,29 @@ document.getElementById('resetMonthBtn').addEventListener('click', () => {
   renderChart();
 });
 
+// Reset filter: kembalikan periode, rentang, dan bulan ke kondisi awal.
+document.getElementById('resetFiltersBtn').addEventListener('click', () => {
+  selectedMonths = new Set();
+  renderMonthFilter();
+  setPeriod('all');
+});
+
 // GRAFIK
+const PERIOD_LABELS = { '1w': '1 minggu', '1m': '1 bulan', '3m': '3 bulan', '6m': '6 bulan', '1y': '1 tahun', all: 'Semua data', custom: 'Rentang bebas' };
+
+// Ringkasan filter aktif untuk header disclosure di mobile.
+function renderFilterSummary() {
+  const target = document.getElementById('filterSummary');
+  if (!target || !currentCommodity) return;
+  const bulan = selectedMonths.size ? `${selectedMonths.size} bulan dipilih` : 'semua bulan';
+  target.textContent = `${currentCommodity} · ${PERIOD_LABELS[currentPeriod] || 'Rentang bebas'} · ${bulan}`;
+}
+
 function renderChart() {
   if (typeof Chart === 'undefined') throw new Error('Pustaka grafik gagal dimuat. Periksa koneksi internet lalu muat ulang halaman.');
   const c = data.commodities[currentCommodity];
   if (!c) return;
+  renderFilterSummary();
   const allDates = Object.keys(c.prices).sort();
   const dates = getFilteredDates(allDates);
   const chartTitle = document.getElementById('chartTitle');
@@ -2344,6 +2458,8 @@ window.addEventListener('resize', () => {
     wasMobile = isMobile;
     renderChart();
   }
+  // Kembali ke layout berdampingan: sidebar harus selalu menampilkan kontrolnya.
+  if (window.innerWidth >= 768) document.getElementById('filterDisclosure').open = true;
 });
 init();
 </script>
