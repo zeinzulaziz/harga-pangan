@@ -12,8 +12,10 @@
   --surface-2: #FAFBFA;
   --surface-3: #F2F5F3;
 
+  /* Hierarki teks: ink (utama) > muted (sekunder) > faint (label/metadata).
+     --neutral hanya untuk elemen non-teks (dot, dekorasi) karena kontrasnya rendah. */
   --ink: #172B24;
-  --muted: #5F6C66;
+  --muted: #4F5C56;
   --faint: #66736D;
   --neutral: #8A9490;
 
@@ -46,6 +48,8 @@
   --radius: 10px;
   --radius-lg: 12px;
 
+  /* Permukaan dashboard memakai border tipis; bayangan hanya untuk
+     elemen mengambang (menu, toast). */
   --shadow-sm: 0 1px 2px rgba(23, 43, 36, 0.04);
   --shadow-pop: 0 8px 24px rgba(23, 43, 36, 0.10);
 
@@ -336,8 +340,8 @@ a { color: var(--accent); }
    --------------------------------------------------------- */
 
 .site-footer {
-  margin-top: 64px;
-  padding: 32px 0 40px;
+  margin-top: 56px;
+  padding: 28px 0 36px;
   border-top: 1px solid var(--line);
   background: var(--surface);
 }
@@ -401,7 +405,7 @@ a { color: var(--accent); }
   align-items: center;
   justify-content: center;
   gap: 6px;
-  min-height: 40px;
+  min-height: 38px;
   padding: 0 12px;
   border: 1px solid var(--line);
   border-radius: var(--radius-sm);
