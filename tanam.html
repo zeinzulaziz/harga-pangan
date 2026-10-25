@@ -437,6 +437,8 @@
 
     .insight .btn { margin-top: 10px; }
 
+    .block .btn { margin-top: 14px; }
+
     .empty,
     .result-error { padding: 4px 0; }
 
@@ -655,7 +657,7 @@
             <fieldset class="field">
               <legend class="field-label">Estimasi pendapatan (opsional)</legend>
               <div class="money-grid">
-                <label class="money-field" for="luas"><span>Luas lahan (hektar)</span><input type="number" id="luas" name="luas" min="0" step="0.1" inputmode="decimal" placeholder="mis. 0.5"></label>
+                <label class="money-field" for="luas"><span>Luas lahan (hektar)</span><input type="text" id="luas" name="luas" inputmode="decimal" placeholder="mis. 0.5"></label>
                 <label class="money-field" for="produktivitas"><span>Produktivitas (ton/hektar)</span><input type="number" id="produktivitas" name="produktivitas" min="0" step="0.1" inputmode="decimal" aria-describedby="prodHint"></label>
               </div>
               <p class="hint" id="prodHint">Kosongkan produktivitas untuk memakai angka umum sesuai komoditas.</p>
@@ -864,7 +866,39 @@
           <li><span>Estimasi pendapatan</span><span style="color:var(--accent)">${rp(revenue)}</span></li>
         </ul>
         <p class="insight-note">Perkiraan kasar: hasil panen = luas x produktivitas, pendapatan = hasil x potensi harga median bulan panen.${yieldNote ? ' *Produktivitas memakai ' + YIELD_DEFAULT_SOURCE + '.' : ''} Belum memperhitungkan biaya produksi, susut, dan fluktuasi harga.</p>
+        <button type="button" class="btn" id="copyRevenueBtn">Salin untuk WhatsApp</button>
       </div>`;
+    }
+
+    function revenueShareText(btn) {
+      const block = btn.closest('.block');
+      const lines = [block.querySelector('h3').textContent.trim()];
+      block.querySelectorAll('.varieties li').forEach(li => {
+        const parts = li.querySelectorAll('span');
+        lines.push('\u2022 ' + parts[0].textContent.trim() + ': ' + parts[1].textContent.trim());
+      });
+      const note = block.querySelector('.insight-note');
+      if (note) lines.push('', note.textContent.trim());
+      return lines.join('\n');
+    }
+
+    async function copyRevenueText(btn) {
+      const text = revenueShareText(btn);
+      try {
+        await navigator.clipboard.writeText(text);
+      } catch (e) {
+        // Fallback untuk konteks non-HTTPS (mis. dibuka langsung via file://).
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        ta.remove();
+      }
+      btn.textContent = 'Tersalin \u2713';
+      setTimeout(() => { btn.textContent = 'Salin untuk WhatsApp'; }, 1500);
     }
 
     function renderSchedule() {
@@ -996,6 +1030,8 @@
 
       const retry = el('retryInsight');
       if (retry) retry.addEventListener('click', loadAnalisa);
+      const copyBtn = el('copyRevenueBtn');
+      if (copyBtn) copyBtn.addEventListener('click', () => copyRevenueText(copyBtn));
     }
 
     async function loadAnalisa() {
