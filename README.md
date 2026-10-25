@@ -27,9 +27,9 @@ membantu petani memahami waktu harga tinggi, rendah, dan momentum kenaikan.
 - Pembaruan data dilakukan otomatis setiap Senin jam 10:00 WIB dari SISKAPERBAPO
   (launchd), atau secara manual kapan pun diperlukan.
 - Penanda data aktual dan data estimasi carry-forward.
-- Analisa tren berdasarkan median harga historis.
-- Rekomendasi bulan dengan harga tertinggi, harga terendah, momentum kenaikan,
-  konsistensi pola, dan coverage data.
+- Halaman [Analisa Musiman](analisa.html): pola tren berdasarkan median harga
+  historis, rekomendasi bulan dengan harga tertinggi, harga terendah, momentum
+  kenaikan, konsistensi pola, coverage data, dan peta musiman bulan × tahun.
 - Kartu harga terkini per pasar dengan penanda estimasi/berhenti, ekspor CSV,
   ekspor grafik PNG, dan tombol bagikan harga via WhatsApp.
 - Halaman [Tentang & Metode](tentang.html): sumber data, cara pengolahan, dan
@@ -61,6 +61,7 @@ sebelumnya agar chart tetap berkesinambungan. Nilai tersebut diberi penanda
 ```text
 harga-pangan/
 ├── index.html
+├── analisa.html
 ├── tanam.html
 ├── tentang.html
 ├── kartu.html
@@ -111,8 +112,8 @@ rekaman historis dan tidak menggantikan file hari sebelumnya.
 
 ### `data/analisa.json`
 
-Hasil analisa yang dibuat dari `produsen.json` dan digunakan oleh view
-`Analisa` pada dashboard.
+Hasil analisa yang dibuat dari `produsen.json` dan digunakan oleh halaman
+[analisa.html](analisa.html).
 
 ### Aset & Metadata
 

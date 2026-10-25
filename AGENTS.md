@@ -25,12 +25,15 @@ sumber data tanpa konfirmasi user.
 ## Arsitektur
 
 - `index.html` — dashboard utama (vanilla JS; Chart.js, hammerjs, chartjs-plugin-zoom
-  dari jsdelivr). Membaca `data/produsen.json` dan `data/analisa.json`. Pasar
-  dipilih lewat tabel pasar di bawah grafik; checkbox diikat lewat **indeks**
-  kolom `commodities[nama].columns`.
+  dari jsdelivr). Membaca `data/produsen.json`. Pasar dipilih lewat tabel pasar di
+  bawah grafik; checkbox diikat lewat **indeks** kolom `commodities[nama].columns`.
+- `analisa.html` — halaman "Analisa musiman" terpisah (dulu tab di index). Membaca
+  `data/analisa.json` saja; CSS + JS analisa (heatmap, peta musiman, ringkasan)
+  pindah dari `index.html` ke halaman ini.
 - `assets/site.css` — fondasi tampilan bersama (token warna, tipografi, header,
-  footer, tombol). Dipakai `index.html`, `tanam.html`, `tentang.html`, dan
-  `kartu.html`; halaman 404 memakai salinan token inline agar tetap tampil saat
+  footer, tombol). Dipakai `index.html`, `analisa.html`, `tanam.html`,
+  `tentang.html`, dan `kartu.html`; halaman 404 memakai salinan token inline agar
+  tetap tampil saat
   URL yang diminta tidak ada.
 - `tanam.html` — kalkulator waktu tanam; membaca `data/analisa.json`. Daftar
   komoditas + umur panen di-hardcode di objek `CROPS` — kalau scraper menambah
