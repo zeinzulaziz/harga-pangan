@@ -35,6 +35,10 @@ sumber data tanpa konfirmasi user.
   `tentang.html`, dan `kartu.html`; halaman 404 memakai salinan token inline agar
   tetap tampil saat
   URL yang diminta tidak ada.
+- `assets/theme.js` — mode gelap: dijalankan blocking di `<head>` semua halaman
+  (set `data-theme` dari localStorage `theme` atau preferensi sistem sebelum
+  paint pertama), lalu memasang tombol `[data-theme-toggle]` di header dan
+  menyiarkan event `themechange` untuk render ulang chart/diagram.
 - `tanam.html` — kalkulator waktu tanam; membaca `data/analisa.json`. Daftar
   komoditas + umur panen di-hardcode di objek `CROPS` — kalau scraper menambah
   komoditas baru, update juga di sini.
@@ -81,6 +85,14 @@ sumber data tanpa konfirmasi user.
 - Kentang tidak punya harga aktual sejak 2 Jan 2023 (semua carry-forward panjang).
   Permukaan tampilan (stat card, kartu, tombol bagikan) harus menandai "berhenti
   Jan 2023" alih-alih menyajikannya sebagai harga terkini.
+- Mode gelap memakai dua jalur di `assets/site.css`: `:root[data-theme="dark"]`
+  (JavaScript aktif) dan `@media (prefers-color-scheme: dark) { :root:not([data-theme]) }`
+  (tanpa JavaScript). Warna chart/titik dihitung dari `isDark()`/`chartColors`/
+  `seriesColor` — jangan tambah hex hardcoded baru. Sel heatmap analisa sengaja
+  dipatok teks `#172B24` karena latar sel selalu pastel di kedua mode.
+- `--accent` dinaikkan terangnya di mode gelap untuk teks/ikon; latar solid
+  berlabel putih (tombol primer, `.brand-mark`, `.skip-link`) wajib memakai
+  `--accent-solid` yang tetap hijau pekat agar kontras teks terpenuhi.
 
 ## Metadata & Aset Situs
 
@@ -108,6 +120,9 @@ Scrape dijalankan otomatis setiap Senin 10:00 WIB via launchd (`com.zeinzulaziz.
   sekunder `#5F6C66`, aksen hijau `#246B4A` (brand), naik `#C2413B`, turun
   `#16805D`, warna seri chart di array `COLORS` (`index.html`). Token lengkap
   ada di `assets/site.css`; jangan menulis ulang nilai warna di halaman.
+  Mode gelap memakai token `--dk-*` di `site.css`; pratinjau/ekspor PNG
+  (`exportPng`, kanvas kartu insight) mengikuti tema aktif kecuali dinyatakan
+  sebaliknya.
 - Harga disimpan sebagai rupiah per kg (integer).
 - Script Node gaya CommonJS, diawali `#!/usr/bin/env node`, output console
   berbahasa Indonesia dengan emoji status.

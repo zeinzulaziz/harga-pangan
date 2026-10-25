@@ -7,8 +7,9 @@
   <meta name="description" content="Dashboard harga produsen pangan Jawa Timur dari SISKAPERBAPO: tren harian 8 komoditas, filter pasar, dan ekspor data.">
   <meta name="author" content="zeinzulaziz">
   <meta name="robots" content="index, follow">
-  <meta name="color-scheme" content="light">
+  <meta name="color-scheme" content="light dark">
   <meta name="theme-color" content="#F7F8FA">
+  <script src="assets/theme.js"></script>
   <link rel="canonical" href="https://zeinzulaziz.github.io/harga-pangan/">
 
   <!-- Ikon -->
@@ -973,6 +974,11 @@
         <a href="tentang.html">Tentang &amp; metode</a>
       </nav>
     </details>
+
+    <button class="theme-toggle" data-theme-toggle type="button" aria-label="Aktifkan mode gelap" title="Mode gelap">
+      <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/></svg>
+      <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M4.6 4.6l1.4 1.4M18 18l1.4 1.4M2.5 12h2M19.5 12h2M4.6 19.4 6 18M18 6l1.4-1.4"/></svg>
+    </button>
   </div>
 </header>
 
@@ -1167,6 +1173,10 @@
 <script>
 const R = n => n != null ? 'Rp' + n.toLocaleString('id-ID') : '-';
 const COLORS = ['#246B4A', '#B4653F', '#3E6A8A', '#9A7B2F', '#6B5B95', '#2F7E7A', '#8A5A6A', '#5C6B3C'];
+// Varian terang untuk latar gelap: rona sama, terang dinaikkan agar garis chart terbaca.
+const COLORS_DARK = ['#4FA87E', '#E08A5C', '#6E9BC1', '#C9A94F', '#9B8BC7', '#56ABA8', '#B58A9C', '#93A45F'];
+const isDark = () => document.documentElement.getAttribute('data-theme') === 'dark';
+const seriesColor = i => { const p = isDark() ? COLORS_DARK : COLORS; return p[i % p.length]; };
 const BULAN = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Ags', 'Sep', 'Okt', 'Nov', 'Des'];
 const CHECK_ICON = '<svg viewBox="0 0 10 8" aria-hidden="true"><path d="M1 4.2 3.6 6.8 9 1.2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 
@@ -1330,7 +1340,7 @@ function renderStatCards() {
   const cards = [...selectedPasars].sort((a, b) => a - b).map(i => {
     const price = c.prices[latest]?.[i];
     if (price == null) return '';
-    const color = COLORS[i % COLORS.length];
+    const color = seriesColor(i);
     const { name } = marketParts(c.columns[i]);
     const isImputed = Boolean(flags[i]);
     const newestActual = lastActualPrice(c, i, latest, 0);
@@ -1449,18 +1459,19 @@ function exportPng() {
   output.width = source.width;
   output.height = head + source.height + foot;
   const ctx = output.getContext('2d');
-  ctx.fillStyle = '#F7F8FA';
+  const dark = isDark();
+  ctx.fillStyle = dark ? '#0E1411' : '#F7F8FA';
   ctx.fillRect(0, 0, output.width, output.height);
-  ctx.fillStyle = '#FFFFFF';
+  ctx.fillStyle = dark ? '#151C19' : '#FFFFFF';
   ctx.fillRect(pad, head - Math.round(12 * unit), output.width - pad * 2, source.height + Math.round(24 * unit));
-  ctx.fillStyle = '#172B24';
+  ctx.fillStyle = dark ? '#E7EDEA' : '#172B24';
   ctx.font = `700 ${Math.round(25 * unit)}px Inter, -apple-system, sans-serif`;
   ctx.fillText('Tren harga ' + document.getElementById('chartTitle').textContent, pad, Math.round(42 * unit));
-  ctx.fillStyle = '#66736D';
+  ctx.fillStyle = dark ? '#909A95' : '#66736D';
   ctx.font = `500 ${Math.round(13 * unit)}px Inter, -apple-system, sans-serif`;
   ctx.fillText(document.getElementById('chartSub').textContent, pad, Math.round(66 * unit));
   ctx.drawImage(source, 0, head);
-  ctx.fillStyle = '#66736D';
+  ctx.fillStyle = dark ? '#909A95' : '#66736D';
   ctx.font = `500 ${Math.round(12 * unit)}px Inter, -apple-system, sans-serif`;
   ctx.fillText('Sumber: SISKAPERBAPO Jatim · Dashboard Harga Pangan', pad, head + source.height + Math.round(24 * unit));
   output.toBlob(blob => {
@@ -1476,7 +1487,7 @@ function renderCommodities() {
   const commodities = Object.keys(data.commodities);
   list.innerHTML = commodities.map((c, i) =>
     `<button class="commodity-btn ${c === currentCommodity ? 'active' : ''}" data-commodity="${c}" aria-pressed="${c === currentCommodity}">
-      <span class="commodity-dot" style="background:${COLORS[i % COLORS.length]}" aria-hidden="true"></span>${c}
+      <span class="commodity-dot" style="background:${seriesColor(i)}" aria-hidden="true"></span>${c}
     </button>`
   ).join('');
   list.querySelectorAll('.commodity-btn').forEach(btn => {
@@ -1512,7 +1523,7 @@ function renderPasarList() {
 
   document.getElementById('pasarList').innerHTML = cols.map((col, i) => {
     const active = selectedPasars.has(i);
-    const color = COLORS[i % COLORS.length];
+    const color = seriesColor(i);
     const price = prices[i];
     const estimated = Boolean(flags[i]);
     const { name, loc } = marketParts(col);
@@ -1660,7 +1671,7 @@ function renderChart() {
       datasets.push({
         label: c.columns[i],
         data: dates.map(d => { const a = c.prices[d]; return a && a[i] != null ? a[i] : null; }),
-        borderColor: COLORS[i % COLORS.length],
+        borderColor: seriesColor(i),
         backgroundColor: 'transparent',
         tension: 0.25,
         pointRadius: dates.length < 120 ? 2 : 0,
@@ -1674,7 +1685,7 @@ function renderChart() {
     datasets.push({
       label: currentCommodity,
       data: dates.map(d => { const a = c.prices[d]; return a && a[0] != null ? a[0] : null; }),
-      borderColor: COLORS[0],
+      borderColor: seriesColor(0),
       backgroundColor: 'transparent',
       tension: 0.25,
       pointRadius: dates.length < 120 ? 2 : 0,
@@ -1694,6 +1705,10 @@ function renderChart() {
       : displayDate(dates[index], false);
   };
 
+  const chartColors = isDark()
+    ? { tick: '#909A95', legend: '#AAB4AF', tipBg: '#151C19', tipTitle: '#E7EDEA', tipBody: '#AAB4AF', tipLine: '#2A332F', grid: '#263029', dragBg: 'rgba(78,168,124,0.14)', dragLine: 'rgba(78,168,124,0.45)' }
+    : { tick: '#66736D', legend: '#4F5C56', tipBg: '#FFFFFF', tipTitle: '#172B24', tipBody: '#5F6C66', tipLine: '#E5E9E6', grid: '#EEF1EF', dragBg: 'rgba(36,107,74,0.08)', dragLine: 'rgba(36,107,74,0.4)' };
+  if (typeof Chart !== 'undefined') Chart.defaults.color = chartColors.tick;
   const fontFamily = '"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
   const ctx = document.getElementById('priceChart').getContext('2d');
   if (chart) chart.destroy();
@@ -1712,7 +1727,7 @@ function renderChart() {
           position: 'bottom',
           align: 'start',
           labels: {
-            color: '#4F5C56',
+            color: chartColors.legend,
             font: { size: 11, family: fontFamily },
             usePointStyle: true,
             pointStyle: 'line',
@@ -1722,10 +1737,10 @@ function renderChart() {
           }
         },
         tooltip: {
-          backgroundColor: '#FFFFFF',
-          titleColor: '#172B24',
-          bodyColor: '#5F6C66',
-          borderColor: '#E5E9E6',
+          backgroundColor: chartColors.tipBg,
+          titleColor: chartColors.tipTitle,
+          bodyColor: chartColors.tipBody,
+          borderColor: chartColors.tipLine,
           borderWidth: 1,
           padding: 10,
           cornerRadius: 8,
@@ -1749,7 +1764,7 @@ function renderChart() {
           zoom: {
             wheel: { enabled: true },
             pinch: { enabled: true },
-            drag: { enabled: true, backgroundColor: 'rgba(36,107,74,0.08)', borderColor: 'rgba(36,107,74,0.4)', borderWidth: 1 },
+            drag: { enabled: true, backgroundColor: chartColors.dragBg, borderColor: chartColors.dragLine, borderWidth: 1 },
             mode: 'x',
             onZoomComplete: () => document.getElementById('resetZoomBtn').classList.add('active'),
             onPanComplete: () => document.getElementById('resetZoomBtn').classList.add('active')
@@ -1760,9 +1775,9 @@ function renderChart() {
       scales: {
         x: {
           grid: { display: false },
-          border: { color: '#E5E9E6' },
+          border: { color: chartColors.tipLine },
           ticks: {
-            color: '#66736D',
+            color: chartColors.tick,
             font: { size: 10.5, family: fontFamily },
             maxRotation: 0,
             autoSkip: true,
@@ -1774,14 +1789,14 @@ function renderChart() {
           title: {
             display: true,
             text: 'Rp per kg',
-            color: '#66736D',
+            color: chartColors.tick,
             font: { size: 11, weight: '500', family: fontFamily },
             padding: { bottom: 8 }
           },
-          grid: { color: '#EEF1EF', drawTicks: false },
+          grid: { color: chartColors.grid, drawTicks: false },
           border: { display: false },
           ticks: {
-            color: '#66736D',
+            color: chartColors.tick,
             font: { size: 10.5, family: fontFamily },
             padding: 8,
             maxTicksLimit: 6,
@@ -1847,6 +1862,14 @@ document.getElementById('shareWaBtn').addEventListener('click', () => {
     }
   }
   window.open('https://api.whatsapp.com/send?text=' + encodeURIComponent(text), '_blank', 'noopener');
+});
+
+window.addEventListener('themechange', () => {
+  if (!data) return;
+  renderStatCards();
+  renderCommodities();
+  renderPasarList();
+  if (typeof Chart !== 'undefined') renderChart();
 });
 
 async function init() {

@@ -38,6 +38,8 @@ membantu petani memahami waktu harga tinggi, rendah, dan momentum kenaikan.
   beserta teks WhatsApp siap dibagikan ke grup.
 - Kalkulator waktu tanam: memperkirakan waktu panen dari tanggal tanam beserta
   rata-rata umur tanaman sampai panen.
+- Mode gelap/terang: mengikuti preferensi sistem saat pertama dibuka, bisa
+  ditoggle lewat tombol di header, dan pilihannya tersimpan di peramban.
 - Tata letak dokumen satu kolom yang responsif dari ponsel sampai desktop.
 
 ## Sumber Data

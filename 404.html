@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex">
-  <meta name="color-scheme" content="light">
+  <meta name="color-scheme" content="light dark">
   <meta name="theme-color" content="#F7F8FA">
   <title>Halaman tidak ditemukan | Harga Pangan Jatim</title>
   <link rel="icon" href="https://zeinzulaziz.github.io/harga-pangan/favicon.svg" type="image/svg+xml">
@@ -14,13 +14,36 @@
       color-scheme: light;
       --bg: #F7F8FA;
       --surface: #FFFFFF;
+      --surface-2: #FAFBFA;
       --ink: #172B24;
       --muted: #5F6C66;
       --faint: #66736D;
       --line: #E5E9E6;
+      --line-strong: #C9D2CC;
       --accent: #246B4A;
       --accent-hover: #1B5439;
+      --accent-solid: #246B4A;
+      --shadow-card: 0 1px 2px rgba(23, 43, 36, 0.04);
       --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    /* Mode gelap mengikuti preferensi sistem (halaman ini tanpa JavaScript). */
+    @media (prefers-color-scheme: dark) {
+      :root {
+        color-scheme: dark;
+        --bg: #0E1411;
+        --surface: #151C19;
+        --surface-2: #1B2320;
+        --ink: #E7EDEA;
+        --muted: #AAB4AF;
+        --faint: #909A95;
+        --line: #2A332F;
+        --line-strong: #3C4743;
+        --accent: #4EA87C;
+        --accent-hover: #1F7A55;
+        --accent-solid: #246B4A;
+        --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.4);
+      }
     }
     body {
       min-height: 100vh;
@@ -40,7 +63,7 @@
       border: 1px solid var(--line);
       border-radius: 12px;
       background: var(--surface);
-      box-shadow: 0 1px 2px rgba(23, 43, 36, 0.04);
+      box-shadow: var(--shadow-card);
       text-align: center;
     }
     .brand {
@@ -61,7 +84,7 @@
       width: 22px;
       height: 22px;
       border-radius: 6px;
-      background: var(--accent);
+      background: var(--accent-solid);
       color: #fff;
     }
     .brand svg { width: 14px; height: 14px; }
@@ -111,12 +134,12 @@
       transition: background-color 0.15s, border-color 0.15s;
     }
     .btn:hover {
-      border-color: #C9D2CC;
-      background: #FAFBFA;
+      border-color: var(--line-strong);
+      background: var(--surface-2);
     }
     .btn.primary {
-      border-color: var(--accent);
-      background: var(--accent);
+      border-color: var(--accent-solid);
+      background: var(--accent-solid);
       color: #fff;
     }
     .btn.primary:hover {
