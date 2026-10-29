@@ -4,6 +4,22 @@ Dashboard statis harga produsen pangan Jawa Timur (sumber: SISKAPERBAPO) plus
 pipeline data Node.js tanpa dependency. UI dan komentar memakai Bahasa Indonesia.
 Detail lengkap ada di `README.md`.
 
+## Peta Cepat
+| Kalau mengerjakan | Baca/edit |
+|---|---|
+| Dashboard & chart | `index.html` (Chart.js, `COLORS`, `isDark`) |
+| Analisa musiman | `analisa.html`, `data/analisa.json` |
+| Kalkulator tanam | `tanam.html` (objek `CROPS`) |
+| Kartu insight bulanan | `kartu.html` |
+| Tentang & metode | `tentang.html` |
+| Tema, token, tipografi | `assets/site.css`, `assets/theme.js` |
+| Pipeline data | `scripts/scrape-harian.sh` → `cek-anomali.js` → `bersihkan-data.js` (`CORRECTIONS`) → `analisa-tren.js` |
+| Arsip harian | `data/history/YYYY/YYYY-MM/` |
+| Sitemap, OG, favicon | `sitemap.xml`, `og-image.svg`, `favicon.svg` (PNG/ICO hasil generate) |
+| Deploy | push `master` (GitHub Pages); scrape otomatis Senin 10:00 WIB via launchd |
+
+Urutan update data: **scrape → cek → bersihkan → analisa**.
+
 ## Perintah
 
 ```bash
