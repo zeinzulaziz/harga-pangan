@@ -1,5 +1,13 @@
 # Harga Produsen Pangan Jawa Timur
 
+**Live:** https://zeinzulaziz.github.io/harga-pangan/
+
+> **In English:** a free dashboard for East Java farmers. Daily producer prices for
+> 8 commodities across local markets, roughly ten years of history, and a seasonal
+> analysis page that answers "when does this commodity usually peak?". Scraped from
+> the provincial price portal with no backend, no framework, and no build step —
+> the data refreshes on a schedule. Full documentation below is in Indonesian.
+
 Dashboard harga produsen pangan Jawa Timur yang mengambil data dari
 [SISKAPERBAPO Jatim](https://siskaperbapo.jatimprov.go.id/produsen/tabel).
 
