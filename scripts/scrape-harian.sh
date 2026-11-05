@@ -37,7 +37,7 @@ echo "[$(date '+%F %T')] analisa..."
 npm run analisa
 
 echo "[$(date '+%F %T')] pull rebase dulu..."
-git pull --rebase origin master || { echo "[$(date '+%F %T')] GAGAL pull rebase"; exit 1; }
+git pull --rebase --autostash origin master || { echo "[$(date '+%F %T')] GAGAL pull rebase"; exit 1; }
 
 echo "[$(date '+%F %T')] commit & push..."
 git add -A
